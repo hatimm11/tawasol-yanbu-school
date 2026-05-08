@@ -442,6 +442,7 @@ body.dark ::-webkit-scrollbar-track{background:#0a0f1e;}
 </head>
 <body>
 <div class="toast" id="toast"></div>
+<button onclick="showHelp()" id="help-btn" style="position:fixed;bottom:80px;left:14px;z-index:900;width:36px;height:36px;border-radius:50%;background:#0d3b2e;color:#4ade80;border:2px solid #4ade80;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.35);opacity:.9;font-weight:800;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.75">؟</button>
 <div id="fb-bar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#ef4444;color:#fff;text-align:center;font-size:11px;padding:3px;font-family:inherit">⚠️ غير متصل بقاعدة البيانات — البيانات تُحفظ محلياً فقط</div>
 
 <!-- ROLE SCREEN -->
@@ -485,6 +486,9 @@ body.dark ::-webkit-scrollbar-track{background:#0a0f1e;}
     <div>
       <div style="font-size:11px;opacity:.7">وضع المطور</div>
     </div>
+  </button>
+  <button onclick="showHelp()" style="width:100%;max-width:320px;margin-top:4px;background:transparent;border:1.5px solid #4ade80;border-radius:14px;color:#4ade80;font-family:inherit;font-size:14px;font-weight:600;padding:13px 20px;cursor:pointer;text-align:center">
+    دليل المنصة
   </button>
   <div style="text-align:center;margin-top:32px;font-size:11px;color:rgba(255,255,255,.4);line-height:1.9">
     جميع الحقوق محفوظة لثانوية ينبع<br>
@@ -3645,6 +3649,77 @@ function devClearAll(){
     localStorage.clear();
     location.reload();
   };
+}
+
+
+function showHelp(){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;padding:0';
+  ov.innerHTML=`<div style="background:#0d3b2e;border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;font-family:inherit;direction:rtl;padding:20px 16px 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-size:17px;font-weight:600;color:#fff">تواصل ينبع</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6)">ثانوية ينبع للبنين</div>
+      </div>
+      <button id="help-close" style="background:none;border:none;font-size:22px;cursor:pointer;color:rgba(255,255,255,.6);padding:4px">✕</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:700;color:#4ade80">36</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">موظف</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:700;color:#4ade80">274</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">ولي أمر</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:8px">الأدوار</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px">
+      ${[
+        ['👔','مدير المدرسة','جميع الصفحات'],
+        ['👨‍🏫','وكيل المعلمين','الإشراف + الجدول'],
+        ['👨‍🎓','وكيل الطلاب','الغياب + التواصل'],
+        ['📋','الموجّه الطلابي','التوجيه + الحالات'],
+        ['📄','المساعد الإداري','الرسائل + الإشراف'],
+        ['🛠','المطور','صلاحيات كاملة'],
+      ].map(([ic,name,desc])=>`<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.1);border-radius:8px;padding:7px 10px"><span style="font-size:13px;color:#fff">${ic} ${name}</span><span style="font-size:11px;color:rgba(255,255,255,.5)">${desc}</span></div>`).join('')}
+    </div>
+
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:8px">توفير الوقت يومياً</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+      ${[
+        ['رسالة الإشراف اليومية','15-20 دق','2-3 دق'],
+        ['إشعار غياب طالب','5-8 دق','1 دقيقة'],
+        ['البحث عن رقم','2-4 دق','10 ثوان'],
+        ['تسجيل حالة موجّه','10-15 دق','3-5 دق'],
+      ].map(([task,before,after])=>`<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px 10px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px;color:#fff">${task}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:#dc2626;text-decoration:line-through">${before}</span>
+          <span style="font-size:11px;color:rgba(255,255,255,.6)">→</span>
+          <span style="font-size:11px;color:#15803d;font-weight:600">${after}</span>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:8px">كيفية البدء</div>
+    <div style="display:flex;flex-direction:column;gap=5px">
+      ${[
+        ['اختر دورك من الشاشة الرئيسية'],
+        ['استورد البيانات من Excel أو أضفها يدوياً'],
+        ['أنشئ قوالب الرسائل في تبويب القوالب'],
+        ['أرسل لواتساب بضغطة واحدة'],
+        ['أضف المنصة للشاشة الرئيسية من Safari/Chrome'],
+      ].map(([t],i)=>`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;background:rgba(255,255,255,.08);border-radius:8px;padding:6px 8px"><div style="width:20px;height:20px;border-radius:50%;background:#0d3b2e;color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div><div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.6">${t}</div></div>`).join('')}
+    </div>
+
+    <div style="margin-top:16px;text-align:center;font-size:10px;color:rgba(255,255,255,.4)">تطوير: حاتم السفياني • ☁️ Firebase متصل</div>
+  </div>`;
+  document.body.appendChild(ov);
+  document.getElementById('help-close').onclick=function(){document.body.removeChild(ov);};
+  ov.addEventListener('click',function(e){if(e.target===ov)document.body.removeChild(ov);});
 }
 </script>
 </body>
