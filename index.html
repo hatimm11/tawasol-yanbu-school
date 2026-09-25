@@ -405,29 +405,28 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-p-cancelled{background:#efeff1;color:#3078a6;text-decoration:line-through}
 #rq-mine-list .tc-row{align-items:center}#rq-mine-list .tc-name{white-space:normal}
 
-/* شريط تبويب جانبي للرقابة */
-#pg-raqaba.pg{max-width:980px}
-.rq-shell{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;align-items:start}
-.rq-shell .rq-tabs{display:flex;flex-direction:column;gap:6px;margin:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);background:#fff;border:1px solid #c2c1c1;border-radius:12px;padding:6px}
-.rq-shell .rq-tabs .dp{min-width:0;width:100%;flex:none;display:flex;align-items:center;gap:8px;text-align:start;padding:10px 10px;border-radius:9px;border:0;background:transparent;color:#15445a;font-weight:700;font-size:13px;position:relative;border-inline-start:3px solid transparent}
-.rq-shell .rq-tabs .dp:hover{background:#fafbfb}
-.rq-shell .rq-tabs .dp.on{background:rgba(7,168,105,.1);color:#15445a;border-inline-start-color:#07a869}
-.rq-shell .rq-tabs .dp i{font-style:normal;font-size:16px;flex:none}
-.rq-shell .rq-tabs .dp span{flex:1;min-width:0;line-height:1.3}
-.rq-shell .rq-tabs .rq-cnt{margin:0}
-.rq-main{min-width:0}
-@media (max-width:620px){
-  .rq-shell{grid-template-columns:64px minmax(0,1fr);gap:8px}
-  .rq-shell .rq-tabs{padding:4px;gap:4px}
-  .rq-shell .rq-tabs .dp{flex-direction:column;gap:3px;padding:8px 2px;text-align:center;font-size:10.5px;border-inline-start-width:0;border-bottom:3px solid transparent}
-  .rq-shell .rq-tabs .dp.on{border-bottom-color:#07a869}
-  .rq-shell .rq-tabs .dp i{font-size:18px}
-  .rq-shell .rq-tabs .rq-cnt{position:absolute;top:3px;inset-inline-end:3px;font-size:9px}
-  .rq-main .card{padding:12px}
-  .rq-boxes{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
-  .rq-bx .rq-k{font-size:11px;height:32px}
-}
-body.rq-only .rq-shell .rq-tabs{display:flex}
+/* ══ القائمة الجانبية ══ */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:120;background:#15445a;color:#fff;display:flex;align-items:center;gap:12px;padding:8px 12px;box-shadow:0 2px 10px rgba(21,68,90,.25)}
+.topbar::after{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;background:linear-gradient(90deg,#07a869,#3d7eb9)}
+.tb-menu{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;cursor:pointer;flex:none}
+.tb-menu span{display:block;width:20px;height:2px;border-radius:2px;background:#fff;transition:transform .2s,opacity .2s}
+body.nav-open .tb-menu span:nth-child(1){transform:translateY(6px) rotate(45deg)}body.nav-open .tb-menu span:nth-child(2){opacity:0}body.nav-open .tb-menu span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.tb-title{display:flex;flex-direction:column;line-height:1.3;min-width:0}.tb-title b{font-size:16px;font-weight:800}.tb-title small{font-size:11.5px;color:#69cee3}
+.nav{position:fixed!important;top:0;bottom:0;right:0;left:auto;width:264px;max-width:82vw;z-index:200;display:flex;flex-direction:column;gap:2px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px calc(env(safe-area-inset-bottom,0px) + 16px);overflow-y:auto;transform:translateX(105%);transition:transform .25s ease;box-shadow:-6px 0 24px rgba(21,68,90,.3)}
+.nav::after{display:none}
+body.nav-open .nav{transform:none}
+.nav-head{display:flex;flex-direction:column;padding:10px 8px 14px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:8px;position:relative;color:#fff}
+.nav-head b{font-size:17px;font-weight:900}.nav-head small{font-size:12px;color:#69cee3}
+.nav-x{position:absolute;top:8px;left:4px;width:34px;height:34px;border-radius:9px;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:15px;cursor:pointer}
+.nav .nb{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:11px 12px;border-radius:10px;border-bottom:0;font-size:14px;font-weight:600;color:rgba(255,255,255,.85);text-align:start;max-width:none!important;width:100%}
+.nav .nb i{font-size:18px;width:24px;text-align:center}
+.nav .nb:hover{background:rgba(255,255,255,.08)}
+.nav .nb.on{background:rgba(7,168,105,.28);color:#fff;border-bottom:0;box-shadow:inset -3px 0 0 #07a869}
+.nav .nb-role{margin-top:auto;border-top:1px solid rgba(255,255,255,.15);border-radius:0 0 10px 10px;padding-top:14px}
+.nav .role-badge{margin:0 auto 0 0}
+.nav-backdrop{position:fixed;inset:0;background:rgba(21,68,90,.45);z-index:190;opacity:0;pointer-events:none;transition:opacity .2s}
+body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.nav,.nav-backdrop,.tb-menu span{transition:none}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -648,7 +647,13 @@ body.rq-only .rq-shell .rq-tabs{display:flex}
   </div>
 </div>
 
-<nav class="nav">
+<header class="topbar">
+  <button class="tb-menu" id="tb-menu" onclick="toggleSideNav()" aria-label="فتح القائمة" aria-expanded="false"><span></span><span></span><span></span></button>
+  <div class="tb-title"><b id="tb-page">اليوم</b><small id="tb-role">—</small></div>
+</header>
+<div class="nav-backdrop" id="nav-backdrop" onclick="toggleSideNav(false)"></div>
+<nav class="nav" id="side-nav" aria-label="القائمة الرئيسية">
+  <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
   <button class="nb on" onclick="nav('today',this)"><i>📅</i>اليوم</button>
   <button class="nb" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
   <button class="nb" onclick="nav('main',this)"><i>📨</i>الرسائل</button>
@@ -660,7 +665,7 @@ body.rq-only .rq-shell .rq-tabs{display:flex}
   <button class="nb" id="nav-raqaba" style="display:none" onclick="nav('raqaba',this)"><i>🛡️</i>الرقابة</button>
   <button class="nb" id="nav-tprof" style="display:none" onclick="location.href='teachers/'"><i>🗂️</i>المعلمون</button>
   <button class="nb" onclick="nav('settings',this)"><i>⚙️</i>إعدادات</button>
-  <button class="nb" onclick="showRoleScreen()" style="max-width:50px"><i>🔄</i><span class="role-badge" id="role-badge">—</span></button>
+  <button class="nb nb-role" onclick="showRoleScreen()"><i>🔄</i>تبديل الدور <span class="role-badge" id="role-badge">—</span></button>
 </nav>
 
 <!-- TODAY -->
@@ -1264,16 +1269,14 @@ body.rq-only .rq-shell .rq-tabs{display:flex}
     <div><h1>الرقابة على دوام المعلمين</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
   </div>
 
-  <div class="rq-shell">
-  <nav class="rq-tabs" aria-label="أقسام الرقابة">
-    <button class="dp on" id="rq-tab-cls" onclick="rqTab('cls')"><i>🏫</i><span>جولة الحصص</span></button>
-    <button class="dp" id="rq-tab-sup" onclick="rqTab('sup')"><i>🧭</i><span>الإشراف</span></button>
-    <button class="dp" id="rq-tab-day" onclick="rqTab('day')"><i>🗓️</i><span>جدول اليوم</span></button>
-    <button class="dp" id="rq-tab-new" onclick="rqTab('new')"><i>📝</i><span>رصد يدوي</span></button>
-    <button class="dp" id="rq-tab-log" onclick="rqTab('log')"><i>📂</i><span>السجل</span><b class="rq-cnt" id="rq-open-cnt"></b></button>
-    <button class="dp" id="rq-tab-rep" onclick="rqTab('rep')"><i>📊</i><span>التقارير</span></button>
-  </nav>
-  <div class="rq-main">
+  <div class="rq-tabs">
+    <button class="dp on" id="rq-tab-cls" onclick="rqTab('cls')">جولة الحصص</button>
+    <button class="dp" id="rq-tab-sup" onclick="rqTab('sup')">الإشراف</button>
+    <button class="dp" id="rq-tab-day" onclick="rqTab('day')">جدول اليوم</button>
+    <button class="dp" id="rq-tab-new" onclick="rqTab('new')">رصد يدوي</button>
+    <button class="dp" id="rq-tab-log" onclick="rqTab('log')">السجل <span class="rq-cnt" id="rq-open-cnt"></span></button>
+    <button class="dp" id="rq-tab-rep" onclick="rqTab('rep')">التقارير</button>
+  </div>
 
   <!-- CLASS ROUND -->
   <div id="rq-cls">
@@ -1369,8 +1372,6 @@ body.rq-only .rq-shell .rq-tabs{display:flex}
       <div id="rq-rep-body"></div>
       <button class="bp" style="margin-top:10px" onclick="rqPrintReport()">🖨️ طباعة التقرير</button>
     </div>
-  </div>
-  </div>
   </div>
 </div>
 
@@ -1829,7 +1830,7 @@ function selectRole(role){
   save();
   renderToday(); renderMTpls(); renderTC(); renderTpls();
   renderPrivBadge(); showAbsNav(); updateChipsForRole();
-  if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}
+  if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}else{syncTopbar(document.querySelector('.nav .nb.on'));}
   if(typeof fbListen !== 'undefined') fbListen();
   if(typeof hideLoadingScreen==='function') hideLoadingScreen();
 }
@@ -2785,6 +2786,8 @@ function addPrivContact(){
 
 // ── NAV ──
 function nav(id,btn){
+  if(!btn)btn=document.querySelector('.nav .nb[onclick*="nav(\''+id+'\'"]');
+  toggleSideNav(false);syncTopbar(btn);
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   var pg=document.getElementById('pg-'+id);
   if(pg)pg.classList.add('on');
@@ -3291,7 +3294,7 @@ function loadRaqabaPage(){
   if(cur)sel.value=cur;
   var d=document.getElementById('rq-date');if(!d.value)d.value=rqIsoToday();
   rqTypeUI();rqHints();rqUpdateCount();
-  ['rq-c-date','rq-s-date'].forEach(function(i){var e=document.getElementById(i);if(e&&!e.value)e.value=rqIsoToday();});
+  ['rq-c-date','rq-s-date'].forEach(function(i){var e=document.getElementById(i);if(e&&!e.value){var t=new Date().getDay();e.value=t>4?rqWeekDate(0):rqIsoToday();}});
   if(currentRole==='admin_assistant'){var at='cls';try{var sv=localStorage.getItem('rq_tab');if(sv==='sup'||sv==='new'||sv==='day')at=sv;}catch(e){}rqTab(at);rqRenderMine();return;}
   var first=!sel.dataset.seen;sel.dataset.seen='1';
   if(first&&currentRole==='admin'){document.getElementById('rq-f-st').value='replied';rqTab('log');}
@@ -3618,6 +3621,16 @@ function rqRenderDay(){
 }
 function rqGoCls(dow,p){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();if(d>4)n.setDate(n.getDate()+(7-d));else n.setDate(n.getDate()-d);n.setDate(n.getDate()+dow);
   document.getElementById('rq-c-date').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');_rqPer=p;rqTab('cls');}
+
+
+// ── القائمة الجانبية ──
+function toggleSideNav(open){var o=(open===undefined)?!document.body.classList.contains('nav-open'):!!open;
+  document.body.classList.toggle('nav-open',o);var b=document.getElementById('tb-menu');if(b)b.setAttribute('aria-expanded',o?'true':'false');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleSideNav(false);});
+function syncTopbar(btn){try{
+  var t=document.getElementById('tb-page');if(t&&btn){var c=btn.cloneNode(true);c.querySelectorAll('i,span').forEach(function(x){x.remove();});t.textContent=c.textContent.trim();}
+  var r=(typeof ROLES!=='undefined'&&currentRole&&ROLES[currentRole])?ROLES[currentRole].label:'—';
+  var a=document.getElementById('tb-role');if(a)a.textContent=r;var n=document.getElementById('nav-role-lbl');if(n)n.textContent=r;}catch(e){}}
 
 // ── COUNSELOR / GUIDANCE ──
 var CNS_KEY = 'sd_cns_records_v1';
