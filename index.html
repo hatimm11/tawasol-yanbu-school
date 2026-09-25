@@ -1062,6 +1062,15 @@ label{color:#3078a6}
     <div><h1>جدول الإشراف الأسبوعي</h1><p>مواقع ثابتة — معلم مختلف كل يوم</p></div>
   </div>
 
+  <!-- School data 1448 -->
+  <div class="card">
+    <div class="ch">🗂️ بيانات الفصل الدراسي الأول ١٤٤٨هـ</div>
+    <p style="font-size:12px;color:#15445a;margin-bottom:10px;line-height:1.8">تحدّث جهات اتصال المعلمين الـ٣٦ (الأسماء والجوالات والتخصصات)، ومواقع الفسحة الخمسة ومشرفيها لكل يوم، والطابور الصباحي، من الكشوف المعتمدة. المناوبة تُؤخذ تلقائيًا من سجل المناوبة حسب التاريخ. لا تُحذف أي جهة اتصال قائمة.</p>
+    <div id="sd-import-sts" class="sts"></div>
+    <button class="bp" onclick="applySchoolData1448()">⟳ تحديث الإشراف وبيانات المعلمين</button>
+    <a href="teachers/" style="display:block;text-align:center;margin-top:8px;font-size:12.5px;color:#218caa;font-weight:700;text-decoration:none">عرض ملفات المعلمين ←</a>
+  </div>
+
   <!-- Fixed locations -->
   <div class="card">
     <div class="ch">📍 مواقع الإشراف الثابتة</div>
@@ -1097,6 +1106,7 @@ label{color:#3078a6}
 
     <!-- مناوبة -->
     <div class="ch" style="margin-bottom:8px">🔄 المناوبة <span style="font-size:11px;font-weight:400;color:#218caa">— يمكن إضافة أكثر من معلم</span></div>
+    <div id="sd-roster-info" style="font-size:12px;color:#15445a;background:rgba(61,126,185,.1);border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.8"></div>
     <div id="sd-monawaba-list"></div>
     <button onclick="addMonawabaSlot('monawaba')" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(61,126,185,.1);color:#3d7eb9;border:1.5px dashed rgba(61,126,185,.2);border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer">+ إضافة مشرف المناوبة</button>
 
@@ -1494,7 +1504,7 @@ function buildFullIshraf(){
   lines.push('الطابور الصباحي //');lines.push(' '+(taboor||'—'));
   if(locs.length){lines.push('إشراف الفسحة //');locs.forEach(function(loc){lines.push(loc+'. '+getTName(dayData[loc]||''));});}
   var salah=getMultiNames('_salah');lines.push('إشراف الصلاة //');lines.push(' '+(salah||'—'));
-  var mon=getMultiNames('_monawaba');lines.push('المناوبة //');lines.push(' '+(mon||'—'));
+  var mon=(typeof rosterMonawabaName==='function'&&rosterMonawabaName(day))||getMultiNames('_monawaba');lines.push('المناوبة //');lines.push(' '+(mon||'—'));
   return lines.join(NL);
 }
 
@@ -2543,7 +2553,7 @@ function nav(id,btn){
   if(id==='tpl')renderTpls();
   if(id==='tc'){renderTC();renderParents();fixParentsCls();updateFilterStage();updateFilterCls();}
   if(id==='settings'){loadSchoolSettingsForm();renderLog();}
-  if(id==='sched'){if(_schedLocsCache===null)getSchedLocs();if(_schedCache===null)getSched();renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');}
+  if(id==='sched'){if(_schedLocsCache===null)getSchedLocs();if(_schedCache===null)getSched();renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');if(typeof renderRosterInfo==='function')renderRosterInfo();}
   if(id==='abs')loadAbsPage();
   if(id==='counselor'){loadCnsStudents();renderCnsRecords();}
 }
@@ -2847,7 +2857,7 @@ function switchSchedDay(day,btn){
   document.querySelectorAll('[id^="sd-tab-"]').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
   var lbl=document.getElementById('sd-day-lbl');if(lbl)lbl.textContent=day;
-  renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');
+  renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');renderRosterInfo();
 }
 function renderSchedSlots(){
   var locs=getSchedLocs();var sched=getSched();var dayData=sched[schedDay]||{};
@@ -2916,11 +2926,67 @@ function resolveSchedTag(day,locName){
   return t?((t.prefix||'')+' '+t.name).trim():locName;
 }
 function resolveMultiTag(day,key){
+  if(key==='_monawaba'&&typeof rosterMonawabaName==='function'){var rn=rosterMonawabaName(day);if(rn)return rn;}
   var sched=_schedCache||getSched();var dayData=sched[day]||{};
   var tids=dayData[key]||[];
   return tids.map(function(tid){var t=DB.teachers.find(function(x){return x.id===tid;});return t?((t.prefix||'')+' '+t.name).trim():'';}).filter(Boolean).join(' / ')||'—';
 }
 
+
+
+// ══ بيانات الفصل الدراسي الأول ١٤٤٨هـ (كشف المعلمين، جدول الفسحة، سجل المناوبة) ══
+var SD1448 = {"v":"1448-1","teachers":[{"n":"حاتم السفياني","ph":"966560053460","job":"معلم"},{"n":"حسن الزهراني","ph":"966558703416","job":"معلم عربي"},{"n":"حمود العلوني","ph":"966569443986","job":"معلم كيمياء"},{"n":"خالد الميلبي","ph":"966509974984","job":"معلم حاسب"},{"n":"رامي العمري","ph":"966502350801","job":"معلم مكتبات"},{"n":"زاهم الحجوري","ph":"966506343856","job":"معلم فيزياء"},{"n":"سالم اليامي","ph":"966544045636","job":"معلم عربي"},{"n":"سعد العلوني","ph":"966504392272","job":"معلم بدنية"},{"n":"سلطان المجنوني","ph":"966567894456","job":"معلم رياضيات"},{"n":"عابد الذبياني","ph":"966505348826","job":"معلم رياضيات"},{"n":"عاطف القروني","ph":"966504349412","job":"معلم أحياء"},{"n":"عبدالله سلامة الجهني","ph":"966543598844","job":"معلم جغرافيا"},{"n":"عبدالله آل صالح","ph":"966559749005","job":"معلم إنجليزي"},{"n":"عبدالله مسعود الجهني","ph":"966560607400","job":"معلم جغرافيا"},{"n":"عيد الشهري","ph":"966509092220","job":"معلم عربي"},{"n":"عيسى البذيلي","ph":"966592810408","job":"معلم فيزياء"},{"n":"غازي المحمادي","ph":"966554343761","job":"معلم أحياء"},{"n":"فهد المطلق","ph":"966530644855","job":"معلم علم نفس"},{"n":"فهد آل سالم","ph":"966568989155","job":"معلم كيمياء"},{"n":"فهد المحياوي","ph":"966505364064","job":"معلم جغرافيا"},{"n":"فيصل الجهني","ph":"966567946995","job":"معلم كيمياء"},{"n":"فيصل السناني","ph":"966548870303","job":"معلم أحياء"},{"n":"محمد الرويلي","ph":"966568087970","job":"معلم حاسب"},{"n":"محمد القباني","ph":"966555363643","job":"معلم إنجليزي"},{"n":"محمد المحمدي","ph":"966506366582","job":"معلم دين"},{"n":"محمد السيد","ph":"966548088488","job":"معلم دين"},{"n":"محمد الزلباني","ph":"966566861238","job":"معلم قراءات"},{"n":"محمد السناني","ph":"966543328471","job":"معلم علم أرض"},{"n":"مروان الفايدي","ph":"966562342020","job":"معلم عربي"},{"n":"مسعود المرواني","ph":"966543971111","job":"معلم مكتبات"},{"n":"نايف الشريف","ph":"966541001617","job":"معلم رياضيات"},{"n":"هاشم المحياوي","ph":"966590399968","job":"معلم عربي"},{"n":"سالم صياح الجهني","ph":"966505630628","job":"معلم دين"},{"n":"منصور الخريصي","ph":"966592760960","job":"معلم دين"},{"n":"عبدالرحمن الصبان","ph":"966504332314","job":"معلم إنجليزي"},{"n":"وليد الجهني","ph":"966504363518","job":"معلم دين"}],"locs":["الدور الأول","الساحة","ممر الفصول","ممر المختبرات","المقصف"],"brk":{"الاثنين":{"المقصف":0,"الساحة":10,"ممر المختبرات":25,"الدور الأول":26,"ممر الفصول":27},"الخميس":{"ممر الفصول":1,"المقصف":14,"ممر المختبرات":19,"الدور الأول":24,"الساحة":32},"الأربعاء":{"ممر الفصول":2,"المقصف":4,"ممر المختبرات":15,"الساحة":22,"الدور الأول":31},"الأحد":{"الساحة":3,"المقصف":11,"ممر المختبرات":20,"الدور الأول":28,"ممر الفصول":29},"الثلاثاء":{"الدور الأول":6,"المقصف":17,"ممر الفصول":18,"ممر المختبرات":21,"الساحة":35}},"taboor":[7,16],"roster":{"2026-08-30":0,"2026-08-31":1,"2026-09-01":2,"2026-09-02":3,"2026-09-03":4,"2026-09-06":6,"2026-09-07":32,"2026-09-08":7,"2026-09-09":8,"2026-09-10":9,"2026-09-13":10,"2026-09-14":34,"2026-09-15":12,"2026-09-16":11,"2026-09-17":13,"2026-09-20":14,"2026-09-21":15,"2026-09-22":16,"2026-09-27":17,"2026-09-28":18,"2026-09-29":19,"2026-09-30":20,"2026-10-01":21,"2026-10-04":23,"2026-10-05":22,"2026-10-06":24,"2026-10-07":27,"2026-10-08":25,"2026-10-11":26,"2026-10-12":28,"2026-10-13":29,"2026-10-14":33,"2026-10-15":30,"2026-10-18":31,"2026-10-19":35,"2026-10-20":0,"2026-10-21":1,"2026-10-22":2,"2026-10-25":3,"2026-10-26":4,"2026-10-27":6,"2026-10-28":32,"2026-10-29":7,"2026-11-01":8,"2026-11-02":9,"2026-11-03":10,"2026-11-04":34,"2026-11-05":12,"2026-11-08":11,"2026-11-09":13,"2026-11-10":14,"2026-11-11":15,"2026-11-12":16,"2026-11-15":17,"2026-11-16":18,"2026-11-17":19,"2026-11-18":20,"2026-11-19":21,"2026-11-29":23,"2026-11-30":22,"2026-12-01":24,"2026-12-02":27,"2026-12-03":25,"2026-12-06":26,"2026-12-07":28,"2026-12-08":29,"2026-12-09":33,"2026-12-10":30,"2026-12-13":31,"2026-12-14":35,"2026-12-15":0,"2026-12-16":1,"2026-12-17":2,"2026-12-20":3,"2026-12-21":4,"2026-12-22":6,"2026-12-23":32,"2026-12-24":7,"2026-12-27":8,"2026-12-28":9,"2026-12-29":10,"2026-12-30":34,"2026-12-31":12}};
+var SD_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+function sdDateOfDay(day){
+  var i=SD_DAYS.indexOf(day);if(i<0)return '';
+  var n=new Date();n.setHours(12,0,0,0);var dow=n.getDay();
+  if(dow>4)n.setDate(n.getDate()+(7-dow));else n.setDate(n.getDate()-dow);
+  n.setDate(n.getDate()+i);
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+function sdTeacherByIdx(i){
+  var s=SD1448.teachers[i];if(!s)return null;
+  return DB.teachers.find(function(x){return x.phone===s.ph;})||{prefix:'أ.',name:s.n,phone:s.ph};
+}
+function rosterMonawabaName(day){
+  var iso=sdDateOfDay(day);if(!iso||!(iso in SD1448.roster))return '';
+  var t=sdTeacherByIdx(SD1448.roster[iso]);return t?((t.prefix||'')+' '+t.name).trim():'';
+}
+function renderRosterInfo(){
+  var el=document.getElementById('sd-roster-info');if(!el)return;
+  var iso=sdDateOfDay(schedDay),nm=rosterMonawabaName(schedDay);
+  el.innerHTML=nm?('📌 حسب سجل المناوبة المعتمد: <b>'+nm+'</b> — '+schedDay+' '+iso.split('-').reverse().join('/')+'م. يُستخدم تلقائيًا في رسائل الإشراف.')
+    :'لا توجد مناوبة مسجلة في سجل المناوبة لهذا اليوم من الأسبوع الحالي (إجازة أو خارج الفصل).';
+}
+function applySchoolData1448(){
+  var byPhone={};DB.teachers.forEach(function(t){byPhone[t.phone]=t;});
+  var ids=[],added=0,updated=0;
+  SD1448.teachers.forEach(function(s){
+    var t=byPhone[s.ph];
+    if(t){t.name=s.n;t.prefix=t.prefix||'أ.';t.job=s.job;updated++;}
+    else{t={id:uid(),prefix:'أ.',name:s.n,phone:s.ph,job:s.job};DB.teachers.push(t);added++;}
+    ids.push(t.id);
+  });
+  save();
+  try{localStorage.setItem(SHARED_TEACHERS_KEY,JSON.stringify(DB.teachers));}catch(e){}
+  if(typeof fbSaveTeachers!=='undefined')fbSaveTeachers(DB.teachers);
+  saveSchedLocs_data(SD1448.locs.slice());
+  var sched=getSched();
+  SD_DAYS.forEach(function(day){
+    var old=sched[day]||{};var d={};
+    SD1448.locs.forEach(function(loc){var i=(SD1448.brk[day]||{})[loc];d[loc]=(i===undefined)?'':ids[i];});
+    d._taboor=SD1448.taboor.map(function(i){return ids[i];});
+    d._salah=old._salah||[];
+    d._monawaba=old._monawaba||[];
+    sched[day]=d;
+  });
+  saveSched(sched);
+  if(typeof renderTC==='function')renderTC();
+  renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');renderRosterInfo();
+  var st=document.getElementById('sd-import-sts');
+  if(st){st.className='sts ok';st.textContent='تم التحديث: '+added+' معلمًا جديدًا، و'+updated+' محدّثًا، ومواقع الفسحة الخمسة، والطابور الصباحي لكل الأيام.';}
+  toast('✅ تم تحديث بيانات الفصل الأول ١٤٤٨هـ');
+}
 
 // ── COUNSELOR / GUIDANCE ──
 var CNS_KEY = 'sd_cns_records_v1';
@@ -3172,7 +3238,7 @@ function previewSchedImage(){
   locs.forEach(function(loc,i){ rows.push({num:i+1, label:loc, value:getTName(dayData[loc]||''), type:'sup'}); });
   rows.push({label:'الطابور الصباحي', value:getMultiNames('_taboor'), type:'taboor', icon:'🌅'});
   rows.push({label:'الصلاة',           value:getMultiNames('_salah'),   type:'salah',   icon:'🕌'});
-  rows.push({label:'المناوبة',         value:getMultiNames('_monawaba'),type:'monawaba',icon:'🔄'});
+  rows.push({label:'المناوبة',         value:(typeof rosterMonawabaName==='function'&&rosterMonawabaName(day))||getMultiNames('_monawaba'),type:'monawaba',icon:'🔄'});
 
   var W=1200, ROW_H=80, HEADER_H=170, COL_H=46, FOOTER_H=65;
   var H=HEADER_H+COL_H+rows.length*ROW_H+FOOTER_H;
