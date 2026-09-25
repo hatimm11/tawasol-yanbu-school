@@ -462,6 +462,9 @@ body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 .rq-cover-w em{color:var(--rq-red)}
 .rq-tbl td.rq-red{color:var(--rq-red);font-weight:800}
 .rq-miss{color:var(--rq-red);font-weight:800}
+
+.dp.rq-lock,.dp:disabled{opacity:.4;cursor:not-allowed}
+input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -3331,6 +3334,7 @@ function loadRaqabaPage(){
   var d=document.getElementById('rq-date');if(!d.value)d.value=rqIsoToday();
   rqTypeUI();rqHints();rqUpdateCount();
   ['rq-c-date','rq-s-date'].forEach(function(i){var e=document.getElementById(i);if(e&&!e.value){var t=new Date().getDay();e.value=t>4?rqWeekDate(0):rqIsoToday();}});
+  rqAALockInputs();
   if(currentRole==='admin_assistant'){var at='cls';try{var sv=localStorage.getItem('rq_tab');if(sv==='sup'||sv==='new'||sv==='day')at=sv;}catch(e){}rqTab(at);rqRenderMine();return;}
   var first=!sel.dataset.seen;sel.dataset.seen='1';
   if(first&&currentRole==='admin'){document.getElementById('rq-f-st').value='replied';rqTab('log');}
@@ -3367,6 +3371,7 @@ function rqHints(){
 function rqList(){var all=rqGet();return Object.keys(all).map(function(k){return all[k];}).sort(function(a,b){return (b.date+b.ts).localeCompare(a.date+a.ts);});}
 function rqSave(){
   var tid=document.getElementById('rq-teacher').value, iso=document.getElementById('rq-date').value, type=document.getElementById('rq-type').value;
+  if(rqAA()){iso=rqIsoToday();document.getElementById('rq-date').value=iso;var dw=new Date().getDay();if(dw>4){toast('لا دوام اليوم',true);return;}}
   if(!tid){toast('اختر المعلم',true);return;} if(!iso){toast('حدّد التاريخ',true);return;}
   var rec={id:'rq'+Date.now().toString(36)+uid().slice(0,3),tid:tid,name:rqTName(tid),phone:(rqT(tid)||{}).phone||'',date:iso,type:type,
     note:document.getElementById('rq-note').value.trim(),status:'new',ts:new Date().toISOString(),by:currentRole};
@@ -3541,17 +3546,17 @@ var _rqPer=0;
 function rqSetPer(p){_rqPer=p;rqRenderCls();}
 function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();if(d>4)n.setDate(n.getDate()+(7-d));else n.setDate(n.getDate()-d);n.setDate(n.getDate()+dow);
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
-function rqSetDay(dow){document.getElementById('rq-c-date').value=rqWeekDate(dow);rqRenderCls();}
+function rqSetDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-c-date').value=rqWeekDate(dow);rqRenderCls();}
 function rqRenderCls(){
   rqLoadTT();
-  var dEl=document.getElementById('rq-c-date');if(!dEl)return;if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
+  var dEl=document.getElementById('rq-c-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value, dow=rqDateObj(iso).getDay();
-  document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){return '<button class="dp'+(i===dow?' on':'')+'" onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
+  document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
   document.getElementById('rq-c-day').textContent=rqDay(iso)+' '+rqHijri(iso);
   var maxP=dow===2?6:7;if(_rqPer>=maxP)_rqPer=0;
   document.getElementById('rq-c-pers').innerHTML=RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
-  if(dow>4){info.innerHTML='لا دوام في هذا اليوم.';list.innerHTML='';return;}
+  if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0;
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur&&cur!=='ok')miss++;
@@ -3577,6 +3582,7 @@ function rqApplyRoundCase(id,m,build){
   return before;
 }
 function rqMarkCls(iso,p,c,m){
+  if(rqLocked(iso)){rqLockMsg();return;}
   var dow=rqDateObj(iso).getDay();var a=rqClassMap(dow,p).map[c];if(!a)return;
   var k='p'+p+'_'+rqKey(c);var cur=rqRoundVal(iso,k);if(cur===m)m='';
   var tid=rqTidByPhone(a.ph);if((m==='late'||m==='abs')&&!tid){toast('المعلم غير موجود في جهات الاتصال',true);return;}
@@ -3599,16 +3605,16 @@ function rqDutyRows(iso){
 }
 var _rqGrp='all';
 var RQ_GRPS=[['all','الكل'],['الطابور الصباحي','الطابور'],['إشراف الفسحة','الفسحة'],['إشراف الصلاة','الصلاة'],['المناوبة لنهاية الدوام','المناوبة']];
-function rqSetSupDay(dow){document.getElementById('rq-s-date').value=rqWeekDate(dow);rqRenderSup();}
+function rqSetSupDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-s-date').value=rqWeekDate(dow);rqRenderSup();}
 function rqRenderSup(){
-  var dEl=document.getElementById('rq-s-date');if(!dEl)return;if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
+  var dEl=document.getElementById('rq-s-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value,dow=rqDateObj(iso).getDay();
-  document.getElementById('rq-s-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){return '<button class="dp'+(i===dow?' on':'')+'" onclick="rqSetSupDay('+i+')">'+n+'</button>';}).join('');
+  document.getElementById('rq-s-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetSupDay('+i+')">'+n+'</button>';}).join('');
   document.getElementById('rq-s-day').textContent=rqDay(iso)+' '+rqHijri(iso);
   var all=rqDutyRows(iso),marks=(rqRoundsGet()[iso])||{},el=document.getElementById('rq-s-list'),info=document.getElementById('rq-s-info');
   document.getElementById('rq-s-grps').innerHTML=RQ_GRPS.map(function(g){var n=g[0]==='all'?all.length:all.filter(function(r){return r.group===g[0];}).length;
     return '<button class="dp'+(_rqGrp===g[0]?' on':'')+'" onclick="_rqGrp=\''+g[0]+'\';rqRenderSup()">'+g[1]+' <small>'+n+'</small></button>';}).join('');
-  if(dow>4){info.innerHTML='لا دوام في هذا اليوم.';el.innerHTML='';return;}
+  if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';el.innerHTML='';return;}
   var rows=_rqGrp==='all'?all:all.filter(function(r){return r.group===_rqGrp;});
   var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c&&c!=='ok')miss++;});
   info.innerHTML='<b>'+rqDay(iso)+':</b> '+rows.length+' مهمة · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
@@ -3620,6 +3626,7 @@ function rqRenderSup(){
       rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+'</div>';}).join('');
 }
 function rqMarkSup(iso,k,m){
+  if(rqLocked(iso)){rqLockMsg();return;}
   var r=rqDutyRows(iso).find(function(x){return x.k===k;});if(!r)return;
   var cur=rqRoundVal(iso,'d_'+k);if(cur===m)m='';
   var id='rd'+iso.replace(/-/g,'')+rqKey(k);
@@ -3723,6 +3730,13 @@ function rqAbsHTML(r){if(!rqIsAbs(r)||r.status==='cancelled')return '';
   return '<div class="rq-abs-row"><span>حالة الغياب:</span>'+(edit?Object.keys(RQ_ABS).map(function(k){return '<button type="button" class="rq-abs rq-abs-'+k+(r.absState===k?' on':'')+'" onclick="rqSetAbs(\''+r.id+'\',\''+k+'\')">'+RQ_ABS[k]+'</button>';}).join('')
     :(r.absState?'<b class="rq-abs rq-abs-'+r.absState+' on">'+RQ_ABS[r.absState]+'</b>':'<em>لم تُحدَّد</em>'))+
     (r.coveredBy&&r.absState==='covered'?'<small>غطّاها: '+rqEsc(r.coveredBy)+'</small>':'')+'</div>';}
+
+
+// ── قفل الأيام للمساعد الإداري ──
+function rqAA(){return currentRole==='admin_assistant';}
+function rqLocked(iso){return rqAA()&&iso!==rqIsoToday();}
+function rqLockMsg(){toast('المساعد الإداري يرصد اليوم الحالي فقط',true);}
+function rqAALockInputs(){var aa=rqAA();['rq-c-date','rq-s-date','rq-date'].forEach(function(i){var e=document.getElementById(i);if(!e)return;e.disabled=aa;if(aa)e.value=rqIsoToday();});}
 
 // ── COUNSELOR / GUIDANCE ──
 var CNS_KEY = 'sd_cns_records_v1';
