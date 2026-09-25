@@ -404,6 +404,30 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-card.rq-cancelled{border-inline-start-color:#c2c1c1;opacity:.7}
 .rq-p-cancelled{background:#efeff1;color:#3078a6;text-decoration:line-through}
 #rq-mine-list .tc-row{align-items:center}#rq-mine-list .tc-name{white-space:normal}
+
+/* شريط تبويب جانبي للرقابة */
+#pg-raqaba.pg{max-width:980px}
+.rq-shell{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;align-items:start}
+.rq-shell .rq-tabs{display:flex;flex-direction:column;gap:6px;margin:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);background:#fff;border:1px solid #c2c1c1;border-radius:12px;padding:6px}
+.rq-shell .rq-tabs .dp{min-width:0;width:100%;flex:none;display:flex;align-items:center;gap:8px;text-align:start;padding:10px 10px;border-radius:9px;border:0;background:transparent;color:#15445a;font-weight:700;font-size:13px;position:relative;border-inline-start:3px solid transparent}
+.rq-shell .rq-tabs .dp:hover{background:#fafbfb}
+.rq-shell .rq-tabs .dp.on{background:rgba(7,168,105,.1);color:#15445a;border-inline-start-color:#07a869}
+.rq-shell .rq-tabs .dp i{font-style:normal;font-size:16px;flex:none}
+.rq-shell .rq-tabs .dp span{flex:1;min-width:0;line-height:1.3}
+.rq-shell .rq-tabs .rq-cnt{margin:0}
+.rq-main{min-width:0}
+@media (max-width:620px){
+  .rq-shell{grid-template-columns:64px minmax(0,1fr);gap:8px}
+  .rq-shell .rq-tabs{padding:4px;gap:4px}
+  .rq-shell .rq-tabs .dp{flex-direction:column;gap:3px;padding:8px 2px;text-align:center;font-size:10.5px;border-inline-start-width:0;border-bottom:3px solid transparent}
+  .rq-shell .rq-tabs .dp.on{border-bottom-color:#07a869}
+  .rq-shell .rq-tabs .dp i{font-size:18px}
+  .rq-shell .rq-tabs .rq-cnt{position:absolute;top:3px;inset-inline-end:3px;font-size:9px}
+  .rq-main .card{padding:12px}
+  .rq-boxes{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
+  .rq-bx .rq-k{font-size:11px;height:32px}
+}
+body.rq-only .rq-shell .rq-tabs{display:flex}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -1240,14 +1264,16 @@ body.rq-only .rq-rooms-card{display:none}
     <div><h1>الرقابة على دوام المعلمين</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
   </div>
 
-  <div class="rq-tabs">
-    <button class="dp on" id="rq-tab-cls" onclick="rqTab('cls')">جولة الحصص</button>
-    <button class="dp" id="rq-tab-sup" onclick="rqTab('sup')">الإشراف</button>
-    <button class="dp" id="rq-tab-day" onclick="rqTab('day')">جدول اليوم</button>
-    <button class="dp" id="rq-tab-new" onclick="rqTab('new')">رصد يدوي</button>
-    <button class="dp" id="rq-tab-log" onclick="rqTab('log')">السجل <span class="rq-cnt" id="rq-open-cnt"></span></button>
-    <button class="dp" id="rq-tab-rep" onclick="rqTab('rep')">التقارير</button>
-  </div>
+  <div class="rq-shell">
+  <nav class="rq-tabs" aria-label="أقسام الرقابة">
+    <button class="dp on" id="rq-tab-cls" onclick="rqTab('cls')"><i>🏫</i><span>جولة الحصص</span></button>
+    <button class="dp" id="rq-tab-sup" onclick="rqTab('sup')"><i>🧭</i><span>الإشراف</span></button>
+    <button class="dp" id="rq-tab-day" onclick="rqTab('day')"><i>🗓️</i><span>جدول اليوم</span></button>
+    <button class="dp" id="rq-tab-new" onclick="rqTab('new')"><i>📝</i><span>رصد يدوي</span></button>
+    <button class="dp" id="rq-tab-log" onclick="rqTab('log')"><i>📂</i><span>السجل</span><b class="rq-cnt" id="rq-open-cnt"></b></button>
+    <button class="dp" id="rq-tab-rep" onclick="rqTab('rep')"><i>📊</i><span>التقارير</span></button>
+  </nav>
+  <div class="rq-main">
 
   <!-- CLASS ROUND -->
   <div id="rq-cls">
@@ -1343,6 +1369,8 @@ body.rq-only .rq-rooms-card{display:none}
       <div id="rq-rep-body"></div>
       <button class="bp" style="margin-top:10px" onclick="rqPrintReport()">🖨️ طباعة التقرير</button>
     </div>
+  </div>
+  </div>
   </div>
 </div>
 
