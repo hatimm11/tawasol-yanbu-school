@@ -450,6 +450,18 @@ body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 .rq-abs-unexcused.on{background:#351375;border-color:#351375;color:#fff}
 .rq-abs-covered.on{background:#c1b489;border-color:#c1b489;color:#15445a}
 .rq-abs-tag{font-weight:800}.rq-abs-tag.rq-abs-excused{color:#3d7eb9}.rq-abs-tag.rq-abs-unexcused{color:#351375}.rq-abs-tag.rq-abs-covered{color:#15445a;background:rgba(193,180,137,.35);border-radius:6px;padding:0 5px}
+
+/* ══ الأحمر لـ«غائب» و«بدون عذر» ══ */
+:root{--rq-red:#d92d20;--rq-red-soft:rgba(217,45,32,.1)}
+.rq-k-abs{color:var(--rq-red);border-color:rgba(217,45,32,.45)}
+.rq-k-abs.on,i.rq-k-abs{background:var(--rq-red)!important;border-color:var(--rq-red)!important;color:#fff!important}
+.rq-bx.rq-m-abs,.rq-row.rq-m-abs{border-color:var(--rq-red);background:var(--rq-red-soft)}
+.rq-abs-unexcused{color:var(--rq-red);border-color:rgba(217,45,32,.45)}
+.rq-abs-unexcused.on{background:var(--rq-red);border-color:var(--rq-red);color:#fff}
+.rq-abs-tag.rq-abs-unexcused{color:var(--rq-red)}
+.rq-cover-w em{color:var(--rq-red)}
+.rq-tbl td.rq-red{color:var(--rq-red);font-weight:800}
+.rq-miss{color:var(--rq-red);font-weight:800}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -3466,7 +3478,7 @@ function rqReportRows(k){
 function rqRepTable(rows){
   if(!rows.length)return '<div class="empty">لا توجد حالات مرصودة في هذا الشهر</div>';
   var tot={absent:0,late:0,lateMin:0,early:0,earlyMin:0,cls:0,duty:0,open:0,rej:0,exc:0,unexc:0,cov:0};rows.forEach(function(o){for(var k in tot)tot[k]+=o[k];});
-  var tr=function(o,b){return '<tr'+(b?' class="tot"':'')+'><td>'+rqEsc(o.name)+'</td><td>'+o.absent+'</td><td>'+o.late+(o.lateMin?' ('+o.lateMin+'د)':'')+'</td><td>'+o.early+(o.earlyMin?' ('+o.earlyMin+'د)':'')+'</td><td>'+o.cls+'</td><td>'+o.duty+'</td><td>'+o.exc+'</td><td>'+o.unexc+'</td><td>'+o.cov+'</td><td>'+o.rej+'</td><td>'+o.open+'</td></tr>';};
+  var tr=function(o,b){return '<tr'+(b?' class="tot"':'')+'><td>'+rqEsc(o.name)+'</td><td>'+o.absent+'</td><td>'+o.late+(o.lateMin?' ('+o.lateMin+'د)':'')+'</td><td>'+o.early+(o.earlyMin?' ('+o.earlyMin+'د)':'')+'</td><td>'+o.cls+'</td><td>'+o.duty+'</td><td>'+o.exc+'</td><td'+(o.unexc?' class="rq-red"':'')+'>'+o.unexc+'</td><td>'+o.cov+'</td><td>'+o.rej+'</td><td>'+o.open+'</td></tr>';};
   tot.name='الإجمالي';
   return '<div style="overflow-x:auto"><table class="rq-tbl"><thead><tr><th>المعلم</th><th>غياب</th><th>تأخر</th><th>انصراف مبكر</th><th>حصص</th><th>إشراف</th><th>غياب بعذر</th><th>بدون عذر</th><th>بالانتظار</th><th>عذر غير مقبول</th><th>مفتوحة</th></tr></thead><tbody>'+rows.map(function(o){return tr(o);}).join('')+tr(tot,1)+'</tbody></table></div>';
 }
@@ -3548,7 +3560,7 @@ function rqRenderCls(){
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
       rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
-  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span style="color:#351375;font-weight:800">'+miss+' حالة</span>':'')+
+  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
     (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'');
 }
 function rqApplyRoundCase(id,m,build){
@@ -3599,7 +3611,7 @@ function rqRenderSup(){
   if(dow>4){info.innerHTML='لا دوام في هذا اليوم.';el.innerHTML='';return;}
   var rows=_rqGrp==='all'?all:all.filter(function(r){return r.group===_rqGrp;});
   var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c&&c!=='ok')miss++;});
-  info.innerHTML='<b>'+rqDay(iso)+':</b> '+rows.length+' مهمة · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span style="color:#351375;font-weight:800">'+miss+' حالة</span>':'');
+  info.innerHTML='<b>'+rqDay(iso)+':</b> '+rows.length+' مهمة · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
   if(!rows.length){el.innerHTML='<div class="empty" style="grid-column:1/-1">لا مهام مسجلة لهذا اليوم</div>';return;}
   el.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
     var place=r.loc||(r.group==='الطابور الصباحي'?'قبل الطابور':r.group==='المناوبة لنهاية الدوام'?'وقت الانصراف':'');
