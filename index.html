@@ -364,6 +364,11 @@ i.rq-k{width:20px;height:20px;font-size:11px;border-radius:5px;margin-inline-end
 .rq-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:#3078a6;margin-top:10px;align-items:center}
 .rq-grp{font-size:12px;font-weight:800;color:#218caa;margin:12px 0 4px}
 body.rq-only .rq-tabs{display:flex}body.rq-only #rq-tab-log,body.rq-only #rq-tab-rep{display:none}
+
+.rq-cls{display:flex;flex-direction:column;line-height:1.25;min-width:62px}.rq-cls small{font-size:10.5px;font-weight:500;color:#218caa}
+.rq-room-ed{display:flex;align-items:center;gap:10px;margin-bottom:6px}.rq-room-ed input{flex:1}
+.rq-rooms-card summary{list-style:none;margin-bottom:0}.rq-rooms-card[open] summary{margin-bottom:10px}
+body.rq-only .rq-rooms-card{display:none}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -477,6 +482,13 @@ body.rq-only .rq-tabs{display:flex}body.rq-only #rq-tab-log,body.rq-only #rq-tab
         try{localStorage.setItem('sd_school_v1', JSON.stringify(data));}catch(e){}
         if(document.getElementById('sch-name')) loadSchoolSettingsForm();
       }
+    });
+
+    // Rooms
+    db.ref(FB_SCHOOL+'/rooms').on('value', function(snap){
+      _rqRooms = snap.val() || {};
+      try{localStorage.setItem('sd_rooms_v1', JSON.stringify(_rqRooms));}catch(e){}
+      var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function'){rqRenderCls();rqRenderRoomsEd();}
     });
 
     // Rounds
@@ -1212,6 +1224,11 @@ body.rq-only .rq-tabs{display:flex}body.rq-only #rq-tab-log,body.rq-only #rq-tab
       <div id="rq-c-list"></div>
       <div class="rq-legend"><span><i class="rq-k rq-k-ok">ح</i>حضر</span><span><i class="rq-k rq-k-late">ت</i>متأخر</span><span><i class="rq-k rq-k-abs">غ</i>لم يحضر</span><span>التأخر وعدم الحضور يُسجَّلان حالةً تلقائيًا</span></div>
     </div>
+    <details class="card rq-rooms-card"><summary class="ch" style="cursor:pointer">🚪 قاعات الفصول</summary>
+      <p style="font-size:11.5px;color:#218caa;margin-bottom:8px">أسماء افتراضية، عدّلها لتطابق مبنى المدرسة.</p>
+      <div id="rq-rooms-ed"></div>
+      <div class="a2"><button class="bp" onclick="rqSaveRooms()">💾 حفظ القاعات</button><button class="b-cp" onclick="rqResetRooms()">استعادة الافتراضي</button></div>
+    </details>
   </div>
 
   <!-- SUPERVISION ROUND -->
@@ -3171,7 +3188,7 @@ function rqTName(id){var t=rqT(id);return t?((t.prefix||'أ.')+' '+t.name).trim(
 function rqLoadTT(){if(_rqTT!==null)return;_rqTT={};
   try{fetch('teachers/data/teachers.json').then(function(r){return r.json();}).then(function(arr){arr.forEach(function(t){_rqTT['966'+t.phone.slice(1)]=t;});rqHints();var c=document.getElementById('rq-cls');if(c&&c.style.display!=='none')rqRenderCls();}).catch(function(){});}catch(e){}}
 function rqTab(t){['cls','sup','new','log','rep'].forEach(function(k){document.getElementById('rq-'+k).style.display=k===t?'block':'none';document.getElementById('rq-tab-'+k).classList.toggle('on',k===t);});
-  if(t==='log')rqRenderLog();if(t==='rep')rqRenderRep();if(t==='cls')rqRenderCls();if(t==='sup')rqRenderSup();
+  if(t==='log')rqRenderLog();if(t==='rep')rqRenderRep();if(t==='cls'){rqRenderCls();rqRenderRoomsEd();}if(t==='sup')rqRenderSup();
   try{localStorage.setItem('rq_tab',t);}catch(e){}}
 function loadRaqabaPage(){
   rqLoadTT();
@@ -3375,8 +3392,8 @@ function rqRenderCls(){
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0;
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur&&cur!=='ok')miss++;
-    if(!a)return '<div class="rq-row rq-free"><span class="rq-cls">'+c+'</span><span class="rq-who">لا حصة</span></div>';
-    return '<div class="rq-row'+(cur?' rq-m-'+cur:'')+'"><span class="rq-cls">'+c+'</span><span class="rq-who"><b>'+rqEsc(a.name)+'</b><small>'+rqEsc(a.subj)+'</small></span>'+
+    if(!a)return '<div class="rq-row rq-free"><span class="rq-cls">'+c+'<small>'+rqEsc(rqRoom(c))+'</small></span><span class="rq-who">لا حصة</span></div>';
+    return '<div class="rq-row'+(cur?' rq-m-'+cur:'')+'"><span class="rq-cls">'+c+'<small>'+rqEsc(rqRoom(c))+'</small></span><span class="rq-who"><b>'+rqEsc(a.name)+'</b><small>'+rqEsc(a.subj)+'</small></span>'+
       rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
   info.innerHTML='<b>الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+(miss?' · <span style="color:#351375;font-weight:800">'+miss+' حالة</span>':'')+
@@ -3389,7 +3406,7 @@ function rqMarkCls(iso,p,c,m){
   var id='rc'+iso.replace(/-/g,'')+'p'+p+rqKey(c);var ex=rqGet()[id];
   if(m==='late'||m==='abs'){var tid=rqTidByPhone(a.ph);if(!tid){toast('المعلم غير موجود في جهات الاتصال',true);return;}
     if(!ex||ex.status==='new'){rqPut({id:id,tid:tid,name:rqTName(tid),phone:a.ph,date:iso,type:m==='abs'?'class':'classlate',period:p,
-      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj,note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:currentRole,src:'round'});}
+      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj+(rqRoom(c)?' ('+rqRoom(c)+')':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:currentRole,src:'round'});}
     toast(m==='abs'?'سُجّلت حالة عدم حضور':'سُجّلت حالة تأخر');}
   else if(ex&&ex.status==='new'&&ex.src==='round'){rqDel(id);}
   rqRenderCls();rqUpdateCount();if(typeof rqRenderMine==='function')rqRenderMine();
@@ -3422,6 +3439,20 @@ function rqMarkSup(iso,k,m){
   else if(ex&&ex.status==='new'&&ex.src==='round'){rqDel(id);}
   rqRenderSup();rqUpdateCount();if(typeof rqRenderMine==='function')rqRenderMine();
 }
+
+
+// ── القاعات ──
+var RQ_ROOMS_DEF={'1-1':'قاعة 101','1-2':'قاعة 102','1-3':'قاعة 103','1-4':'قاعة 104','1-5':'قاعة 105','2-1':'قاعة 201','2-2':'قاعة 202','2-3':'قاعة 203','2-4':'قاعة 204','2ش':'قاعة 205','3-1':'قاعة 301','3-2':'قاعة 302','3-3':'قاعة 303','3ش':'قاعة 304'};
+var _rqRooms=null;
+function rqRooms(){if(_rqRooms!==null)return _rqRooms;try{var d=localStorage.getItem('sd_rooms_v1');_rqRooms=d?JSON.parse(d):{};}catch(e){_rqRooms={};}return _rqRooms;}
+function rqRoom(c){var r=rqRooms();return r[rqKey(c)]||RQ_ROOMS_DEF[c]||'';}
+function rqSaveRooms(){var o={};RQ_CLASSES.forEach(function(c){var e=document.getElementById('rq-room-'+rqKey(c));var v=e?e.value.trim():'';if(v&&v!==RQ_ROOMS_DEF[c])o[rqKey(c)]=v;});
+  _rqRooms=o;try{localStorage.setItem('sd_rooms_v1',JSON.stringify(o));}catch(e){}
+  if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/rooms').set(o);}catch(e){}
+  toast('✅ حُفظت القاعات');rqRenderCls();}
+function rqResetRooms(){RQ_CLASSES.forEach(function(c){var e=document.getElementById('rq-room-'+rqKey(c));if(e)e.value=RQ_ROOMS_DEF[c];});}
+function rqRenderRoomsEd(){var el=document.getElementById('rq-rooms-ed');if(!el)return;
+  el.innerHTML=RQ_CLASSES.map(function(c){return '<div class="rq-room-ed"><span class="rq-cls">'+c+'</span><input type="text" id="rq-room-'+rqKey(c)+'" value="'+rqEsc(rqRoom(c))+'"></div>';}).join('');}
 
 // ── COUNSELOR / GUIDANCE ──
 var CNS_KEY = 'sd_cns_records_v1';
