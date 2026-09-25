@@ -346,6 +346,10 @@ label{color:#3078a6}
 .rq-wait{margin-top:10px;font-size:12px;font-weight:700;color:#3078a6}
 .rq-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;border:1px solid #c2c1c1;border-radius:8px 8px 0 0;overflow:hidden;min-width:520px}
 .rq-tbl th{background:#15445a;color:#fff;padding:6px;text-align:start;white-space:nowrap}.rq-tbl td{padding:6px;border-top:1px solid #efeff1}.rq-tbl tbody tr:nth-child(even) td{background:#fafbfb}.rq-tbl tr.tot td{font-weight:800;background:#efeff1}
+
+body.rq-only .rq-tabs{display:none}
+#rq-mine{display:none}body.rq-only #rq-mine{display:block}
+.rq-by{font-size:11px;color:#218caa}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -533,7 +537,7 @@ label{color:#3078a6}
   <button class="role-btn" onclick="selectRole('admin_assistant')">
     <i><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></i>
     <div>
-      <div>المساعد الإداري</div>
+      <div>المساعد الإداري</div><div class="role-desc">رصد حالات الدوام فقط</div>
     </div>
   </button>
   <button class="role-btn" onclick="selectRole('developer')" style="background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2)">
@@ -1194,9 +1198,11 @@ label{color:#3078a6}
       <div class="mb" id="rq-f-duty" style="display:none"><label for="rq-duty">المهمة</label>
         <select id="rq-duty"><option>الطابور الصباحي</option><option>إشراف الفسحة</option><option>إشراف الصلاة</option><option>المناوبة لنهاية الدوام</option><option>حصة انتظار</option></select></div>
       <div class="rq-hint" id="rq-hint"></div>
-      <div class="mb"><label for="rq-note">ملاحظات الوكيل (اختياري)</label><textarea id="rq-note" style="min-height:64px" placeholder="أي تفاصيل تُحفظ مع الحالة"></textarea></div>
+      <div class="mb"><label for="rq-note">ملاحظات (اختياري)</label><textarea id="rq-note" style="min-height:64px" placeholder="أي تفاصيل تُحفظ مع الحالة"></textarea></div>
       <button class="bp" onclick="rqSave()">💾 حفظ الحالة</button>
     </div>
+    <div class="card" id="rq-mine"><div class="ch">🗒️ ما رصدته اليوم</div><div id="rq-mine-list"></div>
+      <p style="font-size:11.5px;color:#218caa;margin-top:8px">تنتقل الحالات تلقائيًا إلى وكيل شؤون المعلمين لإرسال المساءلة ومتابعتها.</p></div>
   </div>
 
   <!-- LOG -->
@@ -1679,6 +1685,7 @@ function selectRole(role){
   save();
   renderToday(); renderMTpls(); renderTC(); renderTpls();
   renderPrivBadge(); showAbsNav(); updateChipsForRole();
+  if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}
   if(typeof fbListen !== 'undefined') fbListen();
   if(typeof hideLoadingScreen==='function') hideLoadingScreen();
 }
@@ -2662,7 +2669,15 @@ function showAbsNav(){
   var rqBtn   = document.getElementById('nav-raqaba');
   if(rqBtn)    rqBtn.style.display    = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='admin_assistant'||currentRole==='developer')?'flex':'none';
   var tpBtn   = document.getElementById('nav-tprof');
-  if(tpBtn)    tpBtn.style.display    = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='admin_assistant'||currentRole==='developer')?'flex':'none';
+  if(tpBtn)    tpBtn.style.display    = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='developer')?'flex':'none';
+  if(schedBtn&&currentRole==='admin_assistant') schedBtn.style.display='none';
+  // المساعد الإداري: الرصد فقط
+  document.querySelectorAll('.nav .nb').forEach(function(b){
+    if(b.id==='nav-raqaba'||b.querySelector('#role-badge'))return;
+    if(currentRole==='admin_assistant'){ if(b.style.display!=='none'){b.dataset.aahide='1';b.style.display='none';} }
+    else if(b.dataset.aahide==='1'){b.style.display='';delete b.dataset.aahide;}
+  });
+  document.body.classList.toggle('rq-only',currentRole==='admin_assistant');
 }
 function updateChipsForRole(){
   var role=currentRole||'';
@@ -3117,6 +3132,7 @@ function loadRaqabaPage(){
   if(cur)sel.value=cur;
   var d=document.getElementById('rq-date');if(!d.value)d.value=rqIsoToday();
   rqTypeUI();rqHints();rqUpdateCount();
+  if(currentRole==='admin_assistant'){rqTab('new');rqRenderMine();return;}
   var first=!sel.dataset.seen;sel.dataset.seen='1';
   if(first&&currentRole==='admin'){document.getElementById('rq-f-st').value='replied';rqTab('log');}
   else{var vis=['new','log','rep'].filter(function(k){return document.getElementById('rq-'+k).style.display!=='none';})[0]||'new';rqTab(vis);}
@@ -3160,6 +3176,7 @@ function rqSave(){
   if(type==='duty')rec.detail=document.getElementById('rq-duty').value;
   rqPut(rec);
   document.getElementById('rq-note').value='';document.getElementById('rq-min').value='';
+  if(currentRole==='admin_assistant'){toast('✅ حُفظت الحالة وأُحيلت لوكيل شؤون المعلمين');rqHints();rqRenderMine();return;}
   toast('✅ حُفظت الحالة — يمكنك الآن إرسال المساءلة');rqHints();rqUpdateCount();
   rqTab('log');
 }
@@ -3189,6 +3206,10 @@ function rqAct(id,act){
   if(act==='del'){var b=document.getElementById('rq-del-'+id);if(b&&b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='تأكيد الحذف';setTimeout(function(){if(b){b.dataset.armed='';b.textContent='حذف';}},3000);return;}rqDel(id);toast('حُذفت الحالة');}
   rqRenderLog();rqUpdateCount();
 }
+var RQ_BY={admin_assistant:'المساعد الإداري',teacher_affairs:'وكيل شؤون المعلمين',admin:'مدير المدرسة',developer:'المطور'};
+function rqRenderMine(){var el=document.getElementById('rq-mine-list');if(!el)return;var td=rqIsoToday();
+  var rows=rqList().filter(function(r){return r.by==='admin_assistant'&&(r.ts||'').slice(0,10)===new Date().toISOString().slice(0,10);});
+  el.innerHTML=rows.length?rows.map(function(r){return '<div class="tc-row"><span class="tc-name">'+rqEsc(rqTName(r.tid))+'</span><span class="rq-meta">'+RQ_TYPES[r.type]+(r.minutes?' · '+r.minutes+'د':'')+' · '+rqHijri(r.date)+'</span></div>';}).join(''):'<div class="empty" style="padding:8px">لم تُرصد حالات اليوم</div>';}
 function rqUpdateCount(){var n=rqList().filter(function(r){return r.status!=='archived';}).length;var el=document.getElementById('rq-open-cnt');if(el)el.textContent=n?String(n):'';}
 function rqRenderLog(){
   var el=document.getElementById('rq-list');if(!el)return;
@@ -3199,8 +3220,8 @@ function rqRenderLog(){
   el.innerHTML=rows.map(function(r){
     var h='<div class="card rq-card rq-'+r.status+'"><div class="rq-top"><div><div class="rq-name">'+rqEsc(rqTName(r.tid))+'</div>'+
       '<div class="rq-meta">'+RQ_TYPES[r.type]+(r.minutes?' · '+r.minutes+' دقيقة':'')+(r.detail?' · '+rqEsc(r.detail):'')+'</div>'+
-      '<div class="rq-meta">'+rqDay(r.date)+' '+rqHijri(r.date)+'</div></div><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span></div>';
-    if(r.note)h+='<div class="rq-box"><b>ملاحظة الوكيل:</b> '+rqEsc(r.note)+'</div>';
+      '<div class="rq-meta">'+rqDay(r.date)+' '+rqHijri(r.date)+'</div>'+(r.by&&r.by!=='teacher_affairs'?'<div class="rq-by">رصدها: '+(RQ_BY[r.by]||r.by)+'</div>':'')+'</div><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span></div>';
+    if(r.note)h+='<div class="rq-box"><b>ملاحظة الرصد:</b> '+rqEsc(r.note)+'</div>';
     if(r.reply)h+='<div class="rq-box"><b>إفادة المعلم:</b> '+rqEsc(r.reply)+'</div>';
     if(r.decision)h+='<div class="rq-box rq-dec-'+r.decision+'"><b>قرار المدير:</b> '+(r.decision==='accept'?'يُقبل العذر':'لا يُقبل العذر، ويُتخذ الإجراء النظامي')+(r.decisionNote?' — '+rqEsc(r.decisionNote):'')+'</div>';
     h+='<div class="rq-acts">';
