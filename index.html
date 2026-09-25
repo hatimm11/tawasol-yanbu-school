@@ -465,6 +465,11 @@ body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 
 .dp.rq-lock,.dp:disabled{opacity:.4;cursor:not-allowed}
 input[type=date]:disabled{opacity:.7;cursor:not-allowed}
+
+.ico-follow{width:22px;height:22px;display:block}
+.nav .nb i .ico-follow{width:20px;height:20px;margin:0 auto;color:#69cee3}
+.nav .nb.on i .ico-follow{color:#fff}
+.hdr-follow{color:#07a869}.hdr-follow .ico-follow{width:26px;height:26px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -700,7 +705,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <button class="nb" id="nav-abs" style="display:none" onclick="nav('abs',this)"><i>🚨</i>غياب</button>
 <button class="nb" id="nav-cns" style="display:none" onclick="nav('counselor',this)"><i>📋</i>التوجيه</button>
   <button class="nb" id="nav-sched" style="display:none" onclick="nav('sched',this)"><i>📅</i>الإشراف</button>
-  <button class="nb" id="nav-raqaba" style="display:none" onclick="nav('raqaba',this)"><i>🛡️</i>الرقابة</button>
+  <button class="nb" id="nav-raqaba" style="display:none" onclick="nav('raqaba',this)"><i><svg class="ico-follow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.8A1.3 1.3 0 0 1 10.3 2.5h3.4A1.3 1.3 0 0 1 15 3.8v.7"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></i>المتابعة اليومية</button>
   <button class="nb" id="nav-tprof" style="display:none" onclick="location.href='teachers/'"><i>🗂️</i>المعلمون</button>
   <button class="nb" onclick="nav('settings',this)"><i>⚙️</i>إعدادات</button>
   <button class="nb nb-role" onclick="showRoleScreen()"><i>🔄</i>تبديل الدور <span class="role-badge" id="role-badge">—</span></button>
@@ -1303,8 +1308,8 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <!-- RAQABA PAGE (teacher_affairs / admin) -->
 <div id="pg-raqaba" class="pg">
   <div class="hdr">
-    <div class="hdr-i">🛡️</div>
-    <div><h1>الرقابة على دوام المعلمين</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
+    <div class="hdr-i hdr-follow"><svg class="ico-follow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.8A1.3 1.3 0 0 1 10.3 2.5h3.4A1.3 1.3 0 0 1 15 3.8v.7"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></div>
+    <div><h1>المتابعة اليومية</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
   </div>
 
   <div class="rq-tabs">
