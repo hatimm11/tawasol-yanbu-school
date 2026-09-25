@@ -392,6 +392,9 @@ body.rq-only .rq-rooms-card{display:none}
 
 .rq-bx-g{font-size:13.5px}
 #rq-s-grps .dp small{font-size:10px;opacity:.75}
+
+.rq-bx .rq-k{font-size:12.5px;font-weight:800;height:34px;padding:0 4px;letter-spacing:0}
+.rq-bx .rq-marks{gap:4px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -1247,7 +1250,7 @@ body.rq-only .rq-rooms-card{display:none}
       <label>الحصة</label><div class="rq-pers" id="rq-c-pers"></div>
       <div class="rq-hint" id="rq-c-info" style="display:block"></div>
       <div id="rq-c-list" class="rq-boxes"></div>
-      <div class="rq-legend"><span><i class="rq-k rq-k-ok">ح</i>حضر</span><span><i class="rq-k rq-k-late">ت</i>متأخر</span><span><i class="rq-k rq-k-abs">غ</i>لم يحضر</span><span>التأخر وعدم الحضور يُسجَّلان حالةً تلقائيًا</span></div>
+      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل</span></div>
     </div>
     <details class="card rq-rooms-card"><summary class="ch" style="cursor:pointer">🚪 قاعات الفصول</summary>
       <p style="font-size:11.5px;color:#218caa;margin-bottom:8px">أسماء افتراضية، عدّلها لتطابق مبنى المدرسة.</p>
@@ -1277,7 +1280,7 @@ body.rq-only .rq-rooms-card{display:none}
       <label>المهمة</label><div class="rq-pers rq-days" id="rq-s-grps"></div>
       <div class="rq-hint" id="rq-s-info" style="display:block"></div>
       <div id="rq-s-list" class="rq-boxes"></div>
-      <div class="rq-legend"><span><i class="rq-k rq-k-ok">ح</i>نفّذ</span><span><i class="rq-k rq-k-late">ت</i>متأخر</span><span><i class="rq-k rq-k-abs">غ</i>لم ينفّذ</span></div>
+      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل</span></div>
     </div>
   </div>
 
@@ -3412,8 +3415,8 @@ function rqRoundSet(date,key,val){var all=rqRoundsGet();if(!all[date])all[date]=
   if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/rounds/'+date+'/'+key).set(val||null);}catch(e){}}
 function rqKey(s){return String(s).replace(/[.#$\[\]\/\s]/g,'_');}
 function rqTidByPhone(ph){var t=DB.teachers.find(function(x){return x.phone===ph;});return t?t.id:'';}
-var RQ_MARK={ok:'حضر',late:'متأخر',abs:'لم يحضر'};
-function rqMarkBtns(fn,cur){return '<div class="rq-marks">'+['ok','late','abs'].map(function(m){return '<button class="rq-k rq-k-'+m+(cur===m?' on':'')+'" title="'+RQ_MARK[m]+'" onclick="'+fn.replace('%M',m)+'">'+({ok:'ح',late:'ت',abs:'غ'})[m]+'</button>';}).join('')+'</div>';}
+var RQ_MARK={ok:'حاضر',late:'متأخر',abs:'غائب'};
+function rqMarkBtns(fn,cur){return '<div class="rq-marks">'+['ok','abs','late'].map(function(m){return '<button class="rq-k rq-k-'+m+(cur===m?' on':'')+'" onclick="'+fn.replace('%M',m)+'">'+({ok:'حاضر',abs:'غائب',late:'متأخر'})[m]+'</button>';}).join('')+'</div>';}
 function rqClassMap(dow,p){var map={},waits=[];if(!_rqTT)return {map:map,waits:waits};
   Object.keys(_rqTT).forEach(function(ph){var t=_rqTT[ph];var x=(t.tt[dow]||[])[p];if(!x)return;
     if(x.charAt(0)==='M')waits.push({ph:ph,n:+x.slice(1),name:t.short});else{var i=x.indexOf(' ');map[x.slice(0,i)]={ph:ph,subj:x.slice(i+1),name:t.short};}});
