@@ -2963,7 +2963,7 @@ function applySchoolData1448(){
   var ids=[],added=0,updated=0;
   SD1448.teachers.forEach(function(s){
     var t=byPhone[s.ph];
-    if(t){t.name=s.n;t.prefix=t.prefix||'أ.';t.job=s.job;updated++;}
+    if(t){t.prefix=t.prefix||'أ.';t.job=s.job;updated++;}
     else{t={id:uid(),prefix:'أ.',name:s.n,phone:s.ph,job:s.job};DB.teachers.push(t);added++;}
     ids.push(t.id);
   });
