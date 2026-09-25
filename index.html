@@ -3674,7 +3674,8 @@ function rqAssignCover(id,p,ph){
   var r=rqGet()[id];if(!r)return;var c=rqCoverFor(r).find(function(x){return x.p===p;});if(!c)return;
   var w=c.waits.find(function(x){return x.ph===ph;});var tt=DB.teachers.find(function(x){return x.phone===ph;});
   var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
-  var msg='المكرم '+((tt&&tt.prefix)||'أ.')+' '+(tt?tt.name:w.name)+' وفقه الله\nنأمل تغطية حصة انتظار:\n'+rqDay(r.date)+' '+rqHijri(r.date)+'\nالحصة '+RQ_PER[p]+' — الفصل '+c.cls+(c.cls?' ('+rqRoom(c.cls)+')':'')+'\nالمادة: '+c.subj+'\nبدلًا من '+rqTName(r.tid)+'\n\nشاكرين تعاونكم\nوكيل شؤون المعلمين'+(sc.sender?'\n'+sc.sender:'');
+  var full=(tt?tt.name:w.name).trim().split(/\s+/);var nm=full.length>1?full[0]+' '+full[full.length-1]:full[0];
+  var msg='المكرم '+((tt&&tt.prefix)||'أ.')+' '+nm+'\nالسلام عليكم ورحمة الله وبركاته\n\nنأمل التوجه لحصة الانتظار:\n'+rqDay(r.date)+' '+rqHijri(r.date)+'\nالحصة '+RQ_PER[p]+' — الفصل '+c.cls+(c.cls?' ('+rqRoom(c.cls)+')':'')+'\n\nشاكرين تعاونكم\nوكيل شؤون المعلمين'+(sc.sender?'\n'+sc.sender:'');
   window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(msg),'_blank');
 }
 
