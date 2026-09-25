@@ -328,6 +328,24 @@ label{color:#3078a6}
 .dp.on,.ptog button.on{background:#15445a;border-color:#15445a}
 .chip{background:rgba(13,169,166,.08);color:#15445a;border-color:#0da9a6}
 .empty,.hint,.chip-h{color:#3078a6}
+
+/* ══ الرقابة ══ */
+.rq-tabs{display:flex;gap:6px;margin-bottom:12px}.rq-tabs .dp{flex:1;border-radius:8px;padding:8px 4px;font-weight:700}
+.rq-cnt{display:inline-block;min-width:18px;background:#07a869;color:#fff;border-radius:10px;font-size:10px;padding:0 5px;margin-inline-start:4px}.rq-cnt:empty{display:none}
+.rq-hint{display:none;font-size:12px;line-height:1.9;background:rgba(61,126,185,.1);border-radius:8px;padding:8px 10px;margin-bottom:10px;color:#15445a}
+.rq-card{border-inline-start:4px solid #c2c1c1}.rq-card.rq-new{border-inline-start-color:#7258a4}.rq-card.rq-sent{border-inline-start-color:#c1b489}.rq-card.rq-replied{border-inline-start-color:#3d7eb9}.rq-card.rq-decided{border-inline-start-color:#07a869}.rq-card.rq-archived{opacity:.75}
+.rq-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rq-name{font-weight:800;font-size:14px}.rq-meta{font-size:12px;color:#3078a6}
+.rq-pill{font-size:11px;font-weight:800;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.rq-p-new{background:rgba(114,88,164,.12);color:#351375}.rq-p-sent{background:rgba(193,180,137,.25);color:#15445a}.rq-p-replied{background:rgba(61,126,185,.14);color:#3078a6}.rq-p-decided{background:#07a869;color:#fff}.rq-p-archived{background:#efeff1;color:#3078a6}
+.rq-box{font-size:12.5px;background:#fafbfb;border:1px solid #efeff1;border-radius:8px;padding:7px 10px;margin-top:8px;line-height:1.8}
+.rq-dec-accept{border-color:#07a869}.rq-dec-reject{border-color:#7258a4}
+.rq-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.rq-b{background:#efeff1;color:#15445a;border:1px solid #c2c1c1}.rq-b-main{background:#07a869;color:#fff}
+.rq-form{margin-top:10px;border-top:1px dashed #c2c1c1;padding-top:10px}.rq-form .bs{margin-top:6px}
+.rq-wait{margin-top:10px;font-size:12px;font-weight:700;color:#3078a6}
+.rq-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;border:1px solid #c2c1c1;border-radius:8px 8px 0 0;overflow:hidden;min-width:520px}
+.rq-tbl th{background:#15445a;color:#fff;padding:6px;text-align:start;white-space:nowrap}.rq-tbl td{padding:6px;border-top:1px solid #efeff1}.rq-tbl tbody tr:nth-child(even) td{background:#fafbfb}.rq-tbl tr.tot td{font-weight:800;background:#efeff1}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -443,6 +461,15 @@ label{color:#3078a6}
       }
     });
 
+    // Raqaba records
+    db.ref(FB_SCHOOL+'/raqaba').on('value', function(snap){
+      var data = snap.val() || {};
+      _rqCache = data;
+      try{localStorage.setItem('sd_raqaba_v1', JSON.stringify(data));}catch(e){}
+      if(typeof rqUpdateCount==='function') rqUpdateCount();
+      var lg=document.getElementById('rq-log'); if(lg && lg.style.display!=='none' && typeof rqRenderLog==='function') rqRenderLog();
+    });
+
     // Counselor records
     db.ref(FB_SCHOOL+'/cns_records').on('value', function(snap){
       var data = snap.val();
@@ -477,7 +504,7 @@ label{color:#3078a6}
 <div class="role-screen" id="role-screen">
   <div class="role-logo"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/><rect x="9" y="14" width="6" height="7"/><path d="M9 9h.01M12 9h.01M15 9h.01"/></svg></div>
   <div class="role-title">ثانوية ينبع</div>
-  <div class="role-sub">تواصل ورقابة</div>
+  <div class="role-sub">منصة تواصل</div>
   <div class="role-sub" style="opacity:.85;font-size:12px;margin-bottom:36px">اختر دورك</div>
   <button class="role-btn" onclick="selectRole('admin')">
     <i><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M17 3l1.5 1.5M19 7h2M17 11l1.5-1.5"/></svg></i>
@@ -533,6 +560,7 @@ label{color:#3078a6}
   <button class="nb" id="nav-abs" style="display:none" onclick="nav('abs',this)"><i>🚨</i>غياب</button>
 <button class="nb" id="nav-cns" style="display:none" onclick="nav('counselor',this)"><i>📋</i>التوجيه</button>
   <button class="nb" id="nav-sched" style="display:none" onclick="nav('sched',this)"><i>📅</i>الإشراف</button>
+  <button class="nb" id="nav-raqaba" style="display:none" onclick="nav('raqaba',this)"><i>🛡️</i>الرقابة</button>
   <button class="nb" id="nav-tprof" style="display:none" onclick="location.href='teachers/'"><i>🗂️</i>المعلمون</button>
   <button class="nb" onclick="nav('settings',this)"><i>⚙️</i>إعدادات</button>
   <button class="nb" onclick="showRoleScreen()" style="max-width:50px"><i>🔄</i><span class="role-badge" id="role-badge">—</span></button>
@@ -1128,6 +1156,70 @@ label{color:#3078a6}
     <div class="a2">
       <button class="bp" onclick="previewSchedImage()" style="background:#7258a4">👁 معاينة</button>
       <button class="bp" onclick="exportSchedImage()" style="background:#07a869" id="exp-sched-btn" disabled>📲 تصدير وإرسال</button>
+    </div>
+  </div>
+</div>
+
+<!-- RAQABA PAGE (teacher_affairs / admin) -->
+<div id="pg-raqaba" class="pg">
+  <div class="hdr">
+    <div class="hdr-i">🛡️</div>
+    <div><h1>الرقابة على دوام المعلمين</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
+  </div>
+
+  <div class="rq-tabs">
+    <button class="dp on" id="rq-tab-new" onclick="rqTab('new')">رصد جديد</button>
+    <button class="dp" id="rq-tab-log" onclick="rqTab('log')">السجل <span class="rq-cnt" id="rq-open-cnt"></span></button>
+    <button class="dp" id="rq-tab-rep" onclick="rqTab('rep')">التقارير</button>
+  </div>
+
+  <!-- NEW -->
+  <div id="rq-new">
+    <div class="card">
+      <div class="ch">📝 رصد حالة</div>
+      <div class="mb"><label for="rq-teacher">المعلم</label><select id="rq-teacher" onchange="rqHints()"></select></div>
+      <div class="g2 mb">
+        <div><label for="rq-date">التاريخ</label><input type="date" id="rq-date" onchange="rqHints()"></div>
+        <div><label for="rq-type">نوع الحالة</label>
+          <select id="rq-type" onchange="rqTypeUI();rqHints()">
+            <option value="absent">غياب عن العمل</option>
+            <option value="late">تأخر عن بداية الدوام</option>
+            <option value="early">انصراف قبل نهاية الدوام</option>
+            <option value="class">عدم حضور حصة</option>
+            <option value="duty">عدم تنفيذ مهمة إشرافية</option>
+          </select></div>
+      </div>
+      <div class="mb" id="rq-f-min" style="display:none"><label for="rq-min">المدة بالدقائق</label><input type="number" id="rq-min" min="1" max="420" placeholder="مثال: 25"></div>
+      <div class="mb" id="rq-f-period" style="display:none"><label for="rq-period">الحصة</label><select id="rq-period"></select></div>
+      <div class="mb" id="rq-f-duty" style="display:none"><label for="rq-duty">المهمة</label>
+        <select id="rq-duty"><option>الطابور الصباحي</option><option>إشراف الفسحة</option><option>إشراف الصلاة</option><option>المناوبة لنهاية الدوام</option><option>حصة انتظار</option></select></div>
+      <div class="rq-hint" id="rq-hint"></div>
+      <div class="mb"><label for="rq-note">ملاحظات الوكيل (اختياري)</label><textarea id="rq-note" style="min-height:64px" placeholder="أي تفاصيل تُحفظ مع الحالة"></textarea></div>
+      <button class="bp" onclick="rqSave()">💾 حفظ الحالة</button>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div id="rq-log" style="display:none">
+    <div class="card">
+      <div class="g2">
+        <div><label for="rq-f-q">بحث</label><input type="search" id="rq-f-q" placeholder="اسم المعلم" oninput="rqRenderLog()"></div>
+        <div><label for="rq-f-st">الحالة</label>
+          <select id="rq-f-st" onchange="rqRenderLog()">
+            <option value="">الكل</option><option value="open">مفتوحة</option><option value="new">مرصودة</option><option value="sent">أُرسلت المساءلة</option><option value="replied">وردت الإفادة</option><option value="decided">صدر القرار</option><option value="archived">مؤرشفة</option>
+          </select></div>
+      </div>
+    </div>
+    <div id="rq-list"></div>
+  </div>
+
+  <!-- REPORTS -->
+  <div id="rq-rep" style="display:none">
+    <div class="card">
+      <div class="ch">📊 التقرير الشهري</div>
+      <div class="mb"><label for="rq-month">الشهر الهجري</label><select id="rq-month" onchange="rqRenderRep()"></select></div>
+      <div id="rq-rep-body"></div>
+      <button class="bp" style="margin-top:10px" onclick="rqPrintReport()">🖨️ طباعة التقرير</button>
     </div>
   </div>
 </div>
@@ -2554,6 +2646,7 @@ function nav(id,btn){
   if(id==='tc'){renderTC();renderParents();fixParentsCls();updateFilterStage();updateFilterCls();}
   if(id==='settings'){loadSchoolSettingsForm();renderLog();}
   if(id==='sched'){if(_schedLocsCache===null)getSchedLocs();if(_schedCache===null)getSched();renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');if(typeof renderRosterInfo==='function')renderRosterInfo();}
+  if(id==='raqaba')loadRaqabaPage();
   if(id==='abs')loadAbsPage();
   if(id==='counselor'){loadCnsStudents();renderCnsRecords();}
 }
@@ -2566,6 +2659,8 @@ function showAbsNav(){
   if(absBtn)   absBtn.style.display   = currentRole==='student_affairs'?'flex':'none';
   if(schedBtn) schedBtn.style.display = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='admin_assistant'||currentRole==='developer')?'flex':'none';
   if(cnsBtn)   cnsBtn.style.display   = (currentRole==='counselor'||currentRole==='developer')?'flex':'none';
+  var rqBtn   = document.getElementById('nav-raqaba');
+  if(rqBtn)    rqBtn.style.display    = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='admin_assistant'||currentRole==='developer')?'flex':'none';
   var tpBtn   = document.getElementById('nav-tprof');
   if(tpBtn)    tpBtn.style.display    = (currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='admin_assistant'||currentRole==='developer')?'flex':'none';
 }
@@ -2988,6 +3083,197 @@ function applySchoolData1448(){
   toast('✅ تم تحديث بيانات الفصل الأول ١٤٤٨هـ');
 }
 
+
+// ══ الرقابة على دوام المعلمين ══
+var RQ_KEY='sd_raqaba_v1';
+var _rqCache=null, _rqTT=null;
+var RQ_TYPES={absent:'غياب عن العمل',late:'تأخر عن بداية الدوام',early:'انصراف قبل نهاية الدوام',class:'عدم حضور حصة',duty:'عدم تنفيذ مهمة إشرافية'};
+var RQ_ST={new:'مرصودة',sent:'أُرسلت المساءلة',replied:'وردت الإفادة',decided:'صدر القرار',archived:'مؤرشفة'};
+var RQ_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+var RQ_PER=['الأولى','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة'];
+function rqGet(){if(_rqCache!==null)return _rqCache;try{var d=localStorage.getItem(RQ_KEY);_rqCache=d?JSON.parse(d):{};}catch(e){_rqCache={};}return _rqCache;}
+function rqPut(rec){var all=rqGet();all[rec.id]=rec;_rqCache=all;try{localStorage.setItem(RQ_KEY,JSON.stringify(all));}catch(e){}
+  if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/raqaba/'+rec.id).set(rec);}catch(e){}}
+function rqDel(id){var all=rqGet();delete all[id];try{localStorage.setItem(RQ_KEY,JSON.stringify(all));}catch(e){}
+  if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/raqaba/'+id).remove();}catch(e){}}
+function rqEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function rqIsoToday(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function rqDateObj(iso){var p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2],12);}
+function rqHijriParts(iso){try{var f=new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(rqDateObj(iso));
+  var g=function(t){var x=f.find(function(p){return p.type===t;});return x?parseInt(x.value,10):0;};return {y:g('year'),m:g('month'),d:g('day')};}catch(e){return {y:0,m:0,d:0};}}
+function rqHijri(iso){var h=rqHijriParts(iso);return h.d+'/'+h.m+'/'+h.y+'هـ';}
+function rqDay(iso){return RQ_DAYS[rqDateObj(iso).getDay()];}
+function rqT(id){return DB.teachers.find(function(x){return x.id===id;});}
+function rqTName(id){var t=rqT(id);return t?((t.prefix||'أ.')+' '+t.name).trim():'—';}
+function rqLoadTT(){if(_rqTT!==null)return;_rqTT={};
+  try{fetch('teachers/data/teachers.json').then(function(r){return r.json();}).then(function(arr){arr.forEach(function(t){_rqTT['966'+t.phone.slice(1)]=t;});rqHints();}).catch(function(){});}catch(e){}}
+function rqTab(t){['new','log','rep'].forEach(function(k){document.getElementById('rq-'+k).style.display=k===t?'block':'none';document.getElementById('rq-tab-'+k).classList.toggle('on',k===t);});
+  if(t==='log')rqRenderLog();if(t==='rep')rqRenderRep();}
+function loadRaqabaPage(){
+  rqLoadTT();
+  var sel=document.getElementById('rq-teacher');var cur=sel.value;
+  var ts=DB.teachers.slice().sort(function(a,b){return a.name.localeCompare(b.name,'ar');});
+  sel.innerHTML='<option value="">— اختر المعلم —</option>'+ts.map(function(t){return '<option value="'+t.id+'">'+rqEsc(t.name)+'</option>';}).join('');
+  if(cur)sel.value=cur;
+  var d=document.getElementById('rq-date');if(!d.value)d.value=rqIsoToday();
+  rqTypeUI();rqHints();rqUpdateCount();
+  var first=!sel.dataset.seen;sel.dataset.seen='1';
+  if(first&&currentRole==='admin'){document.getElementById('rq-f-st').value='replied';rqTab('log');}
+  else{var vis=['new','log','rep'].filter(function(k){return document.getElementById('rq-'+k).style.display!=='none';})[0]||'new';rqTab(vis);}
+}
+function rqTypeUI(){var t=document.getElementById('rq-type').value;
+  document.getElementById('rq-f-min').style.display=(t==='late'||t==='early')?'block':'none';
+  document.getElementById('rq-f-period').style.display=t==='class'?'block':'none';
+  document.getElementById('rq-f-duty').style.display=t==='duty'?'block':'none';}
+function rqHints(){
+  var el=document.getElementById('rq-hint');if(!el)return;
+  var tid=document.getElementById('rq-teacher').value, iso=document.getElementById('rq-date').value, type=document.getElementById('rq-type').value;
+  var ps=document.getElementById('rq-period');var lines=[];
+  var t=rqT(tid);var dow=iso?rqDateObj(iso).getDay():-1;
+  var tt=t&&_rqTT?_rqTT[t.phone]:null;
+  var opts='';
+  if(tt&&dow>=0&&dow<=4){
+    var row=tt.tt[dow];var cls=[],waits=[];
+    row.forEach(function(x,p){if(!x)return;if(x.charAt(0)==='M')waits.push(RQ_PER[p]);else{cls.push(RQ_PER[p]+': '+x);opts+='<option value="'+p+'">الحصة '+RQ_PER[p]+' — '+rqEsc(x)+'</option>';}});
+    lines.push('<b>حصصه يوم '+RQ_DAYS[dow]+':</b> '+(cls.length?rqEsc(cls.join('، ')):'لا حصص'));
+    if(waits.length)lines.push('<b>حصص الانتظار:</b> '+waits.join('، '));
+  }
+  if(!opts)opts=RQ_PER.map(function(p,i){return '<option value="'+i+'">الحصة '+p+'</option>';}).join('');
+  if(ps){var pv=ps.value;ps.innerHTML=opts;if(pv)ps.value=pv;}
+  if(t&&dow>=0&&dow<=4){
+    var day=RQ_DAYS[dow];var sched=(typeof getSched==='function')?getSched():{};var dd=sched[day]||{};var duties=[];
+    Object.keys(dd).forEach(function(k){if(k.charAt(0)==='_'){if((dd[k]||[]).indexOf(tid)>-1)duties.push(k==='_taboor'?'الطابور الصباحي':k==='_salah'?'إشراف الصلاة':'المناوبة');}else if(dd[k]===tid)duties.push('إشراف الفسحة ('+k+')');});
+    if(typeof SD1448!=='undefined'&&iso in SD1448.roster){var s=SD1448.teachers[SD1448.roster[iso]];if(s&&s.ph===t.phone)duties.push('المناوبة لنهاية الدوام');}
+    lines.push('<b>مهامه الإشرافية في هذا اليوم:</b> '+(duties.length?rqEsc(duties.join('، ')):'لا مهام مسجلة'));
+  }
+  if(t){var prev=rqList().filter(function(r){return r.tid===tid;});if(prev.length)lines.push('<b>حالات سابقة مسجلة له:</b> '+prev.length);}
+  el.innerHTML=lines.join('<br>');el.style.display=lines.length?'block':'none';
+}
+function rqList(){var all=rqGet();return Object.keys(all).map(function(k){return all[k];}).sort(function(a,b){return (b.date+b.ts).localeCompare(a.date+a.ts);});}
+function rqSave(){
+  var tid=document.getElementById('rq-teacher').value, iso=document.getElementById('rq-date').value, type=document.getElementById('rq-type').value;
+  if(!tid){toast('اختر المعلم',true);return;} if(!iso){toast('حدّد التاريخ',true);return;}
+  var rec={id:'rq'+Date.now().toString(36)+uid().slice(0,3),tid:tid,name:rqTName(tid),phone:(rqT(tid)||{}).phone||'',date:iso,type:type,
+    note:document.getElementById('rq-note').value.trim(),status:'new',ts:new Date().toISOString(),by:currentRole};
+  if(type==='late'||type==='early'){var m=parseInt(document.getElementById('rq-min').value,10);if(!m){toast('أدخل المدة بالدقائق',true);return;}rec.minutes=m;}
+  if(type==='class'){var ps=document.getElementById('rq-period');rec.period=+ps.value;rec.detail=ps.options[ps.selectedIndex].text;}
+  if(type==='duty')rec.detail=document.getElementById('rq-duty').value;
+  rqPut(rec);
+  document.getElementById('rq-note').value='';document.getElementById('rq-min').value='';
+  toast('✅ حُفظت الحالة — يمكنك الآن إرسال المساءلة');rqHints();rqUpdateCount();
+  rqTab('log');
+}
+function rqBody(r){
+  var d=rqDay(r.date)+' '+rqHijri(r.date);
+  if(r.type==='absent')return 'لوحظ غيابكم عن العمل يوم '+d+' دون إشعار مسبق.';
+  if(r.type==='late')return 'لوحظ تأخركم عن بداية الدوام الرسمي يوم '+d+' مدة ('+r.minutes+') دقيقة.';
+  if(r.type==='early')return 'لوحظ انصرافكم قبل نهاية الدوام الرسمي يوم '+d+' بمدة ('+r.minutes+') دقيقة دون استئذان.';
+  if(r.type==='class')return 'لوحظ عدم حضوركم '+(r.detail||('الحصة '+RQ_PER[r.period]))+' يوم '+d+'.';
+  return 'لوحظ عدم تنفيذكم مهمة ('+(r.detail||'')+') المكلفين بها يوم '+d+'.';
+}
+function rqMsg(r){
+  var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};var t=rqT(r.tid);
+  return 'المكرم '+((t&&t.prefix)||'أ.')+' '+(t?t.name:r.name)+' وفقه الله\nالسلام عليكم ورحمة الله وبركاته\n\n'+rqBody(r)+
+    '\n\nنأمل إفادتنا بأسباب ذلك خلال يومي عمل من تاريخه، مع إرفاق ما يثبت العذر إن وُجد.\n\nشاكرين تعاونكم\nوكيل شؤون المعلمين'+(sc.sender?'\n'+sc.sender:'')+'\n'+(sc.name||'ثانوية ينبع');
+}
+function rqAct(id,act){
+  var r=rqGet()[id];if(!r)return;var now=new Date().toISOString();
+  if(act==='send'){var t=rqT(r.tid);var ph=(t&&t.phone)||r.phone;
+    window.open(ph?'https://wa.me/'+ph+'?text='+encodeURIComponent(rqMsg(r)):'https://wa.me/?text='+encodeURIComponent(rqMsg(r)),'_blank');
+    if(r.status==='new'){r.status='sent';r.sentAt=now;rqPut(r);}rqRenderLog();return;}
+  if(act==='reply'){var v=document.getElementById('rq-rep-'+id).value.trim();if(!v){toast('اكتب إفادة المعلم',true);return;}r.reply=v;r.replyAt=now;r.status='replied';rqPut(r);toast('✅ حُفظت الإفادة وأُحيلت للمدير');}
+  if(act==='accept'||act==='reject'){r.decision=act;r.decisionNote=(document.getElementById('rq-dn-'+id)||{}).value||'';r.decidedAt=now;r.status='decided';rqPut(r);toast('✅ حُفظ قرار المدير');}
+  if(act==='archive'){r.status='archived';r.archivedAt=now;rqPut(r);toast('📁 أُرشفت الحالة');}
+  if(act==='reopen'){r.status=r.decision?'decided':r.reply?'replied':r.sentAt?'sent':'new';rqPut(r);}
+  if(act==='print'){rqPrintForm(r);return;}
+  if(act==='del'){var b=document.getElementById('rq-del-'+id);if(b&&b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='تأكيد الحذف';setTimeout(function(){if(b){b.dataset.armed='';b.textContent='حذف';}},3000);return;}rqDel(id);toast('حُذفت الحالة');}
+  rqRenderLog();rqUpdateCount();
+}
+function rqUpdateCount(){var n=rqList().filter(function(r){return r.status!=='archived';}).length;var el=document.getElementById('rq-open-cnt');if(el)el.textContent=n?String(n):'';}
+function rqRenderLog(){
+  var el=document.getElementById('rq-list');if(!el)return;
+  var q=(document.getElementById('rq-f-q').value||'').trim(), st=document.getElementById('rq-f-st').value;
+  var isAdmin=currentRole==='admin'||currentRole==='developer';
+  var rows=rqList().filter(function(r){return (!q||(r.name||'').indexOf(q)>-1||rqTName(r.tid).indexOf(q)>-1)&&(!st||(st==='open'?r.status!=='archived':r.status===st));});
+  if(!rows.length){el.innerHTML='<div class="card"><div class="empty">لا توجد حالات مطابقة</div></div>';return;}
+  el.innerHTML=rows.map(function(r){
+    var h='<div class="card rq-card rq-'+r.status+'"><div class="rq-top"><div><div class="rq-name">'+rqEsc(rqTName(r.tid))+'</div>'+
+      '<div class="rq-meta">'+RQ_TYPES[r.type]+(r.minutes?' · '+r.minutes+' دقيقة':'')+(r.detail?' · '+rqEsc(r.detail):'')+'</div>'+
+      '<div class="rq-meta">'+rqDay(r.date)+' '+rqHijri(r.date)+'</div></div><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span></div>';
+    if(r.note)h+='<div class="rq-box"><b>ملاحظة الوكيل:</b> '+rqEsc(r.note)+'</div>';
+    if(r.reply)h+='<div class="rq-box"><b>إفادة المعلم:</b> '+rqEsc(r.reply)+'</div>';
+    if(r.decision)h+='<div class="rq-box rq-dec-'+r.decision+'"><b>قرار المدير:</b> '+(r.decision==='accept'?'يُقبل العذر':'لا يُقبل العذر، ويُتخذ الإجراء النظامي')+(r.decisionNote?' — '+rqEsc(r.decisionNote):'')+'</div>';
+    h+='<div class="rq-acts">';
+    if(r.status==='new'||r.status==='sent')h+='<button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'send\')">'+(r.status==='new'?'📲 إرسال المساءلة':'📲 إعادة الإرسال')+'</button>';
+    h+='<button class="bs rq-b" onclick="rqAct(\''+r.id+'\',\'print\')">🖨️ النموذج</button>';
+    if(r.status==='decided')h+='<button class="bs rq-b" onclick="rqAct(\''+r.id+'\',\'archive\')">📁 أرشفة</button>';
+    if(r.status==='archived')h+='<button class="bs rq-b" onclick="rqAct(\''+r.id+'\',\'reopen\')">إعادة فتح</button>';
+    if(r.status==='new')h+='<button class="bs b-dl" id="rq-del-'+r.id+'" onclick="rqAct(\''+r.id+'\',\'del\')">حذف</button>';
+    h+='</div>';
+    if(r.status==='sent')h+='<div class="rq-form"><label for="rq-rep-'+r.id+'">إفادة المعلم كما وردت</label><textarea id="rq-rep-'+r.id+'" style="min-height:60px"></textarea><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'reply\')">حفظ الإفادة وإحالتها للمدير</button></div>';
+    if(r.status==='replied'){
+      if(isAdmin)h+='<div class="rq-form"><label for="rq-dn-'+r.id+'">ملاحظة المدير (اختياري)</label><input type="text" id="rq-dn-'+r.id+'"><div class="rq-acts"><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'accept\')">✔ يُقبل العذر</button><button class="bs b-dl" onclick="rqAct(\''+r.id+'\',\'reject\')">✖ لا يُقبل العذر</button></div></div>';
+      else h+='<div class="rq-wait">بانتظار قرار مدير المدرسة</div>';
+    }
+    return h+'</div>';
+  }).join('');
+}
+function rqMonths(){var m={};rqList().forEach(function(r){var h=rqHijriParts(r.date);m[h.y+'-'+String(h.m).padStart(2,'0')]=1;});var h=rqHijriParts(rqIsoToday());m[h.y+'-'+String(h.m).padStart(2,'0')]=1;return Object.keys(m).sort().reverse();}
+var RQ_HM=['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+function rqMonthLabel(k){var p=k.split('-');return RQ_HM[+p[1]-1]+' '+p[0]+'هـ';}
+function rqReportRows(k){
+  var by={};rqList().forEach(function(r){var h=rqHijriParts(r.date);if(h.y+'-'+String(h.m).padStart(2,'0')!==k)return;
+    var o=by[r.tid]||(by[r.tid]={name:rqTName(r.tid),absent:0,late:0,lateMin:0,early:0,earlyMin:0,cls:0,duty:0,open:0,rej:0});
+    if(r.type==='absent')o.absent++;if(r.type==='late'){o.late++;o.lateMin+=r.minutes||0;}if(r.type==='early'){o.early++;o.earlyMin+=r.minutes||0;}
+    if(r.type==='class')o.cls++;if(r.type==='duty')o.duty++;if(r.status!=='decided'&&r.status!=='archived')o.open++;if(r.decision==='reject')o.rej++;});
+  return Object.keys(by).map(function(k){return by[k];}).sort(function(a,b){return a.name.localeCompare(b.name,'ar');});
+}
+function rqRepTable(rows){
+  if(!rows.length)return '<div class="empty">لا توجد حالات مرصودة في هذا الشهر</div>';
+  var tot={absent:0,late:0,lateMin:0,early:0,earlyMin:0,cls:0,duty:0,open:0,rej:0};rows.forEach(function(o){for(var k in tot)tot[k]+=o[k];});
+  var tr=function(o,b){return '<tr'+(b?' class="tot"':'')+'><td>'+rqEsc(o.name)+'</td><td>'+o.absent+'</td><td>'+o.late+(o.lateMin?' ('+o.lateMin+'د)':'')+'</td><td>'+o.early+(o.earlyMin?' ('+o.earlyMin+'د)':'')+'</td><td>'+o.cls+'</td><td>'+o.duty+'</td><td>'+o.rej+'</td><td>'+o.open+'</td></tr>';};
+  tot.name='الإجمالي';
+  return '<div style="overflow-x:auto"><table class="rq-tbl"><thead><tr><th>المعلم</th><th>غياب</th><th>تأخر</th><th>انصراف مبكر</th><th>حصص</th><th>إشراف</th><th>عذر غير مقبول</th><th>مفتوحة</th></tr></thead><tbody>'+rows.map(function(o){return tr(o);}).join('')+tr(tot,1)+'</tbody></table></div>';
+}
+function rqRenderRep(){var s=document.getElementById('rq-month');var v=s.value;var ms=rqMonths();s.innerHTML=ms.map(function(k){return '<option value="'+k+'">'+rqMonthLabel(k)+'</option>';}).join('');if(v&&ms.indexOf(v)>-1)s.value=v;
+  document.getElementById('rq-rep-body').innerHTML=rqRepTable(rqReportRows(s.value));}
+function rqDoc(title,sub,strip,body){
+  var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
+  return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>'+title+'</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"><style>'+
+  '@page{size:A4;margin:12mm 15mm 16mm}*{box-sizing:border-box}body{font-family:Tajawal,Cairo,sans-serif;color:#15445a;font-size:12.5px;line-height:2;margin:0}'+
+  '.mh{text-align:center;border-bottom:1px solid #c2c1c1;padding-bottom:8px;margin-bottom:12px}.mh b{font-size:14px;font-weight:800;display:block}.mh span{color:#3078a6;font-size:12px}'+
+  '.tb{background:#efeff1;border-bottom:2.5px solid #69cee3;border-radius:8px;text-align:center;padding:8px;margin-bottom:6px}.tb h1{margin:0;color:#351375;font-weight:900;font-size:18px}.tb div{color:#218caa;font-size:12px}'+
+  '.st{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #c2c1c1;border-radius:8px;margin:10px 0 14px}.st div{padding:4px 10px;border-inline-start:1px solid #c2c1c1}.st div:first-child{border:0}.st span{display:block;font-size:9px;color:#3078a6}.st b{font-size:12px}'+
+  'h3{font-size:13px;font-weight:800;border-inline-start:4px solid #07a869;padding-inline-start:8px;margin:14px 0 6px}p{margin:0 0 6px;text-align:justify}.ln{border-bottom:1px dotted #c2c1c1;height:26px}'+
+  '.ck{display:inline-block;width:13px;height:13px;border:1.5px solid #0da9a6;border-radius:3px;vertical-align:-2px;margin-inline-end:6px;text-align:center;line-height:11px;color:#07a869;font-weight:900}'+
+  '.sg{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.sg div{border-top:1px solid #c2c1c1;padding-top:4px;font-size:11.5px}'+
+  'table{width:100%;border-collapse:separate;border-spacing:0;font-size:10.5px;border:1px solid #c2c1c1;border-radius:8px 8px 0 0;overflow:hidden}th{background:#15445a;color:#fff;padding:5px 6px;text-align:start}td{padding:5px 6px;border-top:1px solid #efeff1}tbody tr:nth-child(even) td{background:#fafbfb}tr.tot td{font-weight:800;background:#efeff1}'+
+  '.ft{position:fixed;bottom:0;left:0;right:0;font-size:8.5px;color:#3078a6}.ft div{display:flex;justify-content:space-between;padding:0 0 3px}.ft i{display:block;height:1.6mm;background:linear-gradient(90deg,#07a869,#3d7eb9);-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+  '</style></head><body><div class="mh"><b>المملكة العربية السعودية · وزارة التعليم</b><span>الإدارة العامة للتعليم بمنطقة المدينة المنورة · '+rqEsc(sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين</span></div>'+
+  '<div class="tb"><h1>'+title+'</h1><div>'+sub+'</div></div>'+strip+body+
+  '<div class="ft"><div><span>'+rqEsc(sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين</span><span>مصدر التوثيق: منصة تواصل</span><span>صفحة ١ من ١</span></div><i></i></div>'+
+  '<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script></body></html>';
+}
+function rqOpenDoc(html){var w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لعرض النموذج',true);return;}w.document.open();w.document.write(html);w.document.close();}
+function rqPrintForm(r){
+  var t=rqT(r.tid);var box=function(on){return '<span class="ck">'+(on?'✔':'')+'</span>';};
+  var strip='<div class="st"><div><span>اسم المعلم</span><b>'+rqEsc(t?t.name:r.name)+'</b></div><div><span>العمل الحالي</span><b>'+rqEsc((t&&t.job)||'معلم')+'</b></div><div><span>تاريخ الحالة</span><b>'+rqDay(r.date)+' '+rqHijri(r.date)+'</b></div><div><span>نوع الحالة</span><b>'+RQ_TYPES[r.type]+'</b></div></div>';
+  var body='<p>المكرم '+rqEsc(((t&&t.prefix)||'أ.')+' '+(t?t.name:r.name))+' وفقه الله</p><p>السلام عليكم ورحمة الله وبركاته، وبعد:</p><p>'+rqEsc(rqBody(r))+' نأمل إفادتنا بأسباب ذلك خلال يومي عمل من تاريخه، مع إرفاق ما يثبت العذر إن وُجد.</p>'+
+    '<div class="sg"><div>وكيل شؤون المعلمين: '+rqEsc((getSchoolSettings()||{}).sender||'')+'</div><div>التوقيع:</div></div>'+
+    '<h3>إفادة المعلم</h3>'+(r.reply?'<p>'+rqEsc(r.reply)+'</p>':'<div class="ln"></div><div class="ln"></div><div class="ln"></div>')+
+    '<div class="sg"><div>الاسم: '+rqEsc(t?t.name:r.name)+'</div><div>التوقيع:                التاريخ:</div></div>'+
+    '<h3>رأي مدير المدرسة</h3><p>'+box(r.decision==='accept')+'يُقبل عذره.</p><p>'+box(r.decision==='reject')+'لا يُقبل عذره، ويُتخذ الإجراء النظامي.</p>'+(r.decisionNote?'<p>ملاحظة: '+rqEsc(r.decisionNote)+'</p>':'')+
+    '<div class="sg"><div>مدير المدرسة:</div><div>التوقيع:                التاريخ:</div></div>';
+  rqOpenDoc(rqDoc('نموذج مساءلة','رقم الحالة: '+r.id.toUpperCase()+' · '+RQ_TYPES[r.type],strip,body));
+}
+function rqPrintReport(){
+  var k=document.getElementById('rq-month').value;if(!k)return;var rows=rqReportRows(k);
+  var n=rqList().filter(function(r){var h=rqHijriParts(r.date);return h.y+'-'+String(h.m).padStart(2,'0')===k;});
+  var strip='<div class="st"><div><span>الشهر</span><b>'+rqMonthLabel(k)+'</b></div><div><span>عدد الحالات</span><b>'+n.length+'</b></div><div><span>المعلمون المعنيون</span><b>'+rows.length+'</b></div><div><span>حالات مفتوحة</span><b>'+n.filter(function(r){return r.status!=='decided'&&r.status!=='archived';}).length+'</b></div></div>';
+  var tbl=rqRepTable(rows).replace('class="rq-tbl"','');
+  rqOpenDoc(rqDoc('التقرير الشهري لدوام المعلمين',rqMonthLabel(k),strip,'<h3>ملخص الحالات حسب المعلم</h3>'+tbl+'<div class="sg"><div>وكيل شؤون المعلمين:</div><div>مدير المدرسة:</div></div>'));
+}
+
 // ── COUNSELOR / GUIDANCE ──
 var CNS_KEY = 'sd_cns_records_v1';
 var _cnsCache = null;
@@ -3310,7 +3596,7 @@ function previewSchedImage(){
   ctx.fillStyle='#15445a'; ctx.fillRect(0,y,W,FOOTER_H);
   ctx.fillStyle='#c1b489'; ctx.fillRect(0,y,W,3);
   ctx.textAlign='right'; ctx.font='16px Arial'; ctx.fillStyle='rgba(255,255,255,0.65)';
-  ctx.fillText('تواصل ورقابة — '+(sc.name||'ثانوية ينبع'), W-30, y+FOOTER_H/2+6);
+  ctx.fillText('منصة تواصل — '+(sc.name||'ثانوية ينبع'), W-30, y+FOOTER_H/2+6);
   ctx.textAlign='left'; ctx.font='13px Arial'; ctx.fillStyle='rgba(255,255,255,0.35)';
   ctx.fillText('تطوير: حاتم السفياني', 30, y+FOOTER_H/2+6);
 
