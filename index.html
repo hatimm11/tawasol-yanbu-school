@@ -13,7 +13,9 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMGQzYjJlIi8+PHRleHQgeT0iLjgyZW0iIGZvbnQtc2l6ZT0iNTgiIHg9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+ToTwvdGV4dD48dGV4dCB5PSI5NSIgZm9udC1zaXplPSIxMyIgeD0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNGFkZTgwIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiPtiq2YjYp9i12YQ8L3RleHQ+PC9zdmc+"
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="preload" href="tajarib-400.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="tajarib-700.woff2" as="font" type="font/woff2" crossorigin>
-<style>@font-face{font-family:'Tajarib';src:url(tajarib-300.woff2) format('woff2');font-weight:300;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-400.woff2) format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-500.woff2) format('woff2');font-weight:500;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:600;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:800;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:900;font-display:swap}</style>
+<style>@font-face{font-family:'TajaribDisp';src:url(tajaribdisp-700.woff2) format('woff2');font-weight:100 799;font-display:swap}@font-face{font-family:'TajaribDisp';src:url(tajaribdisp-900.woff2) format('woff2');font-weight:800 900;font-display:swap}
+.fx-name{font-family:'TajaribDisp','Tajarib','Tajawal',sans-serif;font-feature-settings:'liga','dlig','ss01';line-height:1.7}
+@font-face{font-family:'Tajarib';src:url(tajarib-300.woff2) format('woff2');font-weight:300;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-400.woff2) format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-500.woff2) format('woff2');font-weight:500;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:600;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:800;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:900;font-display:swap}</style>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Tajarib','Tajawal','Cairo','SF Arabic',sans-serif;background:#efeff1;min-height:100vh;direction:rtl;color:#15445a;font-size:14px}
@@ -431,7 +433,7 @@ body.rq-only .rq-rooms-card{display:none}
 .sd-sub{font-size:13px;font-weight:800;margin:4px 0 8px}.sd-sub small{font-size:11px;font-weight:500;color:#218caa}
 .ds-hero{background:linear-gradient(135deg,#15445a,#3078a6);color:#fff;border-radius:16px;padding:16px 18px 14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(21,68,90,.18)}
 .ds-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.ds-hi{font-size:19px;font-weight:900;line-height:1.4}.ds-date{font-size:12px;opacity:.8;margin-top:2px}
+.ds-hi{font-size:19px;font-weight:900;line-height:1.75}.ds-date{font-size:12px;opacity:.8;margin-top:2px}
 .ds-clock{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;letter-spacing:.5px;color:#69cee3}
 .ds-now{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px}
 .ds-now-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ds-now-l b{font-size:15px}.ds-now-l small{font-size:12px;opacity:.8}
@@ -865,7 +867,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <div id="pg-today" class="pg on">
   <div id="dash" style="display:none">
     <div class="ds-hero">
-      <div class="ds-hero-top"><div><div class="ds-hi" id="ds-hi">صباح الخير</div><div class="ds-date" id="ds-date">—</div></div><div class="ds-clock" id="ds-clock">--:--</div></div>
+      <div class="ds-hero-top"><div><div class="ds-hi fx-name" id="ds-hi">صباح الخير</div><div class="ds-date" id="ds-date">—</div></div><div class="ds-clock" id="ds-clock">--:--</div></div>
       <div class="ds-now"><div class="ds-now-l"><span class="ds-live"></span><b id="ds-now">—</b><small id="ds-now-t"></small></div><button class="ds-go" id="ds-go" onclick="dsOpenNow()">فتح الجولة ←</button></div>
       <div class="ds-tl" id="ds-tl"></div>
       <div class="ds-tl-f"><span id="ds-tl-t"></span><span style="display:flex;gap:6px"><button class="ds-pr ds-files" onclick="location.href='teachers/'">🗂️ ملفات المعلمين</button><button class="ds-pr" onclick="dsPrintDay()">🖨️ التقرير اليومي</button></span></div>
@@ -2184,7 +2186,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-tajarib';
+var APP_VER='2026-09-28-ss01';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
