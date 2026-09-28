@@ -399,10 +399,13 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-k-exc.on,i.rq-k-exc{background:#3d7eb9!important;border-color:#3d7eb9!important;color:#fff!important}
 .rq-bx.rq-m-exc,.rq-row.rq-m-exc{border-color:#3d7eb9;background:rgba(61,126,185,.1)}
 .rq-pers .dp.rq-tab-taboor{flex:1.8;font-size:12.5px}
+.rq-pers .dp.rq-past:not(.on){opacity:.55}.rq-pers .dp.rq-now:not(.on){border-color:#07a869;color:#07a869;box-shadow:inset 0 -3px 0 #07a869}
+.rq-locked .rq-k{opacity:.45;cursor:not-allowed}
+.rq-locknote{margin-top:6px;font-weight:800;color:#3078a6}
 .nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
-.rq-user label{margin:0;white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}
-.rq-user input{border:0;background:transparent;padding:4px 0;font-weight:800}
+.rq-user-l{white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}.rq-user-v{flex:1;font-weight:800;font-size:14px;color:#15445a}
+.rq-user-sw{background:#fff;border:1px solid #c2c1c1;border-radius:999px;font-family:inherit;font-size:11.5px;padding:3px 12px;color:#15445a;cursor:pointer}
 .rq-bx-by{font-size:10.5px;color:#3078a6;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .rq-undo{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:#15445a;color:#fff;border-radius:14px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:12px;z-index:1000;font-size:13px;transition:transform .25s;max-width:calc(100% - 32px);box-shadow:0 6px 20px rgba(21,68,90,.3)}
@@ -601,6 +604,9 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function'){rqRenderCls();rqRenderRoomsEd();}
     });
 
+    db.ref(FB_SCHOOL+'/userlist').on('value', function(snap){
+      _usrList = snap.val() || JSON.parse(JSON.stringify(USR_DEF)); try{localStorage.setItem('sd_userlist_v1', JSON.stringify(_usrList));}catch(e){} if(typeof usrRender==='function') usrRender();
+    });
     // Rounds — who marked
     db.ref(FB_SCHOOL+'/roundsBy').on('value', function(snap){
       _rqRBy = snap.val() || {};
@@ -1163,6 +1169,14 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     <div><h1>إعدادات المنصة</h1><p>بيانات المدرسة والمتغيرات</p></div>
   </div>
 
+  <div class="card" id="users-card">
+    <div class="ch">👥 المستخدمون</div>
+    <p style="font-size:11.5px;color:#218caa;margin-bottom:8px">أضف أسماء المستخدمين لكل دور. عند الدخول يختار المستخدم اسمه من القائمة، ويُسجَّل اسمه مع كل رصد.</p>
+    <div class="g2 mb"><div><label for="usr-role">الدور</label><select id="usr-role"></select></div><div><label for="usr-name">الاسم</label><input type="text" id="usr-name" placeholder="مثال: أحمد"></div></div>
+    <button class="bp" onclick="usrAdd()">➕ إضافة مستخدم</button>
+    <div id="usr-list" style="margin-top:10px"></div>
+  </div>
+
   <div class="card">
     <div class="ch">🏫 بيانات المدرسة</div>
     <div class="mb">
@@ -1355,6 +1369,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-cls">
     <div class="card">
       <div class="ch">🏫 جولة متابعة الحصص</div>
+      <div class="rq-user"><span class="rq-user-l">القائم بالجولة</span><b class="rq-user-v">—</b><button type="button" class="rq-user-sw" onclick="usOpen(currentRole)">تبديل</button></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-c-days"></div>
       <div class="g2 mb"><div><label for="rq-c-date">التاريخ</label><input type="date" id="rq-c-date" onchange="rqRenderCls()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-c-day">—</div></div></div>
@@ -1385,6 +1400,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-sup" style="display:none">
     <div class="card">
       <div class="ch">🧭 متابعة المهام الإشرافية</div>
+      <div class="rq-user"><span class="rq-user-l">القائم بالجولة</span><b class="rq-user-v">—</b><button type="button" class="rq-user-sw" onclick="usOpen(currentRole)">تبديل</button></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-s-days"></div>
       <div class="g2 mb"><div><label for="rq-s-date">التاريخ</label><input type="date" id="rq-s-date" onchange="rqRenderSup()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-s-day">—</div></div></div>
@@ -1870,13 +1886,27 @@ var currentRole = null;
 
 
 var _usPending=null;
-function usKnown(role){try{var u=JSON.parse(localStorage.getItem('sd_rqusers_known')||'{}');return u[role]||[];}catch(e){return [];}}
+var _usrList=null;
+var USR_DEF={admin_assistant:['مساعد إداري ١','مساعد إداري ٢','مساعد إداري ٣']};
+function usrGet(){if(_usrList!==null)return _usrList;try{var d=localStorage.getItem('sd_userlist_v1');_usrList=d?JSON.parse(d):JSON.parse(JSON.stringify(USR_DEF));}catch(e){_usrList=JSON.parse(JSON.stringify(USR_DEF));}return _usrList;}
+function usrSave(){try{localStorage.setItem('sd_userlist_v1',JSON.stringify(_usrList));}catch(e){}if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/userlist').set(_usrList);}catch(e){}usrRender();}
+function usrAdd(){var r=document.getElementById('usr-role').value,n=document.getElementById('usr-name').value.trim().replace(/\s+/g,' ');if(n.length<2){toast('اكتب الاسم',true);return;}
+  var L=usrGet();L[r]=L[r]||[];if(L[r].indexOf(n)>-1){toast('الاسم موجود',true);return;}L[r].push(n);document.getElementById('usr-name').value='';usrSave();toast('✅ أُضيف '+n);}
+function usrDel(r,i){var L=usrGet();if(!L[r])return;L[r].splice(i,1);if(!L[r].length)delete L[r];usrSave();}
+function usrRender(){var sel=document.getElementById('usr-role'),el=document.getElementById('usr-list');if(!sel||!el)return;
+  var card=document.getElementById('users-card');if(card)card.style.display=(currentRole==='admin'||currentRole==='teacher_affairs'||currentRole==='developer')?'':'none';
+  if(!sel.options.length)sel.innerHTML=Object.keys(ROLES).filter(function(k){return k!=='developer';}).map(function(k){return '<option value="'+k+'">'+ROLES[k].label+'</option>';}).join('');
+  var L=usrGet(),ks=Object.keys(ROLES).filter(function(k){return L[k]&&L[k].length;});
+  el.innerHTML=ks.length?ks.map(function(k){return '<div class="rq-grp">'+ROLES[k].label+'</div>'+L[k].map(function(n,i){return '<div class="tc-row" style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="flex:1;font-weight:700">'+rqEsc(n)+'</span><button class="bs b-dl" onclick="usrDel(\''+k+'\','+i+')">حذف</button></div>';}).join('');}).join(''):'<div class="empty">لم يُضف مستخدمون بعد</div>';}
+function usKnown(role){var L=usrGet();if(L[role]&&L[role].length)return L[role].slice();try{var u=JSON.parse(localStorage.getItem('sd_rqusers_known')||'{}');return u[role]||[];}catch(e){return [];}}
 function usOpen(role){_usPending=role;var sc=document.getElementById('user-screen');document.getElementById('us-role').textContent=(ROLES[role]||{}).label||'';
   var inp=document.getElementById('us-name');var cur='';try{cur=localStorage.getItem('sd_rquser_'+role)||'';}catch(e){}inp.value=cur;
-  document.getElementById('us-list').innerHTML=usKnown(role).filter(function(n){return n!==cur;}).map(function(n){return '<button type="button" class="dp" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)" onclick="document.getElementById(\'us-name\').value=this.textContent">'+rqEsc(n)+'</button>';}).join('');
+  var fixed=!!(usrGet()[role]&&usrGet()[role].length);inp.style.display=fixed?'none':'';inp.previousElementSibling.textContent=fixed?'اختر اسمك':'اسم المستخدم';document.getElementById('us-list').style.display=fixed?'grid':'flex';document.querySelector('#user-screen button[type=submit]').style.display=fixed?'none':'';
+  document.getElementById('us-list').innerHTML=usKnown(role).filter(function(n){return fixed||n!==cur;}).map(function(n){return (fixed?'<button type="button" class="role-btn" style="justify-content:center;margin:0;max-width:none" onclick="document.getElementById(\'us-name\').value=this.textContent;usSubmit()">':'<button type="button" class="dp" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)" onclick="document.getElementById(\'us-name\').value=this.textContent;usSubmit()">')+rqEsc(n)+'</button>';}).join('');
   sc.classList.remove('hidden');setTimeout(function(){inp.focus();},50);}
 function usCancel(){_usPending=null;document.getElementById('user-screen').classList.add('hidden');}
-function usSubmit(){var v=document.getElementById('us-name').value.trim().replace(/\s+/g,' ');if(v.length<3){toast('اكتب اسم المستخدم',true);return;}
+function usSubmit(){var v=document.getElementById('us-name').value.trim().replace(/\s+/g,' ');if(v.length<2){toast('اكتب اسم المستخدم',true);return;}
+  var LL=usrGet()[_usPending];if(LL&&LL.length&&LL.indexOf(v)<0){toast('اختر اسمك من القائمة',true);return;}
   var role=_usPending;if(!role)return;try{localStorage.setItem('sd_rquser_'+role,v);var k=JSON.parse(localStorage.getItem('sd_rqusers_known')||'{}');k[role]=(k[role]||[]).filter(function(n){return n!==v;});k[role].unshift(v);k[role]=k[role].slice(0,6);localStorage.setItem('sd_rqusers_known',JSON.stringify(k));}catch(e){}
   document.getElementById('user-screen').classList.add('hidden');_usPending=null;
   if(currentRole===role){syncTopbar(document.querySelector('.nav .nb.on'));rqRefreshAll();toast('✅ المستخدم الحالي: '+v);}else selectRole(role,true);}
@@ -2928,7 +2958,7 @@ function updateChipsForRole(){
 }
 
 // ── SETTINGS ──
-function loadSchoolSettingsForm(){
+function loadSchoolSettingsForm(){try{usrRender();}catch(e){}
   var s=getSchoolSettings();
   var fields={  'sch-name':s.name,'sch-phone':s.phone,'sch-address':s.address,'sch-sender':s.sender};
   Object.keys(fields).forEach(function(id){var el=document.getElementById(id);if(el)el.value=fields[id]||'';});
@@ -3592,6 +3622,7 @@ function rqRBy(){if(_rqRBy!==null)return _rqRBy;try{var d=localStorage.getItem('
 function rqRoundBy(iso,k){return ((rqRBy()[iso])||{})[k]||null;}
 function rqUser(){try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
 function rqNeedUser(){if(rqUser())return false;usOpen(currentRole);return true;}
+function rqUserFill(){var v=rqUser();document.querySelectorAll('.rq-user-v').forEach(function(e){e.textContent=v||'—';});}
 function rqNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function rqByLine(b){return b?'<div class="rq-bx-by">✍️ '+rqEsc(b.n)+(b.t?' · '+b.t:'')+'</div>':'';}
 function rqRoundSet(date,key,val,by){var all=rqRoundsGet();if(!all[date])all[date]={};if(val)all[date][key]=val;else delete all[date][key];
@@ -3610,37 +3641,50 @@ function rqClassMap(dow,p){var map={},waits=[];if(!_rqTT)return {map:map,waits:w
     if(x.charAt(0)==='M')waits.push({ph:ph,n:+x.slice(1),name:t.short});else{var i=x.indexOf(' ');map[x.slice(0,i)]={ph:ph,subj:x.slice(i+1),name:t.short};}});
   waits.sort(function(a,b){return a.n-b.n;});return {map:map,waits:waits};}
 var RQ_CLASSES=['1-1','1-2','1-3','1-4','1-5','2-1','2-2','2-3','2-4','2ش','3-1','3-2','3-3','3ش'];
-var _rqPer=0;
-function rqSetPer(p){_rqPer=p;rqRenderCls();}
+var _rqPer=0,_rqPerAuto=true;
+// التوقيت الزمني لليوم الدراسي ١٤٤٨هـ (بالدقائق من منتصف الليل)
+var RQ_TIME={'-1':[420,435],0:[435,485],1:[485,535],2:[535,585],3:[605,655],4:[655,705],5:[705,755],6:[765,815]};
+function rqHM(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function rqNowMin(){var d=new Date();return d.getHours()*60+d.getMinutes();}
+function rqPerState(iso,p){var t=rqIsoToday();if(iso<t)return 'past';if(iso>t)return 'future';var w=RQ_TIME[p];if(!w)return 'now';var n=rqNowMin();return n<w[0]?'future':n>=w[1]?'past':'now';}
+function rqPerOpen(iso,p){return currentRole==='developer'||rqPerState(iso,p)==='now';}
+function rqPerMsg(iso,p){var st=rqPerState(iso,p),w=RQ_TIME[p];var nm=p===-1?'الطابور':'الحصة '+RQ_PER[p];
+  toast(st==='past'?'🔒 انتهى وقت '+nm+' — لا يمكن تعديل الرصد':'🔒 لم يبدأ وقت '+nm+' بعد'+(w?' ('+rqHM(w[0])+')':''),true);}
+function rqCurPer(){var n=rqNowMin(),ks=[-1,0,1,2,3,4,5,6];for(var i=0;i<ks.length;i++){var w=RQ_TIME[ks[i]];if(n<w[1])return n>=w[0]?ks[i]:(i?ks[i]:-1);}return 6;}
+function rqSetPer(p){_rqPer=p;_rqPerAuto=false;rqRenderCls();}
 function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();if(d>4)n.setDate(n.getDate()+(7-d));else n.setDate(n.getDate()-d);n.setDate(n.getDate()+dow);
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function rqSetDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-c-date').value=rqWeekDate(dow);rqRenderCls();}
 function rqRenderCls(){
-  rqLoadTT();
+  rqLoadTT();rqUserFill();
   var dEl=document.getElementById('rq-c-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value, dow=rqDateObj(iso).getDay();
   document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
   document.getElementById('rq-c-day').textContent=rqDay(iso)+' '+rqHijri(iso);
-  var maxP=dow===2?6:7;if(_rqPer>=maxP)_rqPer=0;
-  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
+  var maxP=dow===2?6:7;if(_rqPerAuto&&iso===rqIsoToday())_rqPer=rqCurPer();if(_rqPer>=maxP)_rqPer=maxP-1;
+  var pst=function(p){var st=rqPerState(iso,p);return st==='now'?' rq-now':st==='past'?' rq-past':' rq-fut';};
+  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+pst(-1)+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+pst(i)+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
   if(_rqPer===-1){rqRenderTaboor(iso,list,info);return;}
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
-  var done=0,miss=0;
+  var done=0,miss=0,lk=!rqPerOpen(iso,_rqPer);list.classList.toggle('rq-locked',lk);
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur==='late'||cur==='abs')miss++;
     var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span><span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span></div>';
     if(!a)return '<div class="rq-bx rq-free">'+head+'<div class="rq-bx-s">لا حصة</div></div>';
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
       rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,k)):'')+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
-  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
-    (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'');
+  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+' ('+rqHM(RQ_TIME[_rqPer][0])+'–'+rqHM(RQ_TIME[_rqPer][1])+'):</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
+    (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'')+rqLockNote(iso,_rqPer);
 }
+function rqLockNote(iso,p){if(rqPerOpen(iso,p))return '';var st=rqPerState(iso,p),w=RQ_TIME[p];
+  return '<div class="rq-locknote">🔒 '+(st==='past'?'انتهى وقت '+(p===-1?'الطابور':'الحصة')+' — الرصد للعرض فقط':'لم يبدأ وقت '+(p===-1?'الطابور':'الحصة')+' بعد'+(w?' — يُفتح الرصد '+rqHM(w[0]):''))+'</div>';}
 function rqRenderTaboor(iso,list,info){
   var rows=rqDutyRows(iso).filter(function(r){return r.group==='الطابور الصباحي';}),marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c==='late'||c==='abs')miss++;});
-  info.innerHTML='<b>'+rqDay(iso)+' — الطابور الصباحي (قبل الحصة الأولى):</b> '+rows.length+' مكلّفًا · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
+  var lk=!rqPerOpen(iso,-1);list.classList.toggle('rq-locked',lk);
+  info.innerHTML='<b>'+rqDay(iso)+' — الطابور الصباحي (07:00–07:15):</b> '+rows.length+' مكلّفًا · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+rqLockNote(iso,-1);
   if(!rows.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">لا معلمين مكلّفين بالطابور في هذا اليوم. أضفهم من جدول الإشراف.</div>';return;}
   list.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">الطابور</span><span class="rq-bx-r">قبل الحصة الأولى</span></div>'+
@@ -3662,6 +3706,7 @@ function rqApplyRoundCase(id,m,build){
 }
 function rqMarkCls(iso,p,c,m){
   if(rqLocked(iso)){rqLockMsg();return;}
+  if(!rqPerOpen(iso,p)){rqPerMsg(iso,p);return;}
   if(rqNeedUser())return;
   var dow=rqDateObj(iso).getDay();var a=rqClassMap(dow,p).map[c];if(!a)return;
   var k='p'+p+'_'+rqKey(c);var cur=rqRoundVal(iso,k);if(cur===m)m='';
@@ -3688,6 +3733,7 @@ var _rqGrp='all';
 var RQ_GRPS=[['all','الكل'],['الطابور الصباحي','الطابور'],['إشراف الفسحة','الفسحة'],['إشراف الصلاة','الصلاة'],['المناوبة لنهاية الدوام','المناوبة']];
 function rqSetSupDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-s-date').value=rqWeekDate(dow);rqRenderSup();}
 function rqRenderSup(){
+  rqUserFill();
   var dEl=document.getElementById('rq-s-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value,dow=rqDateObj(iso).getDay();
   document.getElementById('rq-s-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetSupDay('+i+')">'+n+'</button>';}).join('');
@@ -3708,6 +3754,7 @@ function rqRenderSup(){
 }
 function rqMarkSup(iso,k,m){
   if(rqLocked(iso)){rqLockMsg();return;}
+  if(/^taboor_/.test(k)&&!rqPerOpen(iso,-1)){rqPerMsg(iso,-1);return;}
   if(rqNeedUser())return;
   var r=rqDutyRows(iso).find(function(x){return x.k===k;});if(!r)return;
   var cur=rqRoundVal(iso,'d_'+k);if(cur===m)m='';
