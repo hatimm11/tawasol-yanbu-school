@@ -394,7 +394,11 @@ body.rq-only .rq-rooms-card{display:none}
 #rq-s-grps .dp small{font-size:10px;opacity:.75}
 
 .rq-bx .rq-k{font-size:12.5px;font-weight:800;height:34px;padding:0 4px;letter-spacing:0}
-.rq-bx .rq-marks{gap:4px}
+.rq-bx .rq-marks{gap:4px;display:grid;grid-template-columns:1fr 1fr}
+.rq-k-exc{color:#3d7eb9;border-color:rgba(61,126,185,.45)}
+.rq-k-exc.on,i.rq-k-exc{background:#3d7eb9!important;border-color:#3d7eb9!important;color:#fff!important}
+.rq-bx.rq-m-exc,.rq-row.rq-m-exc{border-color:#3d7eb9;background:rgba(61,126,185,.1)}
+.rq-pers .dp.rq-tab-taboor{flex:1.8;font-size:12.5px}
 
 .rq-undo{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:#15445a;color:#fff;border-radius:14px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:12px;z-index:1000;font-size:13px;transition:transform .25s;max-width:calc(100% - 32px);box-shadow:0 6px 20px rgba(21,68,90,.3)}
 .rq-undo.on{transform:translate(-50%,0)}
@@ -1331,7 +1335,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <label>الحصة</label><div class="rq-pers" id="rq-c-pers"></div>
       <div class="rq-hint" id="rq-c-info" style="display:block"></div>
       <div id="rq-c-list" class="rq-boxes"></div>
-      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل</span></div>
+      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل · «مستأذن» يُرصد دون مساءلة</span></div>
     </div>
     <details class="card rq-rooms-card"><summary class="ch" style="cursor:pointer">🚪 قاعات الفصول</summary>
       <p style="font-size:11.5px;color:#218caa;margin-bottom:8px">اسم القاعة هو اسم الفصل كما في الجدول. غيّره فقط إذا كان الفصل في قاعة باسم مختلف.</p>
@@ -1361,7 +1365,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <label>المهمة</label><div class="rq-pers rq-days" id="rq-s-grps"></div>
       <div class="rq-hint" id="rq-s-info" style="display:block"></div>
       <div id="rq-s-list" class="rq-boxes"></div>
-      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل</span></div>
+      <div class="rq-legend"><span>«غائب» و«متأخر» يُسجَّلان حالةً تلقائيًا في سجل الوكيل · «مستأذن» يُرصد دون مساءلة</span></div>
     </div>
   </div>
 
@@ -3540,8 +3544,8 @@ function rqRoundSet(date,key,val){var all=rqRoundsGet();if(!all[date])all[date]=
   if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/rounds/'+date+'/'+key).set(val||null);}catch(e){}}
 function rqKey(s){return String(s).replace(/[.#$\[\]\/\s]/g,'_');}
 function rqTidByPhone(ph){var t=DB.teachers.find(function(x){return x.phone===ph;});return t?t.id:'';}
-var RQ_MARK={ok:'حاضر',late:'متأخر',abs:'غائب'};
-function rqMarkBtns(fn,cur){return '<div class="rq-marks">'+['ok','abs','late'].map(function(m){return '<button class="rq-k rq-k-'+m+(cur===m?' on':'')+'" onclick="'+fn.replace('%M',m)+'">'+({ok:'حاضر',abs:'غائب',late:'متأخر'})[m]+'</button>';}).join('')+'</div>';}
+var RQ_MARK={ok:'حاضر',late:'متأخر',abs:'غائب',exc:'مستأذن'};
+function rqMarkBtns(fn,cur){return '<div class="rq-marks">'+['ok','abs','late','exc'].map(function(m){return '<button class="rq-k rq-k-'+m+(cur===m?' on':'')+'" onclick="'+fn.replace('%M',m)+'">'+RQ_MARK[m]+'</button>';}).join('')+'</div>';}
 function rqClassMap(dow,p){var map={},waits=[];if(!_rqTT)return {map:map,waits:waits};
   Object.keys(_rqTT).forEach(function(ph){var t=_rqTT[ph];var x=(t.tt[dow]||[])[p];if(!x)return;
     if(x.charAt(0)==='M')waits.push({ph:ph,n:+x.slice(1),name:t.short});else{var i=x.indexOf(' ');map[x.slice(0,i)]={ph:ph,subj:x.slice(i+1),name:t.short};}});
@@ -3559,12 +3563,13 @@ function rqRenderCls(){
   document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
   document.getElementById('rq-c-day').textContent=rqDay(iso)+' '+rqHijri(iso);
   var maxP=dow===2?6:7;if(_rqPer>=maxP)_rqPer=0;
-  document.getElementById('rq-c-pers').innerHTML=RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
+  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
+  if(_rqPer===-1){rqRenderTaboor(iso,list,info);return;}
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0;
-  list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur&&cur!=='ok')miss++;
+  list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur==='late'||cur==='abs')miss++;
     var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span><span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span></div>';
     if(!a)return '<div class="rq-bx rq-free">'+head+'<div class="rq-bx-s">لا حصة</div></div>';
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
@@ -3572,6 +3577,16 @@ function rqRenderCls(){
   var n=Object.keys(cm.map).length;
   info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
     (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'');
+}
+function rqRenderTaboor(iso,list,info){
+  var rows=rqDutyRows(iso).filter(function(r){return r.group==='الطابور الصباحي';}),marks=(rqRoundsGet()[iso])||{};
+  var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c==='late'||c==='abs')miss++;});
+  info.innerHTML='<b>'+rqDay(iso)+' — الطابور الصباحي (قبل الحصة الأولى):</b> '+rows.length+' مكلّفًا · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
+  if(!rows.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">لا معلمين مكلّفين بالطابور في هذا اليوم. أضفهم من جدول الإشراف.</div>';return;}
+  list.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
+    return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">الطابور</span><span class="rq-bx-r">قبل الحصة الأولى</span></div>'+
+      '<div class="rq-bx-t" style="font-weight:800;font-size:12.5px">'+rqEsc(rqTName(r.tid))+'</div>'+
+      rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+'</div>';}).join('');
 }
 function rqApplyRoundCase(id,m,build){
   var ex=rqGet()[id];var before=rqSnap(id);
@@ -3621,7 +3636,7 @@ function rqRenderSup(){
     return '<button class="dp'+(_rqGrp===g[0]?' on':'')+'" onclick="_rqGrp=\''+g[0]+'\';rqRenderSup()">'+g[1]+' <small>'+n+'</small></button>';}).join('');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';el.innerHTML='';return;}
   var rows=_rqGrp==='all'?all:all.filter(function(r){return r.group===_rqGrp;});
-  var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c&&c!=='ok')miss++;});
+  var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c==='late'||c==='abs')miss++;});
   info.innerHTML='<b>'+rqDay(iso)+':</b> '+rows.length+' مهمة · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
   if(!rows.length){el.innerHTML='<div class="empty" style="grid-column:1/-1">لا مهام مسجلة لهذا اليوم</div>';return;}
   el.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
