@@ -480,6 +480,24 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
 .app-upd{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10001;background:#07a869;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
 .nb-merged{display:none!important}
+body.dash-ro .tod-tpl,body.dash-ro .tod-tpl~.card,body.dash-ro .ds-go,body.dash-ro .ds-cvr .bs{display:none!important}
+body.dash-ro .ds-slot,body.dash-ro .ds-fl{pointer-events:none;cursor:default}
+body.dash-ro #ds-cov-sub{display:none}
+body.dash-ro #pg-today{max-width:1180px}
+@media(min-width:900px){body.dash-ro .ds-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ds-adm{display:contents}
+.ds-wk{display:flex;gap:8px;align-items:flex-end}
+.ds-wd{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.ds-wb{width:100%;max-width:46px;height:90px;background:#efeff1;border-radius:8px;display:flex;align-items:flex-end;overflow:hidden}.ds-wb i{display:block;width:100%;background:#3d7eb9;border-radius:8px 8px 0 0;min-height:3px}
+.ds-wd.today .ds-wb i{background:#07a869}.ds-wd b{font-size:15px;font-weight:900}.ds-wd small{font-size:11px;color:#3078a6;font-weight:700}.ds-wd em{font-style:normal;font-size:10px;color:#6b7a70;white-space:nowrap}
+.ds-note-s{font-size:10.5px;color:#9aa39d;margin-top:8px;text-align:center}
+.ds-tr{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #efeff1}.ds-tr:last-child{border-bottom:0}
+.ds-tr b{font-size:13px;flex-shrink:0}.ds-tc{flex:1;font-size:11px;color:#3078a6;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-tr em{font-style:normal;font-weight:900;font-size:14px;color:#15445a;background:#efeff1;border-radius:8px;padding:1px 9px}
+.ds-tn{width:20px;height:20px;border-radius:6px;background:#15445a;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+@media(min-width:900px){#dash{display:grid!important;grid-template-columns:1fr 1fr;gap:0 14px;align-items:start}#dash[style*="none"]{display:none!important}
+  #dash>.ds-hero,#dash>.ds-kpis,#dash>.ds-alert{grid-column:1/-1}
+  body.dash-ro #dash .ds-hero{padding:22px 26px}body.dash-ro .ds-clock{font-size:42px}body.dash-ro .ds-hi{font-size:24px}body.dash-ro .ds-kpi b{font-size:32px}}
 body.rq-only .nb-sec{display:none}
 .nb-sec{font-size:10.5px;font-weight:800;letter-spacing:.3px;color:rgba(255,255,255,.45);padding:12px 12px 4px}
 .hub{display:flex;gap:4px;background:#fff;border:1px solid #efeff1;border-radius:12px;padding:4px;margin-bottom:12px;overflow-x:auto}
@@ -851,8 +869,13 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     <div class="card ds-card"><div class="ch">⚡ آخر الرصد <span class="ds-sub">مباشر من المساعد الإداري</span></div><div id="ds-feed"></div></div>
     <div class="card ds-card"><div class="ch">👥 مناوبو اليوم</div><div id="ds-duty"></div></div>
     <div class="card ds-card"><div class="ch">📋 متابعة الحالات <span class="ds-sub">من السجل</span></div><div class="ds-flow" id="ds-flow"></div></div>
+    <div class="ds-adm" id="ds-adm">
+      <div class="card ds-card"><div class="ch">📈 آخر ٥ أيام دراسية</div><div id="ds-week"></div></div>
+      <div class="card ds-card"><div class="ch">👤 الأكثر حالات هذا الشهر <span class="ds-sub" id="ds-top-m"></span></div><div id="ds-top"></div></div>
+      <div class="card ds-card"><div class="ch">🧑‍💼 القائمون بالجولات اليوم</div><div id="ds-rec"></div></div>
+    </div>
   </div>
-  <div class="hdr"><div class="hdr-i">📅</div><div><h1 id="tod-title">قوالب اليوم</h1><p id="tod-sub">تتبع ما أُرسل وما تبقى</p></div></div>
+  <div class="hdr tod-tpl"><div class="hdr-i">📅</div><div><h1 id="tod-title">قوالب اليوم</h1><p id="tod-sub">تتبع ما أُرسل وما تبقى</p></div></div>
   <div class="card">
     <div class="ch">📊 تقدم الإرسال</div>
     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -2146,13 +2169,14 @@ function todayTpls(){
 function toggleSent(id){setSent(id,getSent().indexOf(id)===-1);renderToday();}
 
 // ── لوحة اليوم (مباشرة من رصد الجولات) ──
+function dsAdm(){return currentRole==='admin'||currentRole==='developer';}
 function dsCan(){return currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='developer';}
 function dsPerName(p){return p===-1?'الطابور الصباحي':p===-2?'الفسحة':'الحصة '+RQ_PER[p];}
 function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-daybar';
+var APP_VER='2026-09-28-admdash';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2207,6 +2231,21 @@ function renderDash(){
   document.getElementById('ds-duty').innerHTML=Object.keys(grp).length?Object.keys(grp).map(function(g){return '<div class="ds-dg"><span>'+g.replace('إشراف ','').replace(' لنهاية الدوام','')+'</span><div>'+grp[g].map(function(r){var m=marks['d_'+r.k];return '<em class="'+(m?'ds-m-'+m:'')+'">'+rqEsc(rqTName(r.tid))+(r.loc?' <small>('+rqEsc(r.loc)+')</small>':'')+'</em>';}).join('')+'</div></div>';}).join(''):'<div class="ds-empty">لا مهام إشرافية مسجلة لليوم</div>';
   var L=rqList(),fl=[['new','مرصودة','rq-p-new'],['sent','أُرسلت المساءلة','rq-p-sent'],['replied','بانتظار قرار المدير','rq-p-replied'],['decided','صدر القرار','rq-p-decided']];
   document.getElementById('ds-flow').innerHTML=fl.map(function(f){var n=L.filter(function(r){return r.status===f[0];}).length;return '<button class="ds-fl" onclick="nav(\'raqaba\',document.getElementById(\'nav-raqaba\'));rqTab(\'log\');var s=document.getElementById(\'rq-f-st\');if(s){s.value=\''+f[0]+'\';rqRenderLog();}"><b>'+n+'</b><span class="rq-pill '+f[2]+'">'+f[1]+'</span></button>';}).join('');
+  document.body.classList.toggle('dash-ro',currentRole==='admin');
+  var adm=document.getElementById('ds-adm');adm.style.display=dsAdm()?'':'none';
+  if(dsAdm()){
+    var days=[],d=new Date();d.setHours(12,0,0,0);while(days.length<5){var w=d.getDay();if(w<=4)days.unshift(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));d.setDate(d.getDate()-1);}
+    var all=rqRoundsGet(),L2=rqList(),mx=1,wd=days.map(function(x){var mk=all[x]||{},c={n:0,abs:0,late:0,exc:0};Object.keys(mk).forEach(function(k){c.n++;if(c[mk[k]]!==undefined)c[mk[k]]++;});
+      c.cs=L2.filter(function(r){return r.date===x&&r.status!=='cancelled';}).length;mx=Math.max(mx,c.n);c.iso=x;return c;});
+    document.getElementById('ds-week').innerHTML='<div class="ds-wk">'+wd.map(function(c){var h=Math.round(c.n/mx*100);
+      return '<div class="ds-wd'+(c.iso===iso?' today':'')+'"><div class="ds-wb"><i style="height:'+h+'%"></i></div><b>'+c.n+'</b><small>'+rqDay(c.iso)+'</small><em>غ '+c.abs+' · ت '+c.late+' · ح '+c.cs+'</em></div>';}).join('')+'</div><div class="ds-note-s">العمود = عمليات الرصد · غ غائب · ت متأخر · ح حالات</div>';
+    var hp=rqHijriParts(iso),mk2=hp.y+'-'+String(hp.m).padStart(2,'0'),top=rqReportRows(mk2).map(function(o){o.t=o.absent+o.late+o.early+o.cls+o.duty;return o;}).filter(function(o){return o.t;}).sort(function(a,b){return b.t-a.t;}).slice(0,6);
+    document.getElementById('ds-top-m').textContent=rqMonthLabel(mk2);
+    document.getElementById('ds-top').innerHTML=top.length?top.map(function(o,i){return '<div class="ds-tr"><span class="ds-tn">'+(i+1)+'</span><b>'+rqEsc(o.name)+'</b><span class="ds-tc">'+(o.absent?'غياب '+o.absent+' ':'')+(o.late?'تأخر '+o.late+' ':'')+(o.cls?'حصص '+o.cls+' ':'')+(o.duty?'إشراف '+o.duty:'')+'</span><em>'+o.t+'</em></div>';}).join(''):'<div class="ds-empty">لا حالات هذا الشهر</div>';
+    var who={};Object.keys(by).forEach(function(k){var b=by[k];if(b&&b.n&&marks[k]){var o=who[b.n]||(who[b.n]={n:0,last:''});o.n++;if((b.t||'')>o.last)o.last=b.t;}});
+    var wk=Object.keys(who).sort(function(a,b){return who[b].n-who[a].n;});
+    document.getElementById('ds-rec').innerHTML=wk.length?wk.map(function(n){return '<div class="ds-tr"><b>'+rqEsc(n)+'</b><span class="ds-tc">آخر رصد '+who[n].last+'</span><em>'+who[n].n+'</em></div>';}).join(''):'<div class="ds-empty">لم يبدأ أحد الجولات اليوم</div>';
+  }
   if(!_dsTimer)_dsTimer=setInterval(function(){var pg=document.getElementById('pg-today');if(pg&&pg.classList.contains('on'))renderDash();},30000);
 }
 var _dsCur=0;
