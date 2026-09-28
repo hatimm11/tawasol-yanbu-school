@@ -3643,14 +3643,14 @@ function rqClassMap(dow,p){var map={},waits=[];if(!_rqTT)return {map:map,waits:w
 var RQ_CLASSES=['1-1','1-2','1-3','1-4','1-5','2-1','2-2','2-3','2-4','2ش','3-1','3-2','3-3','3ش'];
 var _rqPer=0,_rqPerAuto=true;
 // التوقيت الزمني لليوم الدراسي ١٤٤٨هـ (بالدقائق من منتصف الليل)
-var RQ_TIME={'-1':[420,435],0:[435,485],1:[485,535],2:[535,585],3:[605,655],4:[655,705],5:[705,755],6:[765,815]};
+var RQ_TIME={'-1':[420,435],'-2':[585,605],0:[435,485],1:[485,535],2:[535,585],3:[605,655],4:[655,705],5:[705,755],6:[765,815]};
 function rqHM(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function rqNowMin(){var d=new Date();return d.getHours()*60+d.getMinutes();}
 function rqPerState(iso,p){var t=rqIsoToday();if(iso<t)return 'past';if(iso>t)return 'future';var w=RQ_TIME[p];if(!w)return 'now';var n=rqNowMin();return n<w[0]?'future':n>=w[1]?'past':'now';}
 function rqPerOpen(iso,p){return currentRole==='developer'||rqPerState(iso,p)==='now';}
-function rqPerMsg(iso,p){var st=rqPerState(iso,p),w=RQ_TIME[p];var nm=p===-1?'الطابور':'الحصة '+RQ_PER[p];
+function rqPerMsg(iso,p){var st=rqPerState(iso,p),w=RQ_TIME[p];var nm=RQ_SLOT[p]?RQ_SLOT[p].nm:'الحصة '+RQ_PER[p];
   toast(st==='past'?'🔒 انتهى وقت '+nm+' — لا يمكن تعديل الرصد':'🔒 لم يبدأ وقت '+nm+' بعد'+(w?' ('+rqHM(w[0])+')':''),true);}
-function rqCurPer(){var n=rqNowMin(),ks=[-1,0,1,2,3,4,5,6];for(var i=0;i<ks.length;i++){var w=RQ_TIME[ks[i]];if(n<w[1])return n>=w[0]?ks[i]:(i?ks[i]:-1);}return 6;}
+function rqCurPer(){var n=rqNowMin(),ks=[-1,0,1,2,-2,3,4,5,6];for(var i=0;i<ks.length;i++){var w=RQ_TIME[ks[i]];if(n<w[1])return n>=w[0]?ks[i]:(i?ks[i]:-1);}return 6;}
 function rqSetPer(p){_rqPer=p;_rqPerAuto=false;rqRenderCls();}
 function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();if(d>4)n.setDate(n.getDate()+(7-d));else n.setDate(n.getDate()-d);n.setDate(n.getDate()+dow);
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
@@ -3663,10 +3663,10 @@ function rqRenderCls(){
   document.getElementById('rq-c-day').textContent=rqDay(iso)+' '+rqHijri(iso);
   var maxP=dow===2?6:7;if(_rqPerAuto&&iso===rqIsoToday())_rqPer=rqCurPer();if(_rqPer>=maxP)_rqPer=maxP-1;
   var pst=function(p){var st=rqPerState(iso,p);return st==='now'?' rq-now':st==='past'?' rq-past':' rq-fut';};
-  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+pst(-1)+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return '<button class="dp'+pst(i)+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
+  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+pst(-1)+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return (i===3?'<button class="dp rq-tab-taboor'+pst(-2)+(_rqPer===-2?' on':'')+'" onclick="rqSetPer(-2)">الفسحة</button>':'')+'<button class="dp'+pst(i)+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
-  if(_rqPer===-1){rqRenderTaboor(iso,list,info);return;}
+  if(_rqPer<0){rqRenderTaboor(iso,list,info,_rqPer);return;}
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0,lk=!rqPerOpen(iso,_rqPer);list.classList.toggle('rq-locked',lk);
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur==='late'||cur==='abs')miss++;
@@ -3678,16 +3678,18 @@ function rqRenderCls(){
   info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+' ('+rqHM(RQ_TIME[_rqPer][0])+'–'+rqHM(RQ_TIME[_rqPer][1])+'):</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
     (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'')+rqLockNote(iso,_rqPer);
 }
+var RQ_SLOT={'-1':{grp:'الطابور الصباحي',nm:'الطابور',pfx:/^taboor_/},'-2':{grp:'إشراف الفسحة',nm:'الفسحة',pfx:/^brk_/}};
+function rqSlotName(p){return RQ_SLOT[p]?RQ_SLOT[p].nm:'الحصة';}
 function rqLockNote(iso,p){if(rqPerOpen(iso,p))return '';var st=rqPerState(iso,p),w=RQ_TIME[p];
-  return '<div class="rq-locknote">🔒 '+(st==='past'?'انتهى وقت '+(p===-1?'الطابور':'الحصة')+' — الرصد للعرض فقط':'لم يبدأ وقت '+(p===-1?'الطابور':'الحصة')+' بعد'+(w?' — يُفتح الرصد '+rqHM(w[0]):''))+'</div>';}
-function rqRenderTaboor(iso,list,info){
-  var rows=rqDutyRows(iso).filter(function(r){return r.group==='الطابور الصباحي';}),marks=(rqRoundsGet()[iso])||{};
+  return '<div class="rq-locknote">🔒 '+(st==='past'?'انتهى وقت '+rqSlotName(p)+' — الرصد للعرض فقط':'لم يبدأ وقت '+rqSlotName(p)+' بعد'+(w?' — يُفتح الرصد '+rqHM(w[0]):''))+'</div>';}
+function rqRenderTaboor(iso,list,info,p){p=p||-1;var S=RQ_SLOT[p],W=RQ_TIME[p];
+  var rows=rqDutyRows(iso).filter(function(r){return r.group===S.grp;}),marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c==='late'||c==='abs')miss++;});
-  var lk=!rqPerOpen(iso,-1);list.classList.toggle('rq-locked',lk);
-  info.innerHTML='<b>'+rqDay(iso)+' — الطابور الصباحي (07:00–07:15):</b> '+rows.length+' مكلّفًا · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+rqLockNote(iso,-1);
-  if(!rows.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">لا معلمين مكلّفين بالطابور في هذا اليوم. أضفهم من جدول الإشراف.</div>';return;}
+  var lk=!rqPerOpen(iso,p);list.classList.toggle('rq-locked',lk);
+  info.innerHTML='<b>'+rqDay(iso)+' — '+S.grp+' ('+rqHM(W[0])+'–'+rqHM(W[1])+'):</b> '+rows.length+' مكلّفًا · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+rqLockNote(iso,p);
+  if(!rows.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">لا معلمين مكلّفين بـ'+S.nm+' في هذا اليوم. أضفهم من جدول الإشراف.</div>';return;}
   list.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
-    return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">الطابور</span><span class="rq-bx-r">قبل الحصة الأولى</span></div>'+
+    return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">'+S.nm+'</span><span class="rq-bx-r">'+rqEsc(r.loc||(p===-1?'قبل الحصة الأولى':''))+'</span></div>'+
       '<div class="rq-bx-t" style="font-weight:800;font-size:12.5px">'+rqEsc(rqTName(r.tid))+'</div>'+
       rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,'d_'+r.k)):'')+'</div>';}).join('');
 }
@@ -3754,7 +3756,7 @@ function rqRenderSup(){
 }
 function rqMarkSup(iso,k,m){
   if(rqLocked(iso)){rqLockMsg();return;}
-  if(/^taboor_/.test(k)&&!rqPerOpen(iso,-1)){rqPerMsg(iso,-1);return;}
+  var sp=/^taboor_/.test(k)?-1:/^brk_/.test(k)?-2:null;if(sp!==null&&!rqPerOpen(iso,sp)){rqPerMsg(iso,sp);return;}
   if(rqNeedUser())return;
   var r=rqDutyRows(iso).find(function(x){return x.k===k;});if(!r)return;
   var cur=rqRoundVal(iso,'d_'+k);if(cur===m)m='';
