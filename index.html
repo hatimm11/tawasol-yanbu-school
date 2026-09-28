@@ -470,6 +470,12 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-dg>span{min-width:70px;font-size:12px;font-weight:800;color:#218caa}.ds-dg div{flex:1;display:flex;flex-wrap:wrap;gap:4px 10px}
 .ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
 .app-upd{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10001;background:#07a869;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
+.nb-merged{display:none!important}
+body.rq-only .nb-sec{display:none}
+.nb-sec{font-size:10.5px;font-weight:800;letter-spacing:.3px;color:rgba(255,255,255,.45);padding:12px 12px 4px}
+.hub{display:flex;gap:4px;background:#fff;border:1px solid #efeff1;border-radius:12px;padding:4px;margin-bottom:12px;overflow-x:auto}
+.hub button{flex:1;white-space:nowrap;border:0;background:none;border-radius:9px;padding:9px 10px;font-family:inherit;font-size:13px;font-weight:700;color:#3078a6;cursor:pointer}
+.hub button.on{background:#15445a;color:#fff}
 .nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
 .rq-user-l{white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}.rq-user-v{flex:1;font-weight:800;font-size:14px;color:#15445a}
@@ -805,15 +811,18 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <nav class="nav" id="side-nav" aria-label="القائمة الرئيسية">
   <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button type="button" class="nav-user-sw" onclick="toggleSideNav(false);usOpen(currentRole)">تبديل المستخدم</button><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
   <button class="nb on" onclick="nav('today',this)"><i>📅</i>اليوم</button>
-  <button class="nb" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
-  <button class="nb" onclick="nav('main',this)"><i>📨</i>الرسائل</button>
-  <button class="nb" onclick="nav('tpl',this)"><i>📋</i>القوالب</button>
-  <button class="nb" onclick="nav('tc',this)"><i>👥</i>جهات الاتصال</button>
+  <button class="nb nb-merged" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص</button>
+  <div class="nb-sec">التواصل</div>
+  <button class="nb" id="nav-msg" onclick="nav('main',this)"><i>📨</i>الرسائل <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
+  <button class="nb nb-merged" onclick="nav('tpl',this)"><i>📋</i>القوالب</button>
+  <button class="nb" id="nav-tc" onclick="nav('tc',this)"><i>👥</i>المعلمون وجهات الاتصال</button>
+  <div class="nb-sec" id="nb-sec-work">المتابعة</div>
   <button class="nb" id="nav-abs" style="display:none" onclick="nav('abs',this)"><i>🚨</i>غياب</button>
 <button class="nb" id="nav-cns" style="display:none" onclick="nav('counselor',this)"><i>📋</i>التوجيه</button>
-  <button class="nb" id="nav-sched" style="display:none" onclick="nav('sched',this)"><i>📅</i>الإشراف</button>
+  <button class="nb nb-merged" id="nav-sched" style="display:none" onclick="nav('sched',this)"><i>📅</i>الإشراف</button>
   <button class="nb" id="nav-raqaba" style="display:none" onclick="nav('raqaba',this)"><i><svg class="ico-follow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.8A1.3 1.3 0 0 1 10.3 2.5h3.4A1.3 1.3 0 0 1 15 3.8v.7"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></i>المتابعة اليومية</button>
-  <button class="nb" id="nav-tprof" style="display:none" onclick="location.href='teachers/'"><i>🗂️</i>المعلمون</button>
+  <button class="nb nb-merged" id="nav-tprof" style="display:none" onclick="location.href='teachers/'"><i>🗂️</i>المعلمون</button>
+  <div class="nb-sec">النظام</div>
   <button class="nb" onclick="nav('settings',this)"><i>⚙️</i>إعدادات</button>
   <button class="nb nb-role" onclick="showRoleScreen()"><i>🔄</i>تبديل الدور <span class="role-badge" id="role-badge">—</span></button>
 </nav>
@@ -851,6 +860,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- PRIVATE -->
 <div id="pg-priv" class="pg">
+  <div class="hub" data-hub="msg"></div>
   <div class="hdr">
     <div class="hdr-i">💬</div>
     <div><h1>الرسائل الخاصة</h1><p>تواصل مباشر مع المعلمين المذكورين اليوم</p></div>
@@ -879,6 +889,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- MAIN -->
 <div id="pg-main" class="pg">
+  <div class="hub" data-hub="msg"></div>
   <div class="hdr"><div class="hdr-i">📨</div><div><h1>إرسال رسالة اليوم</h1><p>اختر القالب وارسل</p></div></div>
   <div class="card">
     <div class="ch">📅 التاريخ</div>
@@ -994,6 +1005,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- TEMPLATES -->
 <div id="pg-tpl" class="pg">
+  <div class="hub" data-hub="msg"></div>
   <div class="hdr"><div class="hdr-i">📋</div><div><h1>إدارة القوالب</h1><p>قوالب حرة مع متغيرات</p></div></div>
   <div class="card">
     <div class="ch">➕ قالب جديد</div>
@@ -1140,6 +1152,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- TEACHERS -->
 <div id="pg-tc" class="pg">
+  <div class="hub" data-hub="tc"></div>
   <div class="hdr"><div class="hdr-i">👥</div><div><h1>جهات الاتصال</h1><p>الموظفون وأولياء الأمور</p></div></div>
 
   <!-- TABS -->
@@ -1358,6 +1371,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- WEEKLY SCHEDULE -->
 <div id="pg-sched" class="pg">
+  <div class="hub" data-hub="work"></div>
   <div class="hdr">
     <div class="hdr-i">📅</div>
     <div><h1>جدول الإشراف الأسبوعي</h1><p>الطابور · الفسحة · الصلاة · المناوبة</p></div>
@@ -1415,6 +1429,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- RAQABA PAGE (teacher_affairs / admin) -->
 <div id="pg-raqaba" class="pg">
+  <div class="hub" data-hub="work"></div>
   <div class="hdr">
     <div class="hdr-i hdr-follow"><svg class="ico-follow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.8A1.3 1.3 0 0 1 10.3 2.5h3.4A1.3 1.3 0 0 1 15 3.8v.7"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></div>
     <div><h1>المتابعة اليومية</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
@@ -2127,7 +2142,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-dash2';
+var APP_VER='2026-09-28-nav';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -3032,7 +3047,16 @@ function addPrivContact(){
 }
 
 // ── NAV ──
+var NAV_GRP={main:'nav-msg',priv:'nav-msg',tpl:'nav-msg',tc:'nav-tc',raqaba:'nav-raqaba',sched:'nav-raqaba'};
+var HUBS={msg:[['main','📨 إرسال'],['priv','💬 خاص'],['tpl','📋 القوالب']],tc:[['tc','👥 جهات الاتصال'],['@tprof','🗂️ ملفات المعلمين']],work:[['raqaba','✅ المتابعة اليومية'],['sched','📅 جدول الإشراف']]};
+function hubRender(id){document.querySelectorAll('.hub').forEach(function(h){var k=h.getAttribute('data-hub');
+  h.innerHTML=HUBS[k].map(function(t){var tid=t[0];
+    if(tid==='@tprof'){var tp=document.getElementById('nav-tprof');if(!tp||tp.style.display==='none')return '';return '<button onclick="location.href=\'teachers/\'">'+t[1]+' ↗</button>';}
+    if(tid==='sched'){var sb=document.getElementById('nav-sched');if(!sb||sb.style.display==='none')return '';}
+    return '<button class="'+(tid===id?'on':'')+'" onclick="nav(\''+tid+'\')">'+t[1]+'</button>';}).join('');
+  h.style.display=h.querySelectorAll('button').length>1?'':'none';});}
 function nav(id,btn){
+  if(NAV_GRP[id]&&(!btn||btn.classList.contains('nb-merged')))btn=document.getElementById(NAV_GRP[id]);
   if(!btn)btn=document.querySelector('.nav .nb[onclick*="nav(\''+id+'\'"]');
   toggleSideNav(false);syncTopbar(btn);
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
@@ -3040,6 +3064,7 @@ function nav(id,btn){
   if(pg)pg.classList.add('on');
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
   if(btn)btn.classList.add('on');
+  try{hubRender(id);}catch(e){}
   if(id==='today')renderToday();
   if(id==='priv')renderPriv();
   if(id==='main'){renderMTpls();autoDay();}
