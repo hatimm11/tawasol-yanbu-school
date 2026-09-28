@@ -436,6 +436,15 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-live{width:9px;height:9px;border-radius:50%;background:#07a869;box-shadow:0 0 0 0 rgba(7,168,105,.7);animation:dsp 1.6s infinite}
 @keyframes dsp{70%{box-shadow:0 0 0 8px rgba(7,168,105,0)}100%{box-shadow:0 0 0 0 rgba(7,168,105,0)}}
 .ds-go{border:0;background:#07a869;color:#fff;border-radius:999px;padding:7px 14px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.ds-tl{display:flex;gap:2px;margin-top:12px;height:26px}
+.ds-seg{position:relative;background:rgba(255,255,255,.14);border-radius:5px;overflow:hidden;min-width:14px}
+.ds-seg i{position:absolute;inset-block:0;inset-inline-start:0;background:#69cee3;display:block}
+.ds-seg.ds-brk{background:rgba(193,180,137,.3)}.ds-seg.ds-brk i{background:#c1b489}
+.ds-seg.ds-cur{box-shadow:0 0 0 2px #fff}
+.ds-seg span{position:relative;display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;font-weight:800;color:#fff}
+.ds-seg.ds-past span{color:#15445a}
+.ds-tl-f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;opacity:.9}
+.ds-pr{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:6px 12px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
 .ds-pbar{height:5px;background:rgba(255,255,255,.18);border-radius:9px;margin-top:10px;overflow:hidden}.ds-pbar i{display:block;height:100%;background:#69cee3;border-radius:9px;transition:width .6s}
 .ds-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .ds-kpi{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;border:1px solid #efeff1;border-top:3px solid #c2c1c1}
@@ -833,7 +842,8 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     <div class="ds-hero">
       <div class="ds-hero-top"><div><div class="ds-hi" id="ds-hi">صباح الخير</div><div class="ds-date" id="ds-date">—</div></div><div class="ds-clock" id="ds-clock">--:--</div></div>
       <div class="ds-now"><div class="ds-now-l"><span class="ds-live"></span><b id="ds-now">—</b><small id="ds-now-t"></small></div><button class="ds-go" id="ds-go" onclick="dsOpenNow()">فتح الجولة ←</button></div>
-      <div class="ds-pbar"><i id="ds-pbar"></i></div>
+      <div class="ds-tl" id="ds-tl"></div>
+      <div class="ds-tl-f"><span id="ds-tl-t"></span><button class="ds-pr" onclick="dsPrintDay()">🖨️ التقرير اليومي</button></div>
     </div>
     <div class="ds-kpis" id="ds-kpis"></div>
     <div class="card ds-card ds-alert" id="ds-abs-card" style="display:none"><div class="ch">🚨 غياب اليوم وحصص الانتظار</div><div id="ds-abs"></div></div>
@@ -2142,7 +2152,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-nav';
+var APP_VER='2026-09-28-daybar';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2158,11 +2168,12 @@ function renderDash(){
   if(dow===2)ks=ks.filter(function(k){return k!==6;});
   ks.forEach(function(k){var w=RQ_TIME[k];if(n>=w[0]&&n<w[1])cur=k;});
   var nx=ks.find(function(k){return RQ_TIME[k][0]>n;});
-  var nowEl=document.getElementById('ds-now'),tEl=document.getElementById('ds-now-t'),bar=document.getElementById('ds-pbar'),go=document.getElementById('ds-go');
+  var nowEl=document.getElementById('ds-now'),tEl=document.getElementById('ds-now-t'),bar={style:{}},go=document.getElementById('ds-go');
   if(!school){nowEl.textContent='لا دوام اليوم';tEl.textContent='';bar.style.width='0';go.style.display='none';}
   else if(cur!==null){var w=RQ_TIME[cur];nowEl.textContent='الآن: '+dsPerName(cur);tEl.textContent='حتى '+rqHM(w[1])+' · متبقٍ '+(w[1]-n)+' د';bar.style.width=Math.round((n-w[0])/(w[1]-w[0])*100)+'%';go.style.display='';_dsCur=cur;}
   else if(nx!==undefined){nowEl.textContent='التالي: '+dsPerName(nx);tEl.textContent='يبدأ '+rqHM(RQ_TIME[nx][0])+(n<RQ_TIME[nx][0]?' · بعد '+(RQ_TIME[nx][0]-n)+' د':'');bar.style.width='0';go.style.display='none';}
   else{nowEl.textContent='انتهى اليوم الدراسي';tEl.textContent='';bar.style.width='100%';go.style.display='none';}
+  dsTimeline(dow,n,school);
   // KPIs from rounds + cases
   var marks=(rqRoundsGet()[iso])||{},by=(rqRBy()[iso])||{},cnt={ok:0,abs:0,late:0,exc:0};
   Object.keys(marks).forEach(function(k){if(cnt[marks[k]]!==undefined)cnt[marks[k]]++;});
@@ -2199,6 +2210,39 @@ function renderDash(){
   if(!_dsTimer)_dsTimer=setInterval(function(){var pg=document.getElementById('pg-today');if(pg&&pg.classList.contains('on'))renderDash();},30000);
 }
 var _dsCur=0;
+function dsSlots(dow){var L=[[-1,'ط'],[0,'1'],[1,'2'],[2,'3'],[-2,'ف'],[3,'4'],[4,'5'],[5,'6'],['s','ص'],[6,'7']];
+  if(dow===2)L=L.filter(function(x){return x[0]!==6;});
+  return L.map(function(x){var w=x[0]==='s'?[755,765]:RQ_TIME[x[0]];return {p:x[0],l:x[1],a:w[0],b:w[1]};});}
+function dsTimeline(dow,n,school){var el=document.getElementById('ds-tl'),tt=document.getElementById('ds-tl-t');if(!el)return;
+  if(!school){el.innerHTML='';tt.textContent='لا دوام اليوم';return;}
+  var S=dsSlots(dow),A=S[0].a,B=S[S.length-1].b,T=B-A;
+  el.innerHTML=S.map(function(x){var st=n>=x.b?'past':n>=x.a?'cur':'fut',f=st==='past'?100:st==='cur'?Math.round((n-x.a)/(x.b-x.a)*100):0;
+    var brk=(x.p===-2||x.p==='s'||x.p===-1);
+    return '<div class="ds-seg ds-'+st+(brk?' ds-brk':'')+'" style="flex:'+(x.b-x.a)+'" title="'+rqHM(x.a)+'–'+rqHM(x.b)+'"><i style="width:'+f+'%"></i><span>'+x.l+'</span></div>';}).join('');
+  var pct=Math.max(0,Math.min(100,Math.round((n-A)/T*100)));
+  tt.textContent=n<A?'يبدأ الدوام '+rqHM(A):n>=B?'انتهى الدوام · '+rqHM(A)+'–'+rqHM(B):'مضى '+pct+'٪ من اليوم · ينتهي الدوام '+rqHM(B);}
+function dsPrintDay(){
+  var iso=rqIsoToday(),dow=rqDateObj(iso).getDay();if(dow>4){toast('لا دوام اليوم',true);return;}
+  rqLoadTT();var marks=(rqRoundsGet()[iso])||{},by=(rqRBy()[iso])||{},e=rqEsc;
+  var cnt={ok:0,abs:0,late:0,exc:0};Object.keys(marks).forEach(function(k){if(cnt[marks[k]]!==undefined)cnt[marks[k]]++;});
+  var cases=rqList().filter(function(r){return r.date===iso&&r.status!=='cancelled';});
+  var strip='<div class="st"><div><span>اليوم والتاريخ</span><b>'+rqDay(iso)+' '+rqHijri(iso)+'</b></div><div><span>عمليات الرصد</span><b>'+Object.keys(marks).length+'</b></div><div><span>غائب / متأخر / مستأذن</span><b>'+cnt.abs+' / '+cnt.late+' / '+cnt.exc+'</b></div><div><span>الحالات المرصودة</span><b>'+cases.length+'</b></div></div>';
+  // per slot
+  var rows=dsSlots(dow).filter(function(x){return x.p!=='s';}).map(function(x){var p=x.p,keys;
+    if(p<0){keys=rqDutyRows(iso).filter(function(r){return r.group===(p===-1?'الطابور الصباحي':'إشراف الفسحة');}).map(function(r){return 'd_'+r.k;});}
+    else{keys=Object.keys(rqClassMap(dow,p).map).map(function(c){return 'p'+p+'_'+rqKey(c);});}
+    var c={ok:0,abs:0,late:0,exc:0},d=0;keys.forEach(function(k){var m=marks[k];if(m){d++;c[m]++;}});
+    return '<tr><td>'+dsPerName(p)+' <small dir="ltr" style="unicode-bidi:isolate">('+rqHM(x.a)+'–'+rqHM(x.b)+')</small></td><td>'+d+' / '+keys.length+'</td><td>'+c.ok+'</td><td>'+c.abs+'</td><td>'+c.late+'</td><td>'+c.exc+'</td></tr>';}).join('');
+  var body='<h3>ملخص الجولات حسب الفترة</h3><table><thead><tr><th>الفترة</th><th>المتابَع</th><th>حاضر</th><th>غائب</th><th>متأخر</th><th>مستأذن</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  // non-present marks
+  var ex=Object.keys(marks).filter(function(k){return marks[k]!=='ok';}).map(function(k){var i=dsKeyInfo(iso,k),b=by[k]||{};return {t:b.t||'',k:k,i:i,m:marks[k],n:b.n||''};}).sort(function(a,b){return a.t.localeCompare(b.t);});
+  body+='<h3>تفصيل الرصد (غير الحاضر)</h3>'+(ex.length?'<table><thead><tr><th>الوقت</th><th>المعلم</th><th>الفترة / الموقع</th><th>الحالة</th><th>القائم بالجولة</th></tr></thead><tbody>'+ex.map(function(x){return '<tr><td>'+x.t+'</td><td>'+e(x.i.t||'—')+'</td><td>'+e(x.i.w)+'</td><td>'+RQ_MARK[x.m]+'</td><td>'+e(x.n)+'</td></tr>';}).join('')+'</tbody></table>':'<p>لا يوجد.</p>');
+  body+='<h3>الحالات المرصودة في السجل</h3>'+(cases.length?'<table><thead><tr><th>المعلم</th><th>نوع الحالة</th><th>التفاصيل</th><th>الوضع</th><th>رصدها</th></tr></thead><tbody>'+cases.map(function(r){return '<tr><td>'+e(rqTName(r.tid))+'</td><td>'+RQ_TYPES[r.type]+(r.minutes?' ('+r.minutes+'د)':'')+'</td><td>'+e(r.detail||'')+(r.coveredBy?' — الانتظار: '+e(r.coveredBy):'')+'</td><td>'+RQ_ST[r.status]+'</td><td>'+e(r.byName||RQ_BY[r.by]||'')+'</td></tr>';}).join('')+'</tbody></table>':'<p>لا توجد حالات.</p>');
+  var who={};Object.keys(by).forEach(function(k){var b=by[k];if(b&&b.n&&marks[k])who[b.n]=(who[b.n]||0)+1;});
+  var wk=Object.keys(who);body+='<h3>القائمون بالجولات</h3>'+(wk.length?'<p>'+wk.map(function(n){return e(n)+' ('+who[n]+' رصد)';}).join('، ')+'</p>':'<p>—</p>');
+  body+='<div class="sg"><div>وكيل شؤون المعلمين:</div><div>مدير المدرسة:</div></div>';
+  rqOpenDoc(rqDoc('التقرير اليومي لمتابعة الدوام',rqDay(iso)+' '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م',strip,body));
+}
 function dsOpenNow(){dsOpen(_dsCur);}
 function dsOpen(p){var b=document.getElementById('nav-raqaba');nav('raqaba',b);document.getElementById('rq-c-date').value=rqIsoToday();_rqPer=p;_rqPerAuto=false;rqTab('cls');}
 function renderToday(){
