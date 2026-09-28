@@ -4128,12 +4128,13 @@ function drawSchedImage(){
   var day=schedDay||(document.getElementById('exp-day-sel')||{}).value||'الأحد';
   var locs=_schedLocsCache||getSchedLocs(),dd=(_schedCache||getSched())[day]||{},sc=getSchoolSettings();
   var tn=function(tid){var t=DB.teachers.find(function(x){return x.id===tid;});return t?((t.prefix||'')+' '+t.name).trim():'';};
-  var many=function(k){return (dd[k]||[]).map(tn).filter(Boolean).join('  /  ');};
+  var list=function(k){return (dd[k]||[]).map(tn).filter(Boolean);};
   var ea=function(v){return String(v).replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});};
-  var rows=[{lbl:'الطابور الصباحي',tm:'07:00 – 07:15',v:many('_taboor'),ac:'#07a869'}];
-  locs.forEach(function(l){rows.push({lbl:'الفسحة — '+l,tm:'09:45 – 10:05',v:tn(dd[l]||''),ac:'#0da9a6'});});
-  rows.push({lbl:'إشراف الصلاة',tm:'12:35 – 12:45',v:many('_salah'),ac:'#c1b489'});
-  rows.push({lbl:'المناوبة لنهاية الدوام',tm:'بعد 13:35',v:(rosterMonawabaName(day)||many('_monawaba')),ac:'#3d7eb9'});
+  var rows=[],add=function(lbl,loc,names,ac){if(!names.length)names=[''];names.forEach(function(v){rows.push({lbl:lbl,loc:loc,v:v,ac:ac});});};
+  add('الطابور الصباحي','ساحة الطابور',list('_taboor'),'#07a869');
+  locs.forEach(function(l){add('الفسحة',l,[tn(dd[l]||'')].filter(Boolean),'#0da9a6');});
+  add('إشراف الصلاة','المصلى',list('_salah'),'#c1b489');
+  var rn=rosterMonawabaName(day);add('المناوبة','نهاية الدوام',rn?[rn]:list('_monawaba'),'#3d7eb9');
   var NAVY='#15445a',SBLUE='#3078a6',SCYAN='#218caa',SKY='#69cee3',IND='#351375',GRAY='#c2c1c1',BG='#efeff1',ROW='#fafbfb',F='Tajawal, Arial, sans-serif';
   var W=1200,P=48,RH=70,TH=56,H=150+118+26+96+30+TH+rows.length*RH+40+64;
   canvas.width=W;canvas.height=H;canvas.style.display='block';
@@ -4142,7 +4143,7 @@ function drawSchedImage(){
   c.fillStyle='#ffffff';c.fillRect(0,0,W,H);
   // 1 الترويسة
   var y=58;c.fillStyle=NAVY;c.font='800 28px '+F;c.fillText('المملكة العربية السعودية · وزارة التعليم',W/2,y);
-  c.fillStyle=SBLUE;c.font='500 21px '+F;c.fillText('الإدارة العامة للتعليم بمنطقة المدينة المنورة · '+(sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين',W/2,y+40);
+  c.fillStyle=SBLUE;c.font='500 21px '+F;c.fillText('الإدارة العامة للتعليم بمنطقة المدينة المنورة · '+(sc.name||'ثانوية ينبع')+' · إدارة المدرسة',W/2,y+40);
   c.fillStyle=GRAY;c.fillRect(P,y+70,W-2*P,1.5);
   // 2 شريط العنوان
   y=150;rr(P,y,W-2*P,118,16);c.fillStyle=BG;c.fill();c.fillStyle=SKY;c.fillRect(P+16,y+113,W-2*P-32,5);
@@ -4158,27 +4159,24 @@ function drawSchedImage(){
     c.fillStyle=NAVY;c.font='800 25px '+F;c.fillText(cl[1],x1+cw-20,y+74);});
   c.textAlign='center';
   // 4 الجدول
-  y+=96+30;var R=W-P,cols=[[R-70,R],[R-470,R-70],[R-700,R-470],[P,R-700]];
+  y+=96+30;var R=W-P,cols=[[R-70,R],[R-330,R-70],[R-600,R-330],[P,R-600]];
   c.save();rr(P,y,W-2*P,TH+rows.length*RH,12);c.clip();
   c.fillStyle=NAVY;c.fillRect(P,y,W-2*P,TH);c.fillStyle='#ffffff';c.font='700 23px '+F;
-  ['م','المهمة / الموقع','الوقت','المسؤول'].forEach(function(t,i){c.fillText(t,(cols[i][0]+cols[i][1])/2,y+TH/2+8);});
-  var ty=y+TH;
+  ['م','المهمة','الموقع','المسؤول'].forEach(function(t,i){c.fillText(t,(cols[i][0]+cols[i][1])/2,y+TH/2+8);});
+  var ty=y+TH,vw=cols[3][1]-cols[3][0]-30,nfs=24;c.font='700 '+nfs+'px '+F;
+  while(nfs>15&&rows.some(function(r){return c.measureText(r.v||'').width>vw;})){nfs--;c.font='700 '+nfs+'px '+F;}
   rows.forEach(function(r,i){
     c.fillStyle=i%2?ROW:'#ffffff';c.fillRect(P,ty,W-2*P,RH);c.fillStyle=BG;c.fillRect(P,ty,W-2*P,1.5);
     c.fillStyle=r.ac;c.fillRect(R-6,ty,6,RH);
     c.fillStyle=SBLUE;c.font='700 21px '+F;c.fillText(ea(i+1),(cols[0][0]+cols[0][1])/2,ty+RH/2+8);
     c.fillStyle=NAVY;c.font='800 24px '+F;c.fillText(r.lbl,(cols[1][0]+cols[1][1])/2,ty+RH/2+9);
-    c.save();c.direction='ltr';c.fillStyle=SCYAN;c.font='700 22px '+F;c.fillText(ea(r.tm),(cols[2][0]+cols[2][1])/2,ty+RH/2+8);c.restore();
-    var v=r.v||'—',vx=(cols[3][0]+cols[3][1])/2,vw=cols[3][1]-cols[3][0]-24,parts=v.split('  /  '),fs=23;c.fillStyle=r.v?NAVY:GRAY;c.font='700 '+fs+'px '+F;
-    if(parts.length>1&&c.measureText(v).width>vw){c.font='700 20px '+F;c.fillText(parts[0],vx,ty+RH/2-4);c.fillText(parts.slice(1).join(' / '),vx,ty+RH/2+22);}
-    else{while(fs>16&&c.measureText(v).width>vw){fs--;c.font='700 '+fs+'px '+F;}c.fillText(v,vx,ty+RH/2+8);}
+    c.fillStyle=SCYAN;c.font='700 23px '+F;c.fillText(r.loc,(cols[2][0]+cols[2][1])/2,ty+RH/2+9);
+    c.fillStyle=r.v?NAVY:GRAY;c.font='700 '+nfs+'px '+F;c.fillText(r.v||'—',(cols[3][0]+cols[3][1])/2,ty+RH/2+8);
     ty+=RH;});
   c.restore();rr(P,y,W-2*P,TH+rows.length*RH,12);c.strokeStyle=GRAY;c.lineWidth=1.5;c.stroke();
   // 5 التذييل
   y=ty+40;c.fillStyle=GRAY;c.fillRect(0,y,W,1.5);c.font='500 17px '+F;c.fillStyle=SBLUE;
-  c.textAlign='right';c.fillText((sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين',W-P,y+34);
-  c.textAlign='center';c.fillText('مصدر التوثيق: منصة تواصل',W/2,y+34);
-  c.textAlign='left';c.fillText(sc.sender||'وكيل شؤون المعلمين',P,y+34);
+  c.textAlign='center';c.fillText((sc.name||'ثانوية ينبع')+' · إدارة المدرسة',W/2,y+34);
   var g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,'#07a869');g.addColorStop(1,'#3d7eb9');c.fillStyle=g;c.fillRect(0,H-10,W,10);
   schedImageDataURL=canvas.toDataURL('image/png');
   var btn=document.getElementById('exp-sched-btn');if(btn)btn.disabled=false;
