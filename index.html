@@ -12,9 +12,11 @@
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogItmF2YbYtdipINiq2YjYp9i12YQg4oCUINir2KfZhtmI2YrYqSDZitmG2KjYuSIsICJzaG9ydF9uYW1lIjogItmF2YbYtdipINiq2YjYp9i12YQiLCAiZGVzY3JpcHRpb24iOiAi2YXZhti12Kkg2KfZhNiq2YjYp9i12YQg2KfZhNmF2K/Ysdiz2YoiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzBkM2IyZSIsICJ0aGVtZV9jb2xvciI6ICIjMGQzYjJlIiwgImRpciI6ICJydGwiLCAibGFuZyI6ICJhciIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBeE1EQWdNVEF3SWo0OGNtVmpkQ0IzYVdSMGFEMGlNVEF3SWlCb1pXbG5hSFE5SWpFd01DSWdjbmc5SWpJd0lpQm1hV3hzUFNJak1HUXpZakpsSWk4K1BIUmxlSFFnZVQwaUxqbGxiU0lnWm05dWRDMXphWHBsUFNJM05TSWdlRDBpTlRBbElpQjBaWGgwTFdGdVkyaHZjajBpYldsa1pHeGxJajd3bjVPeFBDOTBaWGgwUGp3dmMzWm5QZz09IiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIn1dfQ==">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMGQzYjJlIi8+PHRleHQgeT0iLjgyZW0iIGZvbnQtc2l6ZT0iNTgiIHg9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+ToTwvdGV4dD48dGV4dCB5PSI5NSIgZm9udC1zaXplPSIxMyIgeD0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNGFkZTgwIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiPtiq2YjYp9i12YQ8L3RleHQ+PC9zdmc+"
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="tajarib-400.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="tajarib-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>@font-face{font-family:'Tajarib';src:url(tajarib-300.woff2) format('woff2');font-weight:300;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-400.woff2) format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-500.woff2) format('woff2');font-weight:500;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:600;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-700.woff2) format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:800;font-display:swap}@font-face{font-family:'Tajarib';src:url(tajarib-900.woff2) format('woff2');font-weight:900;font-display:swap}</style>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Tajawal','Cairo','SF Arabic',sans-serif;background:#efeff1;min-height:100vh;direction:rtl;color:#15445a;font-size:14px}
+body{font-family:'Tajarib','Tajawal','Cairo','SF Arabic',sans-serif;background:#efeff1;min-height:100vh;direction:rtl;color:#15445a;font-size:14px}
 .nav{background:#15445a;display:flex;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
 .nb{flex:1;padding:12px 4px 10px;background:none;border:none;color:rgba(255,255,255,.45);font-family:inherit;font-size:10px;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:3px}
 .nb i{font-size:17px;font-style:normal}
@@ -2182,7 +2184,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-duty';
+var APP_VER='2026-09-28-tajarib';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -3864,7 +3866,7 @@ function rqRenderRep(){var s=document.getElementById('rq-month');var v=s.value;v
 function rqDoc(title,sub,strip,body){
   var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
   return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>'+title+'</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"><style>'+
-  '@page{size:A4;margin:12mm 15mm 16mm}*{box-sizing:border-box}body{font-family:Tajawal,Cairo,sans-serif;color:#15445a;font-size:12.5px;line-height:2;margin:0}'+
+  '@page{size:A4;margin:12mm 15mm 16mm}*{box-sizing:border-box}body{font-family:Tajarib,Tajawal,Cairo,sans-serif;color:#15445a;font-size:12.5px;line-height:2;margin:0}'+rqFontFace()+
   '.mh{text-align:center;border-bottom:1px solid #c2c1c1;padding-bottom:8px;margin-bottom:12px}.mh b{font-size:14px;font-weight:800;display:block}.mh span{color:#3078a6;font-size:12px}'+
   '.tb{background:#efeff1;border-bottom:2.5px solid #69cee3;border-radius:8px;text-align:center;padding:8px;margin-bottom:6px}.tb h1{margin:0;color:#351375;font-weight:900;font-size:18px}.tb div{color:#218caa;font-size:12px}'+
   '.st{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #c2c1c1;border-radius:8px;margin:10px 0 14px}.st div{padding:4px 10px;border-inline-start:1px solid #c2c1c1}.st div:first-child{border:0}.st span{display:block;font-size:9px;color:#3078a6}.st b{font-size:12px}'+
@@ -3878,6 +3880,7 @@ function rqDoc(title,sub,strip,body){
   '<div class="ft"><div><span>'+rqEsc(sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين</span><span>مصدر التوثيق: منصة تواصل</span><span>صفحة ١ من ١</span></div><i></i></div>'+
   '<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script></body></html>';
 }
+function rqFontFace(){var b=location.href.replace(/[#?].*$/,'').replace(/[^\/]*$/,'');return [[300,300],[400,400],[500,500],[600,700],[700,700],[800,900],[900,900]].map(function(x){return "@font-face{font-family:'Tajarib';src:url("+b+"tajarib-"+x[1]+".woff2) format('woff2');font-weight:"+x[0]+"}";}).join('');}
 function rqOpenDoc(html){var w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لعرض النموذج',true);return;}w.document.open();w.document.write(html);w.document.close();}
 function rqPrintForm(r){
   var t=rqT(r.tid);var box=function(on){return '<span class="ck">'+(on?'✔':'')+'</span>';};
@@ -4390,7 +4393,7 @@ function insHissaFasl(){
 // Schedule image export stubs (need canvas element)
 function previewSchedImage(){
   var go=function(){try{drawSchedImage();}catch(e){console.error(e);toast('تعذّر إنشاء الصورة',true);}};
-  if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('800 40px Tajawal'),document.fonts.load('700 26px Tajawal'),document.fonts.load('500 20px Tajawal')]).then(go,go);else go();
+  if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('900 40px Tajarib'),document.fonts.load('800 26px Tajarib'),document.fonts.load('700 26px Tajarib'),document.fonts.load('500 20px Tajarib')]).then(go,go);else go();
 }
 function drawSchedImage(){
   var canvas=document.getElementById('sched-canvas');if(!canvas){toast('عنصر الرسم غير موجود',true);return;}
@@ -4404,7 +4407,7 @@ function drawSchedImage(){
   locs.forEach(function(l){add('الفسحة',l,[tn(dd[l]||'')].filter(Boolean),'#0da9a6');});
   add('إشراف الصلاة','المصلى',list('_salah'),'#c1b489');
   var rn=rosterMonawabaName(day);add('المناوبة','نهاية الدوام',rn?[rn]:list('_monawaba'),'#3d7eb9');
-  var NAVY='#15445a',SBLUE='#3078a6',SCYAN='#218caa',SKY='#69cee3',IND='#351375',GRAY='#c2c1c1',BG='#efeff1',ROW='#fafbfb',F='Tajawal, Arial, sans-serif';
+  var NAVY='#15445a',SBLUE='#3078a6',SCYAN='#218caa',SKY='#69cee3',IND='#351375',GRAY='#c2c1c1',BG='#efeff1',ROW='#fafbfb',F='Tajarib, Tajawal, Arial, sans-serif';
   var W=1200,P=48,RH=70,TH=56,H=150+118+26+96+30+TH+rows.length*RH+40+64;
   canvas.width=W;canvas.height=H;canvas.style.display='block';
   var c=canvas.getContext('2d');c.direction='rtl';c.textAlign='center';
