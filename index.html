@@ -2181,7 +2181,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-wide';
+var APP_VER='2026-09-28-admrep';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2265,7 +2265,35 @@ function dsTimeline(dow,n,school){var el=document.getElementById('ds-tl'),tt=doc
     return '<div class="ds-seg ds-'+st+(brk?' ds-brk':'')+'" style="flex:'+(x.b-x.a)+'" title="'+rqHM(x.a)+'–'+rqHM(x.b)+'"><i style="width:'+f+'%"></i><span>'+x.l+'</span></div>';}).join('');
   var pct=Math.max(0,Math.min(100,Math.round((n-A)/T*100)));
   tt.textContent=n<A?'يبدأ الدوام '+rqHM(A):n>=B?'انتهى الدوام · '+rqHM(A)+'–'+rqHM(B):'مضى '+pct+'٪ من اليوم · ينتهي الدوام '+rqHM(B);}
+function dsPrintAdm(){
+  var iso=rqIsoToday(),dow=rqDateObj(iso).getDay();if(dow>4){toast('لا دوام اليوم',true);return;}
+  rqLoadTT();var e=rqEsc,all=rqRoundsGet(),marks=all[iso]||{},by=(rqRBy()[iso])||{},L=rqList();
+  var stat=function(x){var mk=all[x]||{},c={n:0,ok:0,abs:0,late:0,exc:0};Object.keys(mk).forEach(function(k){c.n++;if(c[mk[k]]!==undefined)c[mk[k]]++;});
+    c.full=L.filter(function(r){return r.date===x&&r.type==='absent'&&r.status!=='cancelled';}).length;c.cases=L.filter(function(r){return r.date===x&&r.status!=='cancelled';}).length;return c;};
+  var T=stat(iso),days=[],d=rqDateObj(iso);d.setDate(d.getDate()-1);while(days.length<5){if(d.getDay()<=4)days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));d.setDate(d.getDate()-1);}
+  var P=days.map(stat),avg=function(k){return (P.reduce(function(a,c){return a+c[k];},0)/P.length).toFixed(1).replace('.0','');};
+  var tot=0,dn=0;dsSlots(dow).forEach(function(x){if(x.p==='s'||rqPerState(iso,x.p)==='future')return;var p=x.p,keys;
+    if(p<0)keys=rqDutyRows(iso).filter(function(r){return r.group===(p===-1?'الطابور الصباحي':'إشراف الفسحة');}).map(function(r){return 'd_'+r.k;});
+    else keys=Object.keys(rqClassMap(dow,p).map).map(function(c){return 'p'+p+'_'+rqKey(c);});tot+=keys.length;dn+=keys.filter(function(k){return marks[k];}).length;});
+  var cov=tot?Math.round(dn/tot*100):0,disc=T.n?Math.round(T.ok/T.n*100):0;
+  var strip='<div class="st"><div><span>تغطية الجولات حتى الآن</span><b>'+cov+'٪</b></div><div><span>نسبة الانضباط في الرصد</span><b>'+disc+'٪</b></div><div><span>غياب يوم كامل</span><b>'+T.full+'</b></div><div><span>حالات لم يُتخذ فيها قرار</span><b>'+L.filter(function(r){return r.status!=='decided'&&r.status!=='archived'&&r.status!=='cancelled';}).length+'</b></div></div>';
+  var row=function(n,k){return '<tr><td>'+n+'</td><td><b>'+T[k]+'</b></td><td>'+avg(k)+'</td></tr>';};
+  var body='<h3>مؤشرات اليوم مقارنةً بمتوسط آخر ٥ أيام دراسية</h3><table><thead><tr><th>المؤشر</th><th>اليوم</th><th>المتوسط</th></tr></thead><tbody>'+row('عمليات الرصد','n')+row('غائب عن حصة','abs')+row('متأخر','late')+row('مستأذن','exc')+row('غياب يوم كامل','full')+row('الحالات المرصودة','cases')+'</tbody></table>';
+  var ab=L.filter(function(r){return r.date===iso&&r.type==='absent'&&r.status!=='cancelled';});
+  body+='<h3>الغياب وتغطية الانتظار</h3>'+(ab.length?'<table><thead><tr><th>المعلم</th><th>حالة الغياب</th><th>الانتظار</th></tr></thead><tbody>'+ab.map(function(r){return '<tr><td>'+e(rqTName(r.tid))+'</td><td>'+(r.absState?RQ_ABS[r.absState]:'لم يُحدَّد')+'</td><td>'+(r.coveredBy?e(r.coveredBy):'<b>غير مغطّى</b>')+'</td></tr>';}).join('')+'</tbody></table>':'<p>لا يوجد غياب يوم كامل اليوم.</p>');
+  var fl=[['new','مرصودة'],['sent','أُرسلت المساءلة'],['replied','بانتظار قرار الوكيل'],['decided','صدر القرار']];
+  body+='<h3>مسار الحالات (إجمالي السجل)</h3><table><thead><tr>'+fl.map(function(f){return '<th>'+f[1]+'</th>';}).join('')+'</tr></thead><tbody><tr>'+fl.map(function(f){return '<td><b>'+L.filter(function(r){return r.status===f[0];}).length+'</b></td>';}).join('')+'</tr></tbody></table>';
+  var dec=L.filter(function(r){return r.decidedAt&&r.decidedAt.slice(0,10)===iso;});
+  if(dec.length)body+='<p>قرارات الوكيل اليوم: '+dec.length+' (قُبل '+dec.filter(function(r){return r.decision==='accept';}).length+'، رُفض '+dec.filter(function(r){return r.decision==='reject';}).length+').</p>';
+  var hp=rqHijriParts(iso),mk=hp.y+'-'+String(hp.m).padStart(2,'0'),top=rqReportRows(mk).map(function(o){o.t=o.absent+o.late+o.early+o.cls+o.duty;return o;}).filter(function(o){return o.t;}).sort(function(a,b){return b.t-a.t;}).slice(0,5);
+  body+='<h3>الأكثر حالات في '+rqMonthLabel(mk)+'</h3>'+(top.length?'<table><thead><tr><th>المعلم</th><th>غياب</th><th>تأخر</th><th>حصص</th><th>إشراف</th><th>الإجمالي</th></tr></thead><tbody>'+top.map(function(o){return '<tr><td>'+e(o.name)+'</td><td>'+o.absent+'</td><td>'+o.late+'</td><td>'+o.cls+'</td><td>'+o.duty+'</td><td><b>'+o.t+'</b></td></tr>';}).join('')+'</tbody></table>':'<p>لا حالات هذا الشهر.</p>');
+  var who={};Object.keys(by).forEach(function(k){var b=by[k];if(b&&b.n&&marks[k])who[b.n]=(who[b.n]||0)+1;});
+  body+='<h3>فريق الجولات اليوم</h3><p>'+(Object.keys(who).length?Object.keys(who).map(function(n){return e(n)+': '+who[n]+' رصد';}).join(' · '):'لم تُنفَّذ جولات بعد.')+'</p>';
+  body+='<div class="sg"><div>مدير المدرسة:</div><div>التوقيع:</div></div>';
+  rqOpenDoc(rqDoc('الملخص التنفيذي اليومي',rqDay(iso)+' '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م · تقرير مدير المدرسة',strip,body).split('وكالة شؤون المعلمين').join('إدارة المدرسة'));
+}
 function dsPrintDay(){
+  if(currentRole==='admin')return dsPrintAdm();
   var iso=rqIsoToday(),dow=rqDateObj(iso).getDay();if(dow>4){toast('لا دوام اليوم',true);return;}
   rqLoadTT();var marks=(rqRoundsGet()[iso])||{},by=(rqRBy()[iso])||{},e=rqEsc;
   var cnt={ok:0,abs:0,late:0,exc:0};Object.keys(marks).forEach(function(k){if(cnt[marks[k]]!==undefined)cnt[marks[k]]++;});
