@@ -480,6 +480,7 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
 .app-upd{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10001;background:#07a869;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
 .nb-merged{display:none!important}
+body.adm-only .nav .nb:not(#nav-today):not(.nb-role),body.adm-only .nb-sec,body.adm-only .hub{display:none!important}
 body.dash-ro .tod-tpl,body.dash-ro .tod-tpl~.card,body.dash-ro .ds-go,body.dash-ro .ds-cvr .bs{display:none!important}
 body.dash-ro .ds-slot,body.dash-ro .ds-fl{pointer-events:none;cursor:default}
 body.dash-ro #ds-cov-sub{display:none}
@@ -837,7 +838,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <div class="nav-backdrop" id="nav-backdrop" onclick="toggleSideNav(false)"></div>
 <nav class="nav" id="side-nav" aria-label="القائمة الرئيسية">
   <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button type="button" class="nav-user-sw" onclick="toggleSideNav(false);usOpen(currentRole)">تبديل المستخدم</button><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
-  <button class="nb on" onclick="nav('today',this)"><i>📅</i>اليوم</button>
+  <button class="nb on" id="nav-today" onclick="nav('today',this)"><i>📅</i>اليوم</button>
   <button class="nb nb-merged" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص</button>
   <div class="nb-sec">التواصل</div>
   <button class="nb" id="nav-msg" onclick="nav('main',this)"><i>📨</i>الرسائل <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
@@ -1465,7 +1466,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div class="hub" data-hub="work"></div>
   <div class="hdr">
     <div class="hdr-i hdr-follow"><svg class="ico-follow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.8A1.3 1.3 0 0 1 10.3 2.5h3.4A1.3 1.3 0 0 1 15 3.8v.7"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></div>
-    <div><h1>المتابعة اليومية</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار المدير ← الأرشفة</p></div>
+    <div><h1>المتابعة اليومية</h1><p>رصد الحالة ← المساءلة ← إفادة المعلم ← قرار الوكيل ← الأرشفة</p></div>
   </div>
 
   <div class="rq-tabs">
@@ -2058,6 +2059,7 @@ function selectRole(role,signed){
   save();
   renderToday(); renderMTpls(); renderTC(); renderTpls();
   renderPrivBadge(); showAbsNav(); updateChipsForRole();
+  if(role==='admin'){nav('today');}
   if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}else{syncTopbar(document.querySelector('.nav .nb.on'));}
   if(typeof fbListen !== 'undefined') fbListen();
   try{if(typeof db!=='undefined'&&rqUser())db.ref(FB_SCHOOL+'/users/'+role+'/'+rqKey(rqUser())).set({name:rqUser(),last:new Date().toISOString()});}catch(e){}
@@ -2176,7 +2178,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-admdash';
+var APP_VER='2026-09-28-admonly';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2229,7 +2231,7 @@ function renderDash(){
   // duty today
   var dr=school?rqDutyRows(iso):[],grp={};dr.forEach(function(r){(grp[r.group]=grp[r.group]||[]).push(r);});
   document.getElementById('ds-duty').innerHTML=Object.keys(grp).length?Object.keys(grp).map(function(g){return '<div class="ds-dg"><span>'+g.replace('إشراف ','').replace(' لنهاية الدوام','')+'</span><div>'+grp[g].map(function(r){var m=marks['d_'+r.k];return '<em class="'+(m?'ds-m-'+m:'')+'">'+rqEsc(rqTName(r.tid))+(r.loc?' <small>('+rqEsc(r.loc)+')</small>':'')+'</em>';}).join('')+'</div></div>';}).join(''):'<div class="ds-empty">لا مهام إشرافية مسجلة لليوم</div>';
-  var L=rqList(),fl=[['new','مرصودة','rq-p-new'],['sent','أُرسلت المساءلة','rq-p-sent'],['replied','بانتظار قرار المدير','rq-p-replied'],['decided','صدر القرار','rq-p-decided']];
+  var L=rqList(),fl=[['new','مرصودة','rq-p-new'],['sent','أُرسلت المساءلة','rq-p-sent'],['replied','بانتظار القرار','rq-p-replied'],['decided','صدر القرار','rq-p-decided']];
   document.getElementById('ds-flow').innerHTML=fl.map(function(f){var n=L.filter(function(r){return r.status===f[0];}).length;return '<button class="ds-fl" onclick="nav(\'raqaba\',document.getElementById(\'nav-raqaba\'));rqTab(\'log\');var s=document.getElementById(\'rq-f-st\');if(s){s.value=\''+f[0]+'\';rqRenderLog();}"><b>'+n+'</b><span class="rq-pill '+f[2]+'">'+f[1]+'</span></button>';}).join('');
   document.body.classList.toggle('dash-ro',currentRole==='admin');
   var adm=document.getElementById('ds-adm');adm.style.display=dsAdm()?'':'none';
@@ -3139,6 +3141,7 @@ function hubRender(id){document.querySelectorAll('.hub').forEach(function(h){var
     return '<button class="'+(tid===id?'on':'')+'" onclick="nav(\''+tid+'\')">'+t[1]+'</button>';}).join('');
   h.style.display=h.querySelectorAll('button').length>1?'':'none';});}
 function nav(id,btn){
+  if(currentRole==='admin'&&id!=='today')id='today',btn=null;
   if(NAV_GRP[id]&&(!btn||btn.classList.contains('nb-merged')))btn=document.getElementById(NAV_GRP[id]);
   if(!btn)btn=document.querySelector('.nav .nb[onclick*="nav(\''+id+'\'"]');
   toggleSideNav(false);syncTopbar(btn);
@@ -3180,6 +3183,7 @@ function showAbsNav(){
     else if(b.dataset.aahide==='1'){b.style.display='';delete b.dataset.aahide;}
   });
   document.body.classList.toggle('rq-only',currentRole==='admin_assistant');
+  document.body.classList.toggle('adm-only',currentRole==='admin');
 }
 function updateChipsForRole(){
   var role=currentRole||'';
@@ -3616,7 +3620,7 @@ function applySchoolData1448(){
 var RQ_KEY='sd_raqaba_v1';
 var _rqCache=null, _rqTT=null;
 var RQ_TYPES={absent:'غياب عن العمل',late:'تأخر عن بداية الدوام',early:'انصراف قبل نهاية الدوام',class:'عدم حضور حصة',classlate:'تأخر عن حصة',duty:'عدم تنفيذ مهمة إشرافية'};
-var RQ_ST={new:'مرصودة',sent:'أُرسلت المساءلة',replied:'وردت الإفادة',decided:'صدر القرار',archived:'مؤرشفة',cancelled:'ملغاة'};
+var RQ_ST={new:'مرصودة',sent:'أُرسلت المساءلة',replied:'وردت الإفادة — بانتظار القرار',decided:'صدر القرار',archived:'مؤرشفة',cancelled:'ملغاة'};
 var RQ_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 var RQ_PER=['الأولى','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة'];
 function rqGet(){if(_rqCache!==null)return _rqCache;try{var d=localStorage.getItem(RQ_KEY);_rqCache=d?JSON.parse(d):{};}catch(e){_rqCache={};}return _rqCache;}
@@ -3734,12 +3738,12 @@ function rqAct(id,act){
     window.open(ph?'https://wa.me/'+ph+'?text='+encodeURIComponent(rqMsg(r)):'https://wa.me/?text='+encodeURIComponent(rqMsg(r)),'_blank');
     if(r.status!=='new'){rqRenderLog();return;}r.status='sent';r.sentAt=now;label='إرسال المساءلة';}
   else if(act==='reply'){var v=document.getElementById('rq-rep-'+id).value.trim();if(!v){toast('اكتب إفادة المعلم',true);return;}r.reply=v;r.replyAt=now;r.status='replied';label='حفظ الإفادة';}
-  else if(act==='accept'||act==='reject'){r.decision=act;r.decisionNote=(document.getElementById('rq-dn-'+id)||{}).value||'';r.decidedAt=now;r.status='decided';label='قرار المدير';}
+  else if(act==='accept'||act==='reject'){r.decision=act;r.decisionNote=(document.getElementById('rq-dn-'+id)||{}).value||'';r.decidedAt=now;r.status='decided';label='قرار الوكيل';}
   else if(act==='archive'){r.status='archived';r.archivedAt=now;label='الأرشفة';}
   else if(act==='reopen'){r.status=rqPrevStatus(r);label='إعادة الفتح';}
   else if(act==='step'){
     if(r.status==='archived'){r.status='decided';delete r.archivedAt;label='التراجع عن الأرشفة';}
-    else if(r.status==='decided'){delete r.decision;delete r.decisionNote;delete r.decidedAt;r.status='replied';label='التراجع عن قرار المدير';}
+    else if(r.status==='decided'){delete r.decision;delete r.decisionNote;delete r.decidedAt;r.status='replied';label='التراجع عن القرار';}
     else if(r.status==='replied'){delete r.reply;delete r.replyAt;r.status='sent';label='التراجع عن الإفادة';}
     else if(r.status==='sent'){delete r.sentAt;r.status='new';label='التراجع عن إرسال المساءلة';}
     else return;}
@@ -3764,7 +3768,7 @@ function rqUpdateCount(){var n=rqList().filter(function(r){return r.status!=='ar
 function rqRenderLog(){
   var el=document.getElementById('rq-list');if(!el)return;
   var q=(document.getElementById('rq-f-q').value||'').trim(), st=document.getElementById('rq-f-st').value;
-  var isAdmin=currentRole==='admin'||currentRole==='developer';
+  var isAdmin=currentRole==='teacher_affairs'||currentRole==='developer';
   var rows=rqList().filter(function(r){return (!q||(r.name||'').indexOf(q)>-1||rqTName(r.tid).indexOf(q)>-1)&&(!st||(st==='open'?(r.status!=='archived'&&r.status!=='cancelled'):st?r.status===st:r.status!=='cancelled'));});
   if(!rows.length){el.innerHTML='<div class="card"><div class="empty">لا توجد حالات مطابقة</div></div>';return;}
   el.innerHTML=rows.map(function(r){
@@ -3775,7 +3779,7 @@ function rqRenderLog(){
     h+=rqAbsHTML(r);
     h+=rqCoverHTML(r);
     if(r.reply)h+='<div class="rq-box"><b>إفادة المعلم:</b> '+rqEsc(r.reply)+'</div>';
-    if(r.decision)h+='<div class="rq-box rq-dec-'+r.decision+'"><b>قرار المدير:</b> '+(r.decision==='accept'?'يُقبل العذر':'لا يُقبل العذر، ويُتخذ الإجراء النظامي')+(r.decisionNote?' — '+rqEsc(r.decisionNote):'')+'</div>';
+    if(r.decision)h+='<div class="rq-box rq-dec-'+r.decision+'"><b>قرار الوكيل:</b> '+(r.decision==='accept'?'يُقبل العذر':'لا يُقبل العذر، ويُتخذ الإجراء النظامي')+(r.decisionNote?' — '+rqEsc(r.decisionNote):'')+'</div>';
     h+='<div class="rq-acts">';
     if(r.status==='new'||r.status==='sent')h+='<button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'send\')">'+(r.status==='new'?'📲 إرسال المساءلة':'📲 إعادة الإرسال')+'</button>';
     h+='<button class="bs rq-b" onclick="rqAct(\''+r.id+'\',\'print\')">🖨️ النموذج</button>';
@@ -3788,10 +3792,10 @@ function rqRenderLog(){
     if(r.status==='new'||r.status==='cancelled')h+='<button class="bs b-dl" id="rq-del-'+r.id+'" onclick="rqAct(\''+r.id+'\',\'del\')">حذف</button>';
     h+='</div>';
     if(r.status==='cancelled')h+='<div class="rq-wait">أُلغيت الحالة'+(r.cancelledBy?' بواسطة '+(RQ_BY[r.cancelledBy]||r.cancelledBy):'')+'، ولا تدخل في التقارير.</div>';
-    if(r.status==='sent')h+='<div class="rq-form"><label for="rq-rep-'+r.id+'">إفادة المعلم كما وردت</label><textarea id="rq-rep-'+r.id+'" style="min-height:60px"></textarea><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'reply\')">حفظ الإفادة وإحالتها للمدير</button></div>';
+    if(r.status==='sent')h+='<div class="rq-form"><label for="rq-rep-'+r.id+'">إفادة المعلم كما وردت</label><textarea id="rq-rep-'+r.id+'" style="min-height:60px"></textarea><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'reply\')">حفظ الإفادة</button></div>';
     if(r.status==='replied'){
-      if(isAdmin)h+='<div class="rq-form"><label for="rq-dn-'+r.id+'">ملاحظة المدير (اختياري)</label><input type="text" id="rq-dn-'+r.id+'"><div class="rq-acts"><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'accept\')">✔ يُقبل العذر</button><button class="bs b-dl" onclick="rqAct(\''+r.id+'\',\'reject\')">✖ لا يُقبل العذر</button></div></div>';
-      else h+='<div class="rq-wait">بانتظار قرار مدير المدرسة</div>';
+      if(isAdmin)h+='<div class="rq-form"><label for="rq-dn-'+r.id+'">ملاحظة القرار (اختياري)</label><input type="text" id="rq-dn-'+r.id+'"><div class="rq-acts"><button class="bs rq-b-main" onclick="rqAct(\''+r.id+'\',\'accept\')">✔ يُقبل العذر</button><button class="bs b-dl" onclick="rqAct(\''+r.id+'\',\'reject\')">✖ لا يُقبل العذر</button></div></div>';
+      else h+='<div class="rq-wait">بانتظار قرار وكيل شؤون المعلمين</div>';
     }
     return h+'</div>';
   }).join('');
@@ -3850,8 +3854,8 @@ function rqPrintForm(r){
     '<div class="sg"><div>وكيل شؤون المعلمين: '+rqEsc((getSchoolSettings()||{}).sender||'')+'</div><div>التوقيع:</div></div>'+
     '<h3>إفادة المعلم</h3>'+(r.reply?'<p>'+rqEsc(r.reply)+'</p>':'<div class="ln"></div><div class="ln"></div><div class="ln"></div>')+
     '<div class="sg"><div>الاسم: '+rqEsc(t?t.name:r.name)+'</div><div>التوقيع:                التاريخ:</div></div>'+
-    '<h3>رأي مدير المدرسة</h3><p>'+box(r.decision==='accept')+'يُقبل عذره.</p><p>'+box(r.decision==='reject')+'لا يُقبل عذره، ويُتخذ الإجراء النظامي.</p>'+(r.decisionNote?'<p>ملاحظة: '+rqEsc(r.decisionNote)+'</p>':'')+
-    '<div class="sg"><div>مدير المدرسة:</div><div>التوقيع:                التاريخ:</div></div>';
+    '<h3>قرار وكيل شؤون المعلمين</h3><p>'+box(r.decision==='accept')+'يُقبل عذره.</p><p>'+box(r.decision==='reject')+'لا يُقبل عذره، ويُتخذ الإجراء النظامي.</p>'+(r.decisionNote?'<p>ملاحظة: '+rqEsc(r.decisionNote)+'</p>':'')+
+    '<div class="sg"><div>وكيل شؤون المعلمين:</div><div>التوقيع:                التاريخ:</div></div>';
   rqOpenDoc(rqDoc('نموذج مساءلة','رقم الحالة: '+r.id.toUpperCase()+' · '+RQ_TYPES[r.type],strip,body));
 }
 function rqPrintReport(){
