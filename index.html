@@ -480,7 +480,9 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
 .app-upd{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10001;background:#07a869;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
 .nb-merged{display:none!important}
-body.adm-only .nav .nb:not(#nav-today):not(.nb-role),body.adm-only .nb-sec,body.adm-only .hub{display:none!important}
+.nb-adm{display:none!important}body.adm-only .nb-adm{display:flex!important}
+.ds-files{display:none}body.adm-only .ds-files{display:inline-flex}
+body.adm-only .nav .nb:not(#nav-today):not(#nav-files):not(.nb-role),body.adm-only .nb-sec,body.adm-only .hub{display:none!important}
 body.dash-ro .tod-tpl,body.dash-ro .tod-tpl~.card,body.dash-ro .ds-go,body.dash-ro .ds-cvr .bs{display:none!important}
 body.dash-ro .ds-slot,body.dash-ro .ds-fl{pointer-events:none;cursor:default}
 body.dash-ro #ds-cov-sub{display:none}
@@ -839,6 +841,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <nav class="nav" id="side-nav" aria-label="القائمة الرئيسية">
   <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button type="button" class="nav-user-sw" onclick="toggleSideNav(false);usOpen(currentRole)">تبديل المستخدم</button><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
   <button class="nb on" id="nav-today" onclick="nav('today',this)"><i>📅</i>اليوم</button>
+  <button class="nb nb-adm" id="nav-files" onclick="location.href='teachers/'"><i>🗂️</i>ملفات المعلمين</button>
   <button class="nb nb-merged" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص</button>
   <div class="nb-sec">التواصل</div>
   <button class="nb" id="nav-msg" onclick="nav('main',this)"><i>📨</i>الرسائل <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
@@ -862,7 +865,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <div class="ds-hero-top"><div><div class="ds-hi" id="ds-hi">صباح الخير</div><div class="ds-date" id="ds-date">—</div></div><div class="ds-clock" id="ds-clock">--:--</div></div>
       <div class="ds-now"><div class="ds-now-l"><span class="ds-live"></span><b id="ds-now">—</b><small id="ds-now-t"></small></div><button class="ds-go" id="ds-go" onclick="dsOpenNow()">فتح الجولة ←</button></div>
       <div class="ds-tl" id="ds-tl"></div>
-      <div class="ds-tl-f"><span id="ds-tl-t"></span><button class="ds-pr" onclick="dsPrintDay()">🖨️ التقرير اليومي</button></div>
+      <div class="ds-tl-f"><span id="ds-tl-t"></span><span style="display:flex;gap:6px"><button class="ds-pr ds-files" onclick="location.href='teachers/'">🗂️ ملفات المعلمين</button><button class="ds-pr" onclick="dsPrintDay()">🖨️ التقرير اليومي</button></span></div>
     </div>
     <div class="ds-kpis" id="ds-kpis"></div>
     <div class="card ds-card ds-alert" id="ds-abs-card" style="display:none"><div class="ch">🚨 غياب اليوم وحصص الانتظار</div><div id="ds-abs"></div></div>
@@ -2178,7 +2181,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-09-28-admonly';
+var APP_VER='2026-09-28-admfiles';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
