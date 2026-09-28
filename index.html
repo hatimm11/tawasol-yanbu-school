@@ -427,6 +427,35 @@ body.rq-only .rq-rooms-card{display:none}
 .sd-saved{text-align:center;font-size:11.5px;color:#07a869;font-weight:700;margin:-2px 0 12px}
 .sd-set summary{cursor:pointer;list-style:none;margin-bottom:0}.sd-set[open] summary{margin-bottom:12px}
 .sd-sub{font-size:13px;font-weight:800;margin:4px 0 8px}.sd-sub small{font-size:11px;font-weight:500;color:#218caa}
+.ds-hero{background:linear-gradient(135deg,#15445a,#3078a6);color:#fff;border-radius:16px;padding:16px 18px 14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(21,68,90,.18)}
+.ds-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ds-hi{font-size:19px;font-weight:900;line-height:1.4}.ds-date{font-size:12px;opacity:.8;margin-top:2px}
+.ds-clock{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;letter-spacing:.5px;color:#69cee3}
+.ds-now{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px}
+.ds-now-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ds-now-l b{font-size:15px}.ds-now-l small{font-size:12px;opacity:.8}
+.ds-live{width:9px;height:9px;border-radius:50%;background:#07a869;box-shadow:0 0 0 0 rgba(7,168,105,.7);animation:dsp 1.6s infinite}
+@keyframes dsp{70%{box-shadow:0 0 0 8px rgba(7,168,105,0)}100%{box-shadow:0 0 0 0 rgba(7,168,105,0)}}
+.ds-go{border:0;background:#07a869;color:#fff;border-radius:999px;padding:7px 14px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.ds-pbar{height:5px;background:rgba(255,255,255,.18);border-radius:9px;margin-top:10px;overflow:hidden}.ds-pbar i{display:block;height:100%;background:#69cee3;border-radius:9px;transition:width .6s}
+.ds-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.ds-kpi{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;border:1px solid #efeff1;border-top:3px solid #c2c1c1}
+.ds-kpi b{display:block;font-size:24px;font-weight:900;line-height:1.3;font-variant-numeric:tabular-nums}.ds-kpi span{font-size:11px;color:#3078a6;font-weight:600}
+.ds-navy{border-top-color:#15445a}.ds-green{border-top-color:#07a869}.ds-green b{color:#07a869}.ds-red{border-top-color:#d92d20}.ds-red b{color:#d92d20}.ds-sand{border-top-color:#c1b489}.ds-sand b{color:#8a7440}.ds-blue{border-top-color:#3d7eb9}.ds-blue b{color:#3d7eb9}.ds-ind{border-top-color:#7258a4}.ds-ind b{color:#351375}
+.ds-sub{font-size:11px;font-weight:500;color:#218caa;margin-inline-start:auto}
+.ds-cov{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.ds-slot{border:1.5px solid #efeff1;background:#fafbfb;border-radius:10px;padding:7px 4px;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;color:#15445a}
+.ds-slot b{font-size:14px;font-weight:900}.ds-slot span{font-size:11px;font-variant-numeric:tabular-nums}
+.ds-slot.ds-cur{border-color:#07a869;background:rgba(7,168,105,.1);box-shadow:inset 0 -3px 0 #07a869}
+.ds-slot.ds-full{border-color:#07a869;background:#07a869;color:#fff}.ds-slot.ds-part{border-color:#c1b489;background:rgba(193,180,137,.2)}.ds-slot.ds-miss{border-color:rgba(217,45,32,.4);color:#d92d20}.ds-slot.ds-fut{opacity:.55}
+.ds-fi{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #efeff1}.ds-fi:last-child{border-bottom:0}
+.ds-ft{font-size:11.5px;color:#3078a6;font-weight:700;font-variant-numeric:tabular-nums;min-width:38px}
+.ds-fx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.45}.ds-fx b{font-size:13px}.ds-fx small{font-size:11px;color:#3078a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-fx em{font-style:normal;font-size:11px;font-weight:800;margin-inline-start:4px}
+.ds-m-ok{color:#07a869}.ds-m-abs{color:#d92d20}.ds-m-late{color:#8a7440}.ds-m-exc{color:#3d7eb9}
+.ds-empty{font-size:12.5px;color:#9aa39d;padding:6px 2px}
+.ds-dg{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #efeff1;align-items:baseline}.ds-dg:last-child{border-bottom:0}
+.ds-dg>span{min-width:70px;font-size:12px;font-weight:800;color:#218caa}.ds-dg div{flex:1;display:flex;flex-wrap:wrap;gap:4px 10px}
+.ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
 .nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
 .rq-user-l{white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}.rq-user-v{flex:1;font-weight:800;font-size:14px;color:#15445a}
@@ -636,6 +665,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     db.ref(FB_SCHOOL+'/roundsBy').on('value', function(snap){
       _rqRBy = snap.val() || {};
       try{localStorage.setItem('sd_rounds_by_v1', JSON.stringify(_rqRBy));}catch(e){}
+      if(typeof renderDash==='function') try{renderDash();}catch(e){}
       var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function') rqRenderCls();
       var d=document.getElementById('rq-sup'); if(d && d.style.display!=='none' && typeof rqRenderSup==='function') rqRenderSup();
     });
@@ -645,6 +675,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       try{localStorage.setItem('sd_rounds_v1', JSON.stringify(_rqRounds));}catch(e){}
       var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function') rqRenderCls();
       var d=document.getElementById('rq-sup'); if(d && d.style.display!=='none' && typeof rqRenderSup==='function') rqRenderSup();
+      if(typeof renderDash==='function') try{renderDash();}catch(e){}
     });
 
     // Raqaba records
@@ -654,6 +685,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       try{localStorage.setItem('sd_raqaba_v1', JSON.stringify(data));}catch(e){}
       if(typeof rqUpdateCount==='function') rqUpdateCount();
       var lg=document.getElementById('rq-log'); if(lg && lg.style.display!=='none' && typeof rqRenderLog==='function') rqRenderLog();
+      if(typeof renderDash==='function') try{renderDash();}catch(e){}
     });
 
     // Counselor records
@@ -774,6 +806,17 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 
 <!-- TODAY -->
 <div id="pg-today" class="pg on">
+  <div id="dash" style="display:none">
+    <div class="ds-hero">
+      <div class="ds-hero-top"><div><div class="ds-hi" id="ds-hi">صباح الخير</div><div class="ds-date" id="ds-date">—</div></div><div class="ds-clock" id="ds-clock">--:--</div></div>
+      <div class="ds-now"><div class="ds-now-l"><span class="ds-live"></span><b id="ds-now">—</b><small id="ds-now-t"></small></div><button class="ds-go" id="ds-go" onclick="dsOpenNow()">فتح الجولة ←</button></div>
+      <div class="ds-pbar"><i id="ds-pbar"></i></div>
+    </div>
+    <div class="ds-kpis" id="ds-kpis"></div>
+    <div class="card ds-card"><div class="ch">🧭 تغطية الجولات اليوم <span class="ds-sub" id="ds-cov-sub"></span></div><div class="ds-cov" id="ds-cov"></div></div>
+    <div class="card ds-card"><div class="ch">⚡ آخر الرصد <span class="ds-sub">مباشر من المساعد الإداري</span></div><div id="ds-feed"></div></div>
+    <div class="card ds-card"><div class="ch">👥 مناوبو اليوم</div><div id="ds-duty"></div></div>
+  </div>
   <div class="hdr"><div class="hdr-i">📅</div><div><h1 id="tod-title">قوالب اليوم</h1><p id="tod-sub">تتبع ما أُرسل وما تبقى</p></div></div>
   <div class="card">
     <div class="ch">📊 تقدم الإرسال</div>
@@ -2061,8 +2104,61 @@ function todayTpls(){
 }
 function toggleSent(id){setSent(id,getSent().indexOf(id)===-1);renderToday();}
 
+// ── لوحة اليوم (مباشرة من رصد الجولات) ──
+function dsCan(){return currentRole==='teacher_affairs'||currentRole==='admin'||currentRole==='developer';}
+function dsPerName(p){return p===-1?'الطابور الصباحي':p===-2?'الفسحة':'الحصة '+RQ_PER[p];}
+function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
+  if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
+  if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
+  return {t:'',w:k};}
+var _dsTimer=null;
+function renderDash(){
+  var box=document.getElementById('dash');if(!box)return;var on=dsCan();box.style.display=on?'block':'none';if(!on)return;
+  try{rqLoadTT();}catch(e){}
+  var iso=rqIsoToday(),now=new Date(),dow=now.getDay(),n=rqNowMin(),un=rqUser();
+  var h=now.getHours();document.getElementById('ds-hi').textContent=(h<12?'صباح الخير':'مساء الخير')+(un?'، '+un:'');
+  document.getElementById('ds-date').textContent=rqDay(iso)+' · '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م';
+  document.getElementById('ds-clock').textContent=rqHM(n);
+  var school=dow<=4,cur=null,ks=[-1,0,1,2,-2,3,4,5,6];
+  if(dow===2)ks=ks.filter(function(k){return k!==6;});
+  ks.forEach(function(k){var w=RQ_TIME[k];if(n>=w[0]&&n<w[1])cur=k;});
+  var nx=ks.find(function(k){return RQ_TIME[k][0]>n;});
+  var nowEl=document.getElementById('ds-now'),tEl=document.getElementById('ds-now-t'),bar=document.getElementById('ds-pbar'),go=document.getElementById('ds-go');
+  if(!school){nowEl.textContent='لا دوام اليوم';tEl.textContent='';bar.style.width='0';go.style.display='none';}
+  else if(cur!==null){var w=RQ_TIME[cur];nowEl.textContent='الآن: '+dsPerName(cur);tEl.textContent='حتى '+rqHM(w[1])+' · متبقٍ '+(w[1]-n)+' د';bar.style.width=Math.round((n-w[0])/(w[1]-w[0])*100)+'%';go.style.display='';_dsCur=cur;}
+  else if(nx!==undefined){nowEl.textContent='التالي: '+dsPerName(nx);tEl.textContent='يبدأ '+rqHM(RQ_TIME[nx][0])+(n<RQ_TIME[nx][0]?' · بعد '+(RQ_TIME[nx][0]-n)+' د':'');bar.style.width='0';go.style.display='none';}
+  else{nowEl.textContent='انتهى اليوم الدراسي';tEl.textContent='';bar.style.width='100%';go.style.display='none';}
+  // KPIs from rounds + cases
+  var marks=(rqRoundsGet()[iso])||{},by=(rqRBy()[iso])||{},cnt={ok:0,abs:0,late:0,exc:0};
+  Object.keys(marks).forEach(function(k){if(cnt[marks[k]]!==undefined)cnt[marks[k]]++;});
+  var total=Object.keys(marks).length,open=rqList().filter(function(r){return r.status==='new';}).length;
+  var abs=rqList().filter(function(r){return r.date===iso&&r.type==='absent'&&r.status!=='cancelled';}).length;
+  var K=[['عمليات الرصد',total,'navy'],['حاضر',cnt.ok,'green'],['غائب',cnt.abs,'red'],['متأخر',cnt.late,'sand'],['مستأذن',cnt.exc,'blue'],['حالات تنتظر المساءلة',open,'ind']];
+  if(abs)K.splice(3,0,['غياب يوم كامل',abs,'red']);
+  document.getElementById('ds-kpis').innerHTML=K.map(function(k){return '<div class="ds-kpi ds-'+k[2]+'"><b>'+k[1]+'</b><span>'+k[0]+'</span></div>';}).join('');
+  // coverage per slot
+  var cov=[];if(school)ks.forEach(function(p){var tot,dn;
+    if(p<0){var rows=rqDutyRows(iso).filter(function(r){return r.group===(p===-1?'الطابور الصباحي':'إشراف الفسحة');});tot=rows.length;dn=rows.filter(function(r){return marks['d_'+r.k];}).length;}
+    else{var mp=rqClassMap(dow,p).map;var cs=Object.keys(mp);tot=cs.length;dn=cs.filter(function(c){return marks['p'+p+'_'+rqKey(c)];}).length;}
+    var st=rqPerState(iso,p),cls=st==='now'?'cur':st==='future'?'fut':(tot&&dn>=tot?'full':dn?'part':'miss');
+    cov.push('<button class="ds-slot ds-'+cls+'" onclick="dsOpen('+p+')"><b>'+(p===-1?'الطابور':p===-2?'الفسحة':(p+1))+'</b><span>'+(st==='future'?rqHM(RQ_TIME[p][0]):dn+'/'+tot)+'</span></button>');});
+  document.getElementById('ds-cov').innerHTML=cov.join('')||'<div class="empty">لا دوام اليوم</div>';
+  document.getElementById('ds-cov-sub').textContent=school?'اضغط أي فترة لفتحها':'';
+  // live feed
+  var feed=Object.keys(by).map(function(k){var b=by[k];return {k:k,b:b};}).filter(function(x){return x.b&&marks[x.k];}).sort(function(a,b){return (b.b.t||'').localeCompare(a.b.t||'');}).slice(0,8);
+  document.getElementById('ds-feed').innerHTML=feed.length?feed.map(function(x){var inf=dsKeyInfo(iso,x.k),m=marks[x.k];
+    return '<div class="ds-fi"><span class="ds-ft">'+(x.b.t||'')+'</span><i class="rq-k rq-k-'+m+'">'+RQ_MARK[m].charAt(0)+'</i><div class="ds-fx"><b>'+rqEsc(inf.t||'—')+' <em class="ds-m-'+m+'">'+RQ_MARK[m]+'</em></b><small>'+rqEsc(inf.w)+' · ✍️ '+rqEsc(x.b.n||'')+'</small></div></div>';}).join('')
+    :'<div class="ds-empty">لم يُرصد شيء اليوم بعد. سيظهر هنا كل رصد لحظة تسجيله.</div>';
+  // duty today
+  var dr=school?rqDutyRows(iso):[],grp={};dr.forEach(function(r){(grp[r.group]=grp[r.group]||[]).push(r);});
+  document.getElementById('ds-duty').innerHTML=Object.keys(grp).length?Object.keys(grp).map(function(g){return '<div class="ds-dg"><span>'+g.replace('إشراف ','').replace(' لنهاية الدوام','')+'</span><div>'+grp[g].map(function(r){var m=marks['d_'+r.k];return '<em class="'+(m?'ds-m-'+m:'')+'">'+rqEsc(rqTName(r.tid))+(r.loc?' <small>('+rqEsc(r.loc)+')</small>':'')+'</em>';}).join('')+'</div></div>';}).join(''):'<div class="ds-empty">لا مهام إشرافية مسجلة لليوم</div>';
+  if(!_dsTimer)_dsTimer=setInterval(function(){var pg=document.getElementById('pg-today');if(pg&&pg.classList.contains('on'))renderDash();},30000);
+}
+var _dsCur=0;
+function dsOpenNow(){dsOpen(_dsCur);}
+function dsOpen(p){var b=document.getElementById('nav-raqaba');nav('raqaba',b);document.getElementById('rq-c-date').value=rqIsoToday();_rqPer=p;_rqPerAuto=false;rqTab('cls');}
 function renderToday(){
-  renderPrivBadge();
+  renderPrivBadge();try{renderDash();}catch(e){console.error(e);}
   var tpls=todayTpls();
   document.getElementById('tod-cnt').textContent=tpls.length;
   var _se=document.getElementById('msg-stats-today');
@@ -3402,7 +3498,7 @@ function rqUndoLast(){var u=_rqUndo.pop();var b=document.getElementById('rq-undo
   u.recs.forEach(function(x){if(x[1])rqPut(x[1]);else rqDel(x[0]);});
   u.rounds.forEach(function(x){rqRoundSet(x[0],x[1],x[2],x[3]);});
   toast('↶ تم التراجع: '+u.label);rqRefreshAll();}
-function rqRefreshAll(){['rqRenderLog','rqUpdateCount','rqRenderMine','rqRenderCls','rqRenderSup','rqHints'].forEach(function(f){try{var el=f==='rqRenderCls'?document.getElementById('rq-cls'):f==='rqRenderSup'?document.getElementById('rq-sup'):f==='rqRenderLog'?document.getElementById('rq-log'):null;if(el&&el.style.display==='none')return;window[f]&&window[f]();}catch(e){}});}
+function rqRefreshAll(){try{renderDash();}catch(e){}['rqRenderLog','rqUpdateCount','rqRenderMine','rqRenderCls','rqRenderSup','rqHints'].forEach(function(f){try{var el=f==='rqRenderCls'?document.getElementById('rq-cls'):f==='rqRenderSup'?document.getElementById('rq-sup'):f==='rqRenderLog'?document.getElementById('rq-log'):null;if(el&&el.style.display==='none')return;window[f]&&window[f]();}catch(e){}});}
 function rqPrevStatus(r){return r.decision?'decided':r.reply?'replied':r.sentAt?'sent':'new';}
 function rqEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function rqIsoToday(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
