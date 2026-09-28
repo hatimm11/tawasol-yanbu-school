@@ -399,6 +399,7 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-k-exc.on,i.rq-k-exc{background:#3d7eb9!important;border-color:#3d7eb9!important;color:#fff!important}
 .rq-bx.rq-m-exc,.rq-row.rq-m-exc{border-color:#3d7eb9;background:rgba(61,126,185,.1)}
 .rq-pers .dp.rq-tab-taboor{flex:1.8;font-size:12.5px}
+.nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
 .rq-user label{margin:0;white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}
 .rq-user input{border:0;background:transparent;padding:4px 0;font-weight:800}
@@ -607,10 +608,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function') rqRenderCls();
       var d=document.getElementById('rq-sup'); if(d && d.style.display!=='none' && typeof rqRenderSup==='function') rqRenderSup();
     });
-    db.ref(FB_SCHOOL+'/rqusers').on('value', function(snap){
-      var u = snap.val() || {}; if(currentRole && u[currentRole]!==undefined && !rqUser()){ try{localStorage.setItem('sd_rquser_'+currentRole,u[currentRole]);}catch(e){} if(typeof rqUserFill==='function') rqUserFill(); }
-    });
-    // Rounds
+        // Rounds
     db.ref(FB_SCHOOL+'/rounds').on('value', function(snap){
       _rqRounds = snap.val() || {};
       try{localStorage.setItem('sd_rounds_v1', JSON.stringify(_rqRounds));}catch(e){}
@@ -656,6 +654,20 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <div class="toast" id="toast"></div>
 <button onclick="showHelp()" id="help-btn" style="position:fixed;bottom:80px;left:14px;z-index:900;width:36px;height:36px;border-radius:50%;background:#15445a;color:#69cee3;border:2px solid #69cee3;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.35);opacity:.9;font-weight:800;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.75">؟</button>
 <div id="fb-bar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#7258a4;color:#fff;text-align:center;font-size:11px;padding:3px;font-family:inherit">⚠️ غير متصل بقاعدة البيانات — البيانات تُحفظ محلياً فقط</div>
+
+<!-- USER SIGN-IN -->
+<div class="role-screen hidden" id="user-screen" style="z-index:10000">
+  <div class="role-title" style="margin-bottom:4px">تسجيل الدخول</div>
+  <div class="role-sub" id="us-role" style="margin-bottom:22px">—</div>
+  <form onsubmit="event.preventDefault();usSubmit()" style="width:100%;max-width:320px;display:grid;gap:10px">
+    <label for="us-name" style="color:#fff;font-size:13px;font-weight:600">اسم المستخدم</label>
+    <input id="us-name" type="text" autocomplete="username" placeholder="مثال: حاتم السفياني" style="font-size:16px;padding:12px 14px;border-radius:12px;border:0">
+    <div id="us-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    <button type="submit" class="role-btn" style="justify-content:center;margin:6px 0 0">دخول</button>
+    <button type="button" onclick="usCancel()" style="background:none;border:0;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;cursor:pointer">رجوع</button>
+  </form>
+  <div style="margin-top:18px;font-size:11.5px;color:rgba(255,255,255,.6);max-width:320px;text-align:center;line-height:1.8">يُسجَّل اسم المستخدم تلقائيًا مع كل رصد وفي التقارير.</div>
+</div>
 
 <!-- ROLE SCREEN -->
 <div class="role-screen" id="role-screen">
@@ -714,7 +726,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 </header>
 <div class="nav-backdrop" id="nav-backdrop" onclick="toggleSideNav(false)"></div>
 <nav class="nav" id="side-nav" aria-label="القائمة الرئيسية">
-  <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
+  <div class="nav-head"><b>منصة تواصل</b><small id="nav-role-lbl">—</small><button type="button" class="nav-user-sw" onclick="toggleSideNav(false);usOpen(currentRole)">تبديل المستخدم</button><button class="nav-x" onclick="toggleSideNav(false)" aria-label="إغلاق القائمة">✕</button></div>
   <button class="nb on" onclick="nav('today',this)"><i>📅</i>اليوم</button>
   <button class="nb" onclick="nav('priv',this)" id="nav-priv"><i>💬</i>خاص <span id="nav-priv-cnt" style="font-size:9px;background:#07a869;color:#fff;border-radius:10px;padding:1px 5px;display:none">0</span></button>
   <button class="nb" onclick="nav('main',this)"><i>📨</i>الرسائل</button>
@@ -1343,7 +1355,6 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-cls">
     <div class="card">
       <div class="ch">🏫 جولة متابعة الحصص</div>
-      <div class="rq-user"><label for="rq-c-user">القائم بالجولة</label><input type="text" id="rq-c-user" class="rq-user-in" placeholder="اكتب اسمك مرة واحدة" oninput="rqUserSave(this.value)" autocomplete="name"></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-c-days"></div>
       <div class="g2 mb"><div><label for="rq-c-date">التاريخ</label><input type="date" id="rq-c-date" onchange="rqRenderCls()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-c-day">—</div></div></div>
@@ -1374,7 +1385,6 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-sup" style="display:none">
     <div class="card">
       <div class="ch">🧭 متابعة المهام الإشرافية</div>
-      <div class="rq-user"><label for="rq-s-user">القائم بالجولة</label><input type="text" id="rq-s-user" class="rq-user-in" placeholder="اكتب اسمك مرة واحدة" oninput="rqUserSave(this.value)" autocomplete="name"></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-s-days"></div>
       <div class="g2 mb"><div><label for="rq-s-date">التاريخ</label><input type="date" id="rq-s-date" onchange="rqRenderSup()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-s-day">—</div></div></div>
@@ -1859,7 +1869,19 @@ var currentRole = null;
 
 
 
-function selectRole(role){
+var _usPending=null;
+function usKnown(role){try{var u=JSON.parse(localStorage.getItem('sd_rqusers_known')||'{}');return u[role]||[];}catch(e){return [];}}
+function usOpen(role){_usPending=role;var sc=document.getElementById('user-screen');document.getElementById('us-role').textContent=(ROLES[role]||{}).label||'';
+  var inp=document.getElementById('us-name');var cur='';try{cur=localStorage.getItem('sd_rquser_'+role)||'';}catch(e){}inp.value=cur;
+  document.getElementById('us-list').innerHTML=usKnown(role).filter(function(n){return n!==cur;}).map(function(n){return '<button type="button" class="dp" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)" onclick="document.getElementById(\'us-name\').value=this.textContent">'+rqEsc(n)+'</button>';}).join('');
+  sc.classList.remove('hidden');setTimeout(function(){inp.focus();},50);}
+function usCancel(){_usPending=null;document.getElementById('user-screen').classList.add('hidden');}
+function usSubmit(){var v=document.getElementById('us-name').value.trim().replace(/\s+/g,' ');if(v.length<3){toast('اكتب اسم المستخدم',true);return;}
+  var role=_usPending;if(!role)return;try{localStorage.setItem('sd_rquser_'+role,v);var k=JSON.parse(localStorage.getItem('sd_rqusers_known')||'{}');k[role]=(k[role]||[]).filter(function(n){return n!==v;});k[role].unshift(v);k[role]=k[role].slice(0,6);localStorage.setItem('sd_rqusers_known',JSON.stringify(k));}catch(e){}
+  document.getElementById('user-screen').classList.add('hidden');_usPending=null;
+  if(currentRole===role){syncTopbar(document.querySelector('.nav .nb.on'));rqRefreshAll();toast('✅ المستخدم الحالي: '+v);}else selectRole(role,true);}
+function selectRole(role,signed){
+  if(!signed){var u='';try{u=localStorage.getItem('sd_rquser_'+role)||'';}catch(e){}if(!u){usOpen(role);return;}}
   currentRole = role;
   var r = ROLES[role];
   STORE = r.store;
@@ -1896,6 +1918,7 @@ function selectRole(role){
   renderPrivBadge(); showAbsNav(); updateChipsForRole();
   if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}else{syncTopbar(document.querySelector('.nav .nb.on'));}
   if(typeof fbListen !== 'undefined') fbListen();
+  try{if(typeof db!=='undefined'&&rqUser())db.ref(FB_SCHOOL+'/users/'+role+'/'+rqKey(rqUser())).set({name:rqUser(),last:new Date().toISOString()});}catch(e){}
   if(typeof hideLoadingScreen==='function') hideLoadingScreen();
 }
 function showRoleScreen(){
@@ -3568,12 +3591,7 @@ var _rqRBy=null;
 function rqRBy(){if(_rqRBy!==null)return _rqRBy;try{var d=localStorage.getItem('sd_rounds_by_v1');_rqRBy=d?JSON.parse(d):{};}catch(e){_rqRBy={};}return _rqRBy;}
 function rqRoundBy(iso,k){return ((rqRBy()[iso])||{})[k]||null;}
 function rqUser(){try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
-function rqUserSave(v){v=(v||'').trim();try{localStorage.setItem('sd_rquser_'+(currentRole||'default'),v);}catch(e){}
-  document.querySelectorAll('.rq-user-in').forEach(function(e){if(e.value.trim()!==v)e.value=v;});
-  if(typeof db!=='undefined'&&currentRole)try{db.ref(FB_SCHOOL+'/rqusers/'+currentRole).set(v||null);}catch(e){}}
-function rqUserFill(){var v=rqUser();document.querySelectorAll('.rq-user-in').forEach(function(e){if(document.activeElement!==e)e.value=v;});}
-function rqNeedUser(){if(rqUser())return false;toast('اكتب اسمك في «القائم بالجولة» أولًا',true);
-  var e=document.querySelector('#rq-cls:not([style*="none"]) .rq-user-in, #rq-sup:not([style*="none"]) .rq-user-in');if(e){e.focus();e.scrollIntoView({block:'center',behavior:'smooth'});}return true;}
+function rqNeedUser(){if(rqUser())return false;usOpen(currentRole);return true;}
 function rqNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function rqByLine(b){return b?'<div class="rq-bx-by">✍️ '+rqEsc(b.n)+(b.t?' · '+b.t:'')+'</div>':'';}
 function rqRoundSet(date,key,val,by){var all=rqRoundsGet();if(!all[date])all[date]={};if(val)all[date][key]=val;else delete all[date][key];
@@ -3598,7 +3616,7 @@ function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function rqSetDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-c-date').value=rqWeekDate(dow);rqRenderCls();}
 function rqRenderCls(){
-  rqLoadTT();rqUserFill();
+  rqLoadTT();
   var dEl=document.getElementById('rq-c-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value, dow=rqDateObj(iso).getDay();
   document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
@@ -3670,7 +3688,6 @@ var _rqGrp='all';
 var RQ_GRPS=[['all','الكل'],['الطابور الصباحي','الطابور'],['إشراف الفسحة','الفسحة'],['إشراف الصلاة','الصلاة'],['المناوبة لنهاية الدوام','المناوبة']];
 function rqSetSupDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-s-date').value=rqWeekDate(dow);rqRenderSup();}
 function rqRenderSup(){
-  rqUserFill();
   var dEl=document.getElementById('rq-s-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value,dow=rqDateObj(iso).getDay();
   document.getElementById('rq-s-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetSupDay('+i+')">'+n+'</button>';}).join('');
@@ -3744,7 +3761,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleSideNa
 function syncTopbar(btn){try{
   var t=document.getElementById('tb-page');if(t&&btn){var c=btn.cloneNode(true);c.querySelectorAll('i,span').forEach(function(x){x.remove();});t.textContent=c.textContent.trim();}
   var r=(typeof ROLES!=='undefined'&&currentRole&&ROLES[currentRole])?ROLES[currentRole].label:'—';
-  var a=document.getElementById('tb-role');if(a)a.textContent=r;var n=document.getElementById('nav-role-lbl');if(n)n.textContent=r;}catch(e){}}
+  var un=(typeof rqUser==='function')?rqUser():'';var rl=r+(un?' · '+un:'');
+  var a=document.getElementById('tb-role');if(a)a.textContent=rl;var n=document.getElementById('nav-role-lbl');if(n)n.textContent=rl;}catch(e){}}
 
 
 // ── الانتظار المقابل لغياب المعلم ──
