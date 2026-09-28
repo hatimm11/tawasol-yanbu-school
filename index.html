@@ -399,6 +399,10 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-k-exc.on,i.rq-k-exc{background:#3d7eb9!important;border-color:#3d7eb9!important;color:#fff!important}
 .rq-bx.rq-m-exc,.rq-row.rq-m-exc{border-color:#3d7eb9;background:rgba(61,126,185,.1)}
 .rq-pers .dp.rq-tab-taboor{flex:1.8;font-size:12.5px}
+.rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
+.rq-user label{margin:0;white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}
+.rq-user input{border:0;background:transparent;padding:4px 0;font-weight:800}
+.rq-bx-by{font-size:10.5px;color:#3078a6;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .rq-undo{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:#15445a;color:#fff;border-radius:14px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:12px;z-index:1000;font-size:13px;transition:transform .25s;max-width:calc(100% - 32px);box-shadow:0 6px 20px rgba(21,68,90,.3)}
 .rq-undo.on{transform:translate(-50%,0)}
@@ -596,6 +600,16 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function'){rqRenderCls();rqRenderRoomsEd();}
     });
 
+    // Rounds — who marked
+    db.ref(FB_SCHOOL+'/roundsBy').on('value', function(snap){
+      _rqRBy = snap.val() || {};
+      try{localStorage.setItem('sd_rounds_by_v1', JSON.stringify(_rqRBy));}catch(e){}
+      var c=document.getElementById('rq-cls'); if(c && c.style.display!=='none' && typeof rqRenderCls==='function') rqRenderCls();
+      var d=document.getElementById('rq-sup'); if(d && d.style.display!=='none' && typeof rqRenderSup==='function') rqRenderSup();
+    });
+    db.ref(FB_SCHOOL+'/rqusers').on('value', function(snap){
+      var u = snap.val() || {}; if(currentRole && u[currentRole]!==undefined && !rqUser()){ try{localStorage.setItem('sd_rquser_'+currentRole,u[currentRole]);}catch(e){} if(typeof rqUserFill==='function') rqUserFill(); }
+    });
     // Rounds
     db.ref(FB_SCHOOL+'/rounds').on('value', function(snap){
       _rqRounds = snap.val() || {};
@@ -1329,6 +1343,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-cls">
     <div class="card">
       <div class="ch">🏫 جولة متابعة الحصص</div>
+      <div class="rq-user"><label for="rq-c-user">القائم بالجولة</label><input type="text" id="rq-c-user" class="rq-user-in" placeholder="اكتب اسمك مرة واحدة" oninput="rqUserSave(this.value)" autocomplete="name"></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-c-days"></div>
       <div class="g2 mb"><div><label for="rq-c-date">التاريخ</label><input type="date" id="rq-c-date" onchange="rqRenderCls()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-c-day">—</div></div></div>
@@ -1359,6 +1374,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <div id="rq-sup" style="display:none">
     <div class="card">
       <div class="ch">🧭 متابعة المهام الإشرافية</div>
+      <div class="rq-user"><label for="rq-s-user">القائم بالجولة</label><input type="text" id="rq-s-user" class="rq-user-in" placeholder="اكتب اسمك مرة واحدة" oninput="rqUserSave(this.value)" autocomplete="name"></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-s-days"></div>
       <div class="g2 mb"><div><label for="rq-s-date">التاريخ</label><input type="date" id="rq-s-date" onchange="rqRenderSup()"></div>
         <div><label>التاريخ الهجري</label><div class="rq-dayname" id="rq-s-day">—</div></div></div>
@@ -3315,7 +3331,7 @@ function rqUndoBar(label){var b=document.getElementById('rq-undo');if(!b){b=docu
   clearTimeout(_rqUndoT);_rqUndoT=setTimeout(function(){b.classList.remove('on');},7000);}
 function rqUndoLast(){var u=_rqUndo.pop();var b=document.getElementById('rq-undo');if(b)b.classList.remove('on');if(!u)return;
   u.recs.forEach(function(x){if(x[1])rqPut(x[1]);else rqDel(x[0]);});
-  u.rounds.forEach(function(x){rqRoundSet(x[0],x[1],x[2]);});
+  u.rounds.forEach(function(x){rqRoundSet(x[0],x[1],x[2],x[3]);});
   toast('↶ تم التراجع: '+u.label);rqRefreshAll();}
 function rqRefreshAll(){['rqRenderLog','rqUpdateCount','rqRenderMine','rqRenderCls','rqRenderSup','rqHints'].forEach(function(f){try{var el=f==='rqRenderCls'?document.getElementById('rq-cls'):f==='rqRenderSup'?document.getElementById('rq-sup'):f==='rqRenderLog'?document.getElementById('rq-log'):null;if(el&&el.style.display==='none')return;window[f]&&window[f]();}catch(e){}});}
 function rqPrevStatus(r){return r.decision?'decided':r.reply?'replied':r.sentAt?'sent':'new';}
@@ -3383,7 +3399,7 @@ function rqSave(){
   if(rqAA()){iso=rqIsoToday();document.getElementById('rq-date').value=iso;var dw=new Date().getDay();if(dw>4){toast('لا دوام اليوم',true);return;}}
   if(!tid){toast('اختر المعلم',true);return;} if(!iso){toast('حدّد التاريخ',true);return;}
   var rec={id:'rq'+Date.now().toString(36)+uid().slice(0,3),tid:tid,name:rqTName(tid),phone:(rqT(tid)||{}).phone||'',date:iso,type:type,
-    note:document.getElementById('rq-note').value.trim(),status:'new',ts:new Date().toISOString(),by:currentRole};
+    note:document.getElementById('rq-note').value.trim(),status:'new',ts:new Date().toISOString(),by:currentRole,byName:rqUser()};
   if(type==='late'||type==='early'){var m=parseInt(document.getElementById('rq-min').value,10);if(!m){toast('أدخل المدة بالدقائق',true);return;}rec.minutes=m;}
   if(type==='class'){var ps=document.getElementById('rq-period');rec.period=+ps.value;rec.detail=ps.options[ps.selectedIndex].text;}
   if(type==='duty')rec.detail=document.getElementById('rq-duty').value;
@@ -3440,7 +3456,7 @@ function rqRenderMine(){var el=document.getElementById('rq-mine-list');if(!el)re
   var rows=rqList().filter(function(r){return r.by==='admin_assistant'&&(r.ts||'').slice(0,10)===new Date().toISOString().slice(0,10);});
   el.innerHTML=rows.length?rows.map(function(r){return '<div class="tc-row"><span class="tc-name">'+rqEsc(rqTName(r.tid))+'<small class="rq-meta" style="display:block">'+RQ_TYPES[r.type]+(r.minutes?' · '+r.minutes+'د':'')+(r.detail?' · '+rqEsc(r.detail):'')+'</small></span><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span>'+(r.status==='new'?'<button class="bs rq-b rq-b-undo" onclick="rqMineUndo(\''+r.id+'\')">↶ تراجع</button>':'')+'</div>';}).join(''):'<div class="empty" style="padding:8px">لم تُرصد حالات اليوم</div>';}
 function rqMineUndo(id){var r=rqGet()[id];if(!r||r.status!=='new')return;var before=rqSnap(id);var rounds=[];
-  if(r.src==='round'&&r.rkey){rounds.push([r.date,r.rkey,rqRoundVal(r.date,r.rkey)]);rqRoundSet(r.date,r.rkey,'');}
+  if(r.src==='round'&&r.rkey){rounds.push([r.date,r.rkey,rqRoundVal(r.date,r.rkey),rqRoundBy(r.date,r.rkey)]);rqRoundSet(r.date,r.rkey,'');}
   rqDel(id);rqUndoable('حذف رصد '+rqTName(r.tid),[[id,before]],rounds);rqRefreshAll();}
 function rqUpdateCount(){var n=rqList().filter(function(r){return r.status!=='archived'&&r.status!=='cancelled';}).length;var el=document.getElementById('rq-open-cnt');if(el)el.textContent=n?String(n):'';}
 function rqRenderLog(){
@@ -3452,7 +3468,7 @@ function rqRenderLog(){
   el.innerHTML=rows.map(function(r){
     var h='<div class="card rq-card rq-'+r.status+'"><div class="rq-top"><div><div class="rq-name">'+rqEsc(rqTName(r.tid))+'</div>'+
       '<div class="rq-meta">'+RQ_TYPES[r.type]+(r.absState?' · <b class="rq-abs-tag rq-abs-'+r.absState+'">'+RQ_ABS[r.absState]+'</b>':'')+(r.minutes?' · '+r.minutes+' دقيقة':'')+(r.detail?' · '+rqEsc(r.detail):'')+'</div>'+
-      '<div class="rq-meta">'+rqDay(r.date)+' '+rqHijri(r.date)+'</div>'+(r.by&&r.by!=='teacher_affairs'?'<div class="rq-by">رصدها: '+(RQ_BY[r.by]||r.by)+'</div>':'')+'</div><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span></div>';
+      '<div class="rq-meta">'+rqDay(r.date)+' '+rqHijri(r.date)+'</div>'+((r.byName||(r.by&&r.by!=='teacher_affairs'))?'<div class="rq-by">رصدها: '+rqEsc(r.byName||'')+(r.byName&&r.by?' · ':'')+(RQ_BY[r.by]||r.by||'')+'</div>':'')+'</div><span class="rq-pill rq-p-'+r.status+'">'+RQ_ST[r.status]+'</span></div>';
     if(r.note)h+='<div class="rq-box"><b>ملاحظة الرصد:</b> '+rqEsc(r.note)+'</div>';
     h+=rqAbsHTML(r);
     h+=rqCoverHTML(r);
@@ -3496,8 +3512,17 @@ function rqRepTable(rows){
   tot.name='الإجمالي';
   return '<div style="overflow-x:auto"><table class="rq-tbl"><thead><tr><th>المعلم</th><th>غياب</th><th>تأخر</th><th>انصراف مبكر</th><th>حصص</th><th>إشراف</th><th>غياب بعذر</th><th>بدون عذر</th><th>بالانتظار</th><th>عذر غير مقبول</th><th>مفتوحة</th></tr></thead><tbody>'+rows.map(function(o){return tr(o);}).join('')+tr(tot,1)+'</tbody></table></div>';
 }
+function rqRecRows(k){var rb=rqRBy(),by={};
+  Object.keys(rb).forEach(function(iso){var h=rqHijriParts(iso);if(h.y+'-'+String(h.m).padStart(2,'0')!==k)return;
+    Object.keys(rb[iso]||{}).forEach(function(key){var b=rb[iso][key];if(!b||!b.n)return;var o=by[b.n]||(by[b.n]={name:b.n,days:{},ok:0,abs:0,late:0,exc:0,n:0});
+      o.days[iso]=1;o.n++;if(o[b.m]!==undefined)o[b.m]++;});});
+  return Object.keys(by).map(function(x){var o=by[x];o.d=Object.keys(o.days).length;return o;}).sort(function(a,b){return b.n-a.n;});}
+function rqRecTable(rows){
+  if(!rows.length)return '<div class="empty">لا عمليات رصد مسجّلة بأسماء في هذا الشهر</div>';
+  return '<div style="overflow-x:auto"><table class="rq-tbl"><thead><tr><th>القائم بالجولة</th><th>أيام الرصد</th><th>عمليات الرصد</th><th>حاضر</th><th>غائب</th><th>متأخر</th><th>مستأذن</th></tr></thead><tbody>'+
+    rows.map(function(o){return '<tr><td>'+rqEsc(o.name)+'</td><td>'+o.d+'</td><td>'+o.n+'</td><td>'+o.ok+'</td><td>'+o.abs+'</td><td>'+o.late+'</td><td>'+o.exc+'</td></tr>';}).join('')+'</tbody></table></div>';}
 function rqRenderRep(){var s=document.getElementById('rq-month');var v=s.value;var ms=rqMonths();s.innerHTML=ms.map(function(k){return '<option value="'+k+'">'+rqMonthLabel(k)+'</option>';}).join('');if(v&&ms.indexOf(v)>-1)s.value=v;
-  document.getElementById('rq-rep-body').innerHTML=rqRepTable(rqReportRows(s.value));}
+  document.getElementById('rq-rep-body').innerHTML=rqRepTable(rqReportRows(s.value))+'<div class="rq-grp" style="margin-top:14px">القائمون بالجولات</div>'+rqRecTable(rqRecRows(s.value));}
 function rqDoc(title,sub,strip,body){
   var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
   return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>'+title+'</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"><style>'+
@@ -3518,7 +3543,7 @@ function rqDoc(title,sub,strip,body){
 function rqOpenDoc(html){var w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لعرض النموذج',true);return;}w.document.open();w.document.write(html);w.document.close();}
 function rqPrintForm(r){
   var t=rqT(r.tid);var box=function(on){return '<span class="ck">'+(on?'✔':'')+'</span>';};
-  var strip='<div class="st"><div><span>اسم المعلم</span><b>'+rqEsc(t?t.name:r.name)+'</b></div><div><span>العمل الحالي</span><b>'+rqEsc((t&&t.job)||'معلم')+'</b></div><div><span>تاريخ الحالة</span><b>'+rqDay(r.date)+' '+rqHijri(r.date)+'</b></div><div><span>نوع الحالة</span><b>'+RQ_TYPES[r.type]+'</b></div></div>';
+  var strip='<div class="st"><div><span>اسم المعلم</span><b>'+rqEsc(t?t.name:r.name)+'</b></div><div><span>العمل الحالي</span><b>'+rqEsc((t&&t.job)||'معلم')+'</b></div><div><span>تاريخ الحالة</span><b>'+rqDay(r.date)+' '+rqHijri(r.date)+'</b></div><div><span>نوع الحالة</span><b>'+RQ_TYPES[r.type]+'</b></div></div>'+(r.byName?'<p style="font-size:11px;color:#3078a6">رصدها: '+rqEsc(r.byName)+'</p>':'');
   var body='<p>المكرم '+rqEsc(((t&&t.prefix)||'أ.')+' '+(t?t.name:r.name))+' وفقه الله</p><p>السلام عليكم ورحمة الله وبركاته، وبعد:</p><p>'+rqEsc(rqBody(r))+' نأمل إفادتنا بأسباب ذلك خلال يومي عمل من تاريخه، مع إرفاق ما يثبت العذر إن وُجد.</p>'+
     '<div class="sg"><div>وكيل شؤون المعلمين: '+rqEsc((getSchoolSettings()||{}).sender||'')+'</div><div>التوقيع:</div></div>'+
     '<h3>إفادة المعلم</h3>'+(r.reply?'<p>'+rqEsc(r.reply)+'</p>':'<div class="ln"></div><div class="ln"></div><div class="ln"></div>')+
@@ -3532,14 +3557,30 @@ function rqPrintReport(){
   var n=rqList().filter(function(r){var h=rqHijriParts(r.date);return r.status!=='cancelled'&&h.y+'-'+String(h.m).padStart(2,'0')===k;});
   var strip='<div class="st"><div><span>الشهر</span><b>'+rqMonthLabel(k)+'</b></div><div><span>عدد الحالات</span><b>'+n.length+'</b></div><div><span>المعلمون المعنيون</span><b>'+rows.length+'</b></div><div><span>حالات مفتوحة</span><b>'+n.filter(function(r){return r.status!=='decided'&&r.status!=='archived';}).length+'</b></div></div>';
   var tbl=rqRepTable(rows).replace('class="rq-tbl"','');
-  rqOpenDoc(rqDoc('التقرير الشهري لدوام المعلمين',rqMonthLabel(k),strip,'<h3>ملخص الحالات حسب المعلم</h3>'+tbl+'<div class="sg"><div>وكيل شؤون المعلمين:</div><div>مدير المدرسة:</div></div>'));
+  rqOpenDoc(rqDoc('التقرير الشهري لدوام المعلمين',rqMonthLabel(k),strip,'<h3>ملخص الحالات حسب المعلم</h3>'+tbl+'<h3>القائمون بالجولات</h3>'+rqRecTable(rqRecRows(k)).replace('class="rq-tbl"','')+'<div class="sg"><div>وكيل شؤون المعلمين:</div><div>مدير المدرسة:</div></div>'));
 }
 
 
 // ── جولات المتابعة (الحصص والإشراف) ──
 var _rqRounds=null;
 function rqRoundsGet(){if(_rqRounds!==null)return _rqRounds;try{var d=localStorage.getItem('sd_rounds_v1');_rqRounds=d?JSON.parse(d):{};}catch(e){_rqRounds={};}return _rqRounds;}
-function rqRoundSet(date,key,val){var all=rqRoundsGet();if(!all[date])all[date]={};if(val)all[date][key]=val;else delete all[date][key];
+var _rqRBy=null;
+function rqRBy(){if(_rqRBy!==null)return _rqRBy;try{var d=localStorage.getItem('sd_rounds_by_v1');_rqRBy=d?JSON.parse(d):{};}catch(e){_rqRBy={};}return _rqRBy;}
+function rqRoundBy(iso,k){return ((rqRBy()[iso])||{})[k]||null;}
+function rqUser(){try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
+function rqUserSave(v){v=(v||'').trim();try{localStorage.setItem('sd_rquser_'+(currentRole||'default'),v);}catch(e){}
+  document.querySelectorAll('.rq-user-in').forEach(function(e){if(e.value.trim()!==v)e.value=v;});
+  if(typeof db!=='undefined'&&currentRole)try{db.ref(FB_SCHOOL+'/rqusers/'+currentRole).set(v||null);}catch(e){}}
+function rqUserFill(){var v=rqUser();document.querySelectorAll('.rq-user-in').forEach(function(e){if(document.activeElement!==e)e.value=v;});}
+function rqNeedUser(){if(rqUser())return false;toast('اكتب اسمك في «القائم بالجولة» أولًا',true);
+  var e=document.querySelector('#rq-cls:not([style*="none"]) .rq-user-in, #rq-sup:not([style*="none"]) .rq-user-in');if(e){e.focus();e.scrollIntoView({block:'center',behavior:'smooth'});}return true;}
+function rqNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function rqByLine(b){return b?'<div class="rq-bx-by">✍️ '+rqEsc(b.n)+(b.t?' · '+b.t:'')+'</div>':'';}
+function rqRoundSet(date,key,val,by){var all=rqRoundsGet();if(!all[date])all[date]={};if(val)all[date][key]=val;else delete all[date][key];
+  var rb=rqRBy();if(!rb[date])rb[date]={};var bv=val?(by||{n:rqUser()||(RQ_BY[currentRole]||currentRole||''),t:rqNowHM(),m:val,r:currentRole||''}):null;
+  if(bv){bv.m=val;rb[date][key]=bv;}else delete rb[date][key];
+  try{localStorage.setItem('sd_rounds_by_v1',JSON.stringify(rb));}catch(e){}
+  if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/roundsBy/'+date+'/'+key).set(bv);}catch(e){}
   try{localStorage.setItem('sd_rounds_v1',JSON.stringify(all));}catch(e){}
   if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/rounds/'+date+'/'+key).set(val||null);}catch(e){}}
 function rqKey(s){return String(s).replace(/[.#$\[\]\/\s]/g,'_');}
@@ -3557,7 +3598,7 @@ function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function rqSetDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-c-date').value=rqWeekDate(dow);rqRenderCls();}
 function rqRenderCls(){
-  rqLoadTT();
+  rqLoadTT();rqUserFill();
   var dEl=document.getElementById('rq-c-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value, dow=rqDateObj(iso).getDay();
   document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
@@ -3573,7 +3614,7 @@ function rqRenderCls(){
     var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span><span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span></div>';
     if(!a)return '<div class="rq-bx rq-free">'+head+'<div class="rq-bx-s">لا حصة</div></div>';
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
-      rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+'</div>';}).join('');
+      rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,k)):'')+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
   info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+':</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
     (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'');
@@ -3586,7 +3627,7 @@ function rqRenderTaboor(iso,list,info){
   list.innerHTML=rows.map(function(r){var cur=marks['d_'+r.k];
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">الطابور</span><span class="rq-bx-r">قبل الحصة الأولى</span></div>'+
       '<div class="rq-bx-t" style="font-weight:800;font-size:12.5px">'+rqEsc(rqTName(r.tid))+'</div>'+
-      rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+'</div>';}).join('');
+      rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,'d_'+r.k)):'')+'</div>';}).join('');
 }
 function rqApplyRoundCase(id,m,build){
   var ex=rqGet()[id];var before=rqSnap(id);
@@ -3594,7 +3635,7 @@ function rqApplyRoundCase(id,m,build){
     if(!ex||ex.status==='new'||ex.status==='cancelled'){
       if(ex&&ex.status==='cancelled'){rec.status=ex.prevStatus||rqPrevStatus(ex);['sentAt','reply','replyAt','decision','decisionNote','decidedAt'].forEach(function(f){if(ex[f]!==undefined)rec[f]=ex[f];});}
       rqPut(rec);}
-    else{ex.type=rec.type;ex.detail=rec.detail;rqPut(ex);}
+    else{ex.type=rec.type;ex.detail=rec.detail;if(rec.byName)ex.byName=rec.byName;rqPut(ex);}
   }else if(ex&&ex.src==='round'){
     if(ex.status==='new')rqDel(id);
     else if(ex.status!=='cancelled'){ex.prevStatus=ex.status;ex.status='cancelled';ex.cancelledAt=new Date().toISOString();ex.cancelledBy=currentRole;rqPut(ex);}
@@ -3603,14 +3644,16 @@ function rqApplyRoundCase(id,m,build){
 }
 function rqMarkCls(iso,p,c,m){
   if(rqLocked(iso)){rqLockMsg();return;}
+  if(rqNeedUser())return;
   var dow=rqDateObj(iso).getDay();var a=rqClassMap(dow,p).map[c];if(!a)return;
   var k='p'+p+'_'+rqKey(c);var cur=rqRoundVal(iso,k);if(cur===m)m='';
   var tid=rqTidByPhone(a.ph);if((m==='late'||m==='abs')&&!tid){toast('المعلم غير موجود في جهات الاتصال',true);return;}
   var id='rc'+iso.replace(/-/g,'')+'p'+p+rqKey(c);
   var before=rqApplyRoundCase(id,m,function(ex){return {id:id,tid:tid,name:rqTName(tid),phone:a.ph,date:iso,type:m==='abs'?'class':'classlate',period:p,
-      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj+(rqRoom(c)?' ('+rqRoom(c)+')':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,src:'round',rkey:k};});
+      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj+(rqRoom(c)?' ('+rqRoom(c)+')':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,byName:rqUser(),src:'round',rkey:k};});
+  var prevBy=rqRoundBy(iso,k);
   rqRoundSet(iso,k,m);
-  rqUndoable((m?RQ_MARK[m]:'إزالة الرصد')+' — '+c+' الحصة '+(p+1),[[id,before]],[[iso,k,cur]]);
+  rqUndoable((m?RQ_MARK[m]:'إزالة الرصد')+' — '+c+' الحصة '+(p+1),[[id,before]],[[iso,k,cur,prevBy]]);
   rqRefreshAll();
 }
 function rqDutyRows(iso){
@@ -3627,6 +3670,7 @@ var _rqGrp='all';
 var RQ_GRPS=[['all','الكل'],['الطابور الصباحي','الطابور'],['إشراف الفسحة','الفسحة'],['إشراف الصلاة','الصلاة'],['المناوبة لنهاية الدوام','المناوبة']];
 function rqSetSupDay(dow){if(rqAA()){rqLockMsg();return;}document.getElementById('rq-s-date').value=rqWeekDate(dow);rqRenderSup();}
 function rqRenderSup(){
+  rqUserFill();
   var dEl=document.getElementById('rq-s-date');if(!dEl)return;if(rqAA()){dEl.value=rqIsoToday();dEl.disabled=true;}if(!dEl.value){var t=new Date().getDay();dEl.value=t>4?rqWeekDate(0):rqIsoToday();}
   var iso=dEl.value,dow=rqDateObj(iso).getDay();
   document.getElementById('rq-s-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetSupDay('+i+')">'+n+'</button>';}).join('');
@@ -3643,17 +3687,19 @@ function rqRenderSup(){
     var place=r.loc||(r.group==='الطابور الصباحي'?'قبل الطابور':r.group==='المناوبة لنهاية الدوام'?'وقت الانصراف':'');
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'"><div class="rq-bx-h"><span class="rq-bx-c rq-bx-g">'+rqEsc(r.group.replace('إشراف ','').replace(' لنهاية الدوام',''))+'</span><span class="rq-bx-r">'+rqEsc(place)+'</span></div>'+
       '<div class="rq-bx-t" style="font-weight:800;font-size:12.5px">'+rqEsc(rqTName(r.tid))+'</div>'+
-      rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+'</div>';}).join('');
+      rqMarkBtns("rqMarkSup('"+iso+"','"+r.k+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,'d_'+r.k)):'')+'</div>';}).join('');
 }
 function rqMarkSup(iso,k,m){
   if(rqLocked(iso)){rqLockMsg();return;}
+  if(rqNeedUser())return;
   var r=rqDutyRows(iso).find(function(x){return x.k===k;});if(!r)return;
   var cur=rqRoundVal(iso,'d_'+k);if(cur===m)m='';
   var id='rd'+iso.replace(/-/g,'')+rqKey(k);
   var before=rqApplyRoundCase(id,m,function(ex){return {id:id,tid:r.tid,name:rqTName(r.tid),phone:(rqT(r.tid)||{}).phone||'',date:iso,type:'duty',
-      detail:r.label+(m==='late'?' (تأخر)':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,src:'round',rkey:'d_'+k};});
+      detail:r.label+(m==='late'?' (تأخر)':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,byName:rqUser(),src:'round',rkey:'d_'+k};});
+  var prevBy=rqRoundBy(iso,'d_'+k);
   rqRoundSet(iso,'d_'+k,m);
-  rqUndoable((m?RQ_MARK[m]:'إزالة الرصد')+' — '+rqTName(r.tid),[[id,before]],[[iso,'d_'+k,cur]]);
+  rqUndoable((m?RQ_MARK[m]:'إزالة الرصد')+' — '+rqTName(r.tid),[[id,before]],[[iso,'d_'+k,cur,prevBy]]);
   rqRefreshAll();
 }
 
