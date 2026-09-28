@@ -439,6 +439,7 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-pbar{height:5px;background:rgba(255,255,255,.18);border-radius:9px;margin-top:10px;overflow:hidden}.ds-pbar i{display:block;height:100%;background:#69cee3;border-radius:9px;transition:width .6s}
 .ds-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .ds-kpi{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;border:1px solid #efeff1;border-top:3px solid #c2c1c1}
+.ds-kpi i{display:block;font-style:normal;font-size:14px;opacity:.7;line-height:1}
 .ds-kpi b{display:block;font-size:24px;font-weight:900;line-height:1.3;font-variant-numeric:tabular-nums}.ds-kpi span{font-size:11px;color:#3078a6;font-weight:600}
 .ds-navy{border-top-color:#15445a}.ds-green{border-top-color:#07a869}.ds-green b{color:#07a869}.ds-red{border-top-color:#d92d20}.ds-red b{color:#d92d20}.ds-sand{border-top-color:#c1b489}.ds-sand b{color:#8a7440}.ds-blue{border-top-color:#3d7eb9}.ds-blue b{color:#3d7eb9}.ds-ind{border-top-color:#7258a4}.ds-ind b{color:#351375}
 .ds-sub{font-size:11px;font-weight:500;color:#218caa;margin-inline-start:auto}
@@ -453,9 +454,22 @@ body.rq-only .rq-rooms-card{display:none}
 .ds-fx em{font-style:normal;font-size:11px;font-weight:800;margin-inline-start:4px}
 .ds-m-ok{color:#07a869}.ds-m-abs{color:#d92d20}.ds-m-late{color:#8a7440}.ds-m-exc{color:#3d7eb9}
 .ds-empty{font-size:12.5px;color:#9aa39d;padding:6px 2px}
+.ds-alert{border:1.5px solid rgba(217,45,32,.35);background:linear-gradient(180deg,rgba(217,45,32,.05),#fff 60%)}
+.ds-ab{padding:8px 0;border-bottom:1px solid #efeff1}.ds-ab:last-child{border-bottom:0}
+.ds-ab-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.ds-ab-h b{font-size:14px}.ds-ab-h span{font-size:11.5px;color:#d92d20;font-weight:700}
+.ds-cv{margin-top:6px;display:grid;gap:5px}
+.ds-cvr{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1px solid #efeff1;border-radius:9px;padding:5px 8px;font-size:12px}
+.ds-cvp{width:22px;height:22px;border-radius:6px;background:#15445a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0}
+.ds-cvc{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}.ds-cvw{color:#07a869;font-weight:800;white-space:nowrap}
+.ds-cvr .bs{padding:3px 8px;font-size:11px}.ds-cvd{font-size:12px;color:#07a869;font-weight:700;margin-top:4px}
+.ds-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ds-fl{border:1px solid #efeff1;background:#fafbfb;border-radius:11px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-family:inherit}
+.ds-fl b{font-size:22px;font-weight:900;color:#15445a}
+@media(min-width:560px){.ds-kpis{grid-template-columns:repeat(6,minmax(0,1fr))}.ds-flow{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .ds-dg{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #efeff1;align-items:baseline}.ds-dg:last-child{border-bottom:0}
 .ds-dg>span{min-width:70px;font-size:12px;font-weight:800;color:#218caa}.ds-dg div{flex:1;display:flex;flex-wrap:wrap;gap:4px 10px}
 .ds-dg em{font-style:normal;font-size:12.5px;font-weight:700}.ds-dg em small{font-weight:500;color:#3078a6}
+.app-upd{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10001;background:#07a869;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
 .nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
 .rq-user-l{white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}.rq-user-v{flex:1;font-weight:800;font-size:14px;color:#15445a}
@@ -813,9 +827,11 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <div class="ds-pbar"><i id="ds-pbar"></i></div>
     </div>
     <div class="ds-kpis" id="ds-kpis"></div>
+    <div class="card ds-card ds-alert" id="ds-abs-card" style="display:none"><div class="ch">🚨 غياب اليوم وحصص الانتظار</div><div id="ds-abs"></div></div>
     <div class="card ds-card"><div class="ch">🧭 تغطية الجولات اليوم <span class="ds-sub" id="ds-cov-sub"></span></div><div class="ds-cov" id="ds-cov"></div></div>
     <div class="card ds-card"><div class="ch">⚡ آخر الرصد <span class="ds-sub">مباشر من المساعد الإداري</span></div><div id="ds-feed"></div></div>
     <div class="card ds-card"><div class="ch">👥 مناوبو اليوم</div><div id="ds-duty"></div></div>
+    <div class="card ds-card"><div class="ch">📋 متابعة الحالات <span class="ds-sub">من السجل</span></div><div class="ds-flow" id="ds-flow"></div></div>
   </div>
   <div class="hdr"><div class="hdr-i">📅</div><div><h1 id="tod-title">قوالب اليوم</h1><p id="tod-sub">تتبع ما أُرسل وما تبقى</p></div></div>
   <div class="card">
@@ -2111,6 +2127,10 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
+var APP_VER='2026-09-28-dash2';
+(function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
+  var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
+  setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
 var _dsTimer=null;
 function renderDash(){
   var box=document.getElementById('dash');if(!box)return;var on=dsCan();box.style.display=on?'block':'none';if(!on)return;
@@ -2133,9 +2153,16 @@ function renderDash(){
   Object.keys(marks).forEach(function(k){if(cnt[marks[k]]!==undefined)cnt[marks[k]]++;});
   var total=Object.keys(marks).length,open=rqList().filter(function(r){return r.status==='new';}).length;
   var abs=rqList().filter(function(r){return r.date===iso&&r.type==='absent'&&r.status!=='cancelled';}).length;
-  var K=[['عمليات الرصد',total,'navy'],['حاضر',cnt.ok,'green'],['غائب',cnt.abs,'red'],['متأخر',cnt.late,'sand'],['مستأذن',cnt.exc,'blue'],['حالات تنتظر المساءلة',open,'ind']];
-  if(abs)K.splice(3,0,['غياب يوم كامل',abs,'red']);
-  document.getElementById('ds-kpis').innerHTML=K.map(function(k){return '<div class="ds-kpi ds-'+k[2]+'"><b>'+k[1]+'</b><span>'+k[0]+'</span></div>';}).join('');
+  var K=[['عمليات الرصد',total,'navy','📝'],['حاضر',cnt.ok,'green','✓'],['غائب عن حصة',cnt.abs,'red','✗'],['متأخر',cnt.late,'sand','⏱'],['مستأذن',cnt.exc,'blue','↪'],['غياب يوم كامل',abs,'red','🚨']];
+  document.getElementById('ds-kpis').innerHTML=K.map(function(k){return '<div class="ds-kpi ds-'+k[2]+'"><i>'+k[3]+'</i><b>'+k[1]+'</b><span>'+k[0]+'</span></div>';}).join('');
+  // absences + cover
+  var absR=rqList().filter(function(r){return r.date===iso&&(r.type==='absent'||r.type==='class')&&r.status!=='cancelled';});
+  var ac=document.getElementById('ds-abs-card');ac.style.display=absR.length?'':'none';
+  document.getElementById('ds-abs').innerHTML=absR.map(function(r){var cv=[];try{cv=rqCoverFor(r).filter(function(c){return rqPerState(iso,c.p)!=='past';});}catch(e){}
+    return '<div class="ds-ab"><div class="ds-ab-h"><b>'+rqEsc(rqTName(r.tid))+'</b><span>'+(r.type==='absent'?'غياب يوم كامل':rqEsc(r.detail||'عدم حضور حصة'))+(r.absState?' · '+RQ_ABS[r.absState]:'')+'</span></div>'+
+      (cv.length?'<div class="ds-cv">'+cv.map(function(c){var f=c.waits.find(function(w){return !w.off;});
+        return '<div class="ds-cvr"><span class="ds-cvp">'+(c.p+1)+'</span><span class="ds-cvc">'+rqEsc(c.cls)+' · '+rqEsc(c.subj)+'</span><span class="ds-cvw">'+(f?'← '+rqEsc(f.name):'لا منتظر')+'</span>'+(f?'<button class="bs rq-b" onclick="rqAssignCover(\''+r.id+'\','+c.p+',\''+f.ph+'\')">📲 تكليف</button>':'')+'</div>';}).join('')+'</div>'
+        :(r.coveredBy?'<div class="ds-cvd">✓ '+rqEsc(r.coveredBy)+'</div>':''))+'</div>';}).join('');
   // coverage per slot
   var cov=[];if(school)ks.forEach(function(p){var tot,dn;
     if(p<0){var rows=rqDutyRows(iso).filter(function(r){return r.group===(p===-1?'الطابور الصباحي':'إشراف الفسحة');});tot=rows.length;dn=rows.filter(function(r){return marks['d_'+r.k];}).length;}
@@ -2152,6 +2179,8 @@ function renderDash(){
   // duty today
   var dr=school?rqDutyRows(iso):[],grp={};dr.forEach(function(r){(grp[r.group]=grp[r.group]||[]).push(r);});
   document.getElementById('ds-duty').innerHTML=Object.keys(grp).length?Object.keys(grp).map(function(g){return '<div class="ds-dg"><span>'+g.replace('إشراف ','').replace(' لنهاية الدوام','')+'</span><div>'+grp[g].map(function(r){var m=marks['d_'+r.k];return '<em class="'+(m?'ds-m-'+m:'')+'">'+rqEsc(rqTName(r.tid))+(r.loc?' <small>('+rqEsc(r.loc)+')</small>':'')+'</em>';}).join('')+'</div></div>';}).join(''):'<div class="ds-empty">لا مهام إشرافية مسجلة لليوم</div>';
+  var L=rqList(),fl=[['new','مرصودة','rq-p-new'],['sent','أُرسلت المساءلة','rq-p-sent'],['replied','بانتظار قرار المدير','rq-p-replied'],['decided','صدر القرار','rq-p-decided']];
+  document.getElementById('ds-flow').innerHTML=fl.map(function(f){var n=L.filter(function(r){return r.status===f[0];}).length;return '<button class="ds-fl" onclick="nav(\'raqaba\',document.getElementById(\'nav-raqaba\'));rqTab(\'log\');var s=document.getElementById(\'rq-f-st\');if(s){s.value=\''+f[0]+'\';rqRenderLog();}"><b>'+n+'</b><span class="rq-pill '+f[2]+'">'+f[1]+'</span></button>';}).join('');
   if(!_dsTimer)_dsTimer=setInterval(function(){var pg=document.getElementById('pg-today');if(pg&&pg.classList.contains('on'))renderDash();},30000);
 }
 var _dsCur=0;
