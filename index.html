@@ -402,6 +402,31 @@ body.rq-only .rq-rooms-card{display:none}
 .rq-pers .dp.rq-past:not(.on){opacity:.55}.rq-pers .dp.rq-now:not(.on){border-color:#07a869;color:#07a869;box-shadow:inset 0 -3px 0 #07a869}
 .rq-locked .rq-k{opacity:.45;cursor:not-allowed}
 .rq-locknote{margin-top:6px;font-weight:800;color:#3078a6}
+.sd-days{display:flex;gap:4px;background:#fff;border:1px solid #efeff1;border-radius:12px;padding:4px;margin-bottom:10px;position:sticky;top:58px;z-index:20}
+.sd-day{flex:1;border:0;background:none;border-radius:9px;padding:9px 2px;font-family:inherit;font-size:13px;font-weight:700;color:#3078a6;cursor:pointer}
+.sd-day.on{background:#224c35;color:#fff}
+.sd-dayhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 2px 10px}
+.sd-dayhead b{font-size:18px;font-weight:900;margin-inline-end:8px}.sd-dayhead span{font-size:12px;color:#3078a6}
+.sd-prog{font-size:12px;font-weight:800;border-radius:999px;padding:3px 12px;background:rgba(163,132,62,.15);color:#7a6230!important;white-space:nowrap}.sd-prog.done{background:#224c35;color:#fff!important}
+.sd-sec{padding:12px 14px}
+.sd-sh{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #efeff1}
+.sd-ic{width:36px;height:36px;border-radius:10px;background:rgba(34,76,53,.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sd-st{flex:1;display:flex;flex-direction:column;line-height:1.4}.sd-st b{font-size:14.5px;font-weight:800}.sd-st small{font-size:11.5px;color:#a3843e;font-weight:700;direction:ltr;text-align:right}
+.sd-cnt{font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 10px;background:#efeff1;color:#3078a6;white-space:nowrap}.sd-cnt.done{background:rgba(34,76,53,.12);color:#224c35}
+.sd-row{display:flex;align-items:center;gap:8px;padding:6px 8px;margin-bottom:6px;border:1px solid #efeff1;border-inline-start:3px solid #c2c1c1;border-radius:9px;background:#fafbfb}
+.sd-row.ok{border-inline-start-color:#224c35;background:#fff}
+.sd-row select{flex:1;min-width:0;border:0;background:transparent;padding:6px 2px;font-weight:700}
+.sd-n{width:22px;height:22px;border-radius:6px;background:#efeff1;color:#3078a6;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sd-row.ok .sd-n{background:#224c35;color:#fff}
+.sd-loc{min-width:92px;font-size:13px;font-weight:800;color:#15445a}
+.sd-x{border:0;background:rgba(217,45,32,.08);color:#d92d20;border-radius:7px;width:30px;height:30px;cursor:pointer;flex-shrink:0}
+.sd-add{width:100%;padding:8px;background:none;color:#224c35;border:1.5px dashed rgba(34,76,53,.35);border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.sd-link{background:none;border:0;color:#218caa;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px 0}
+.sd-empty{font-size:12px;color:#9aa39d;padding:6px 2px 10px}
+.sd-note{font-size:12px;color:#15445a;background:rgba(163,132,62,.1);border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.8}
+.sd-saved{text-align:center;font-size:11.5px;color:#224c35;font-weight:700;margin:-2px 0 12px}
+.sd-set summary{cursor:pointer;list-style:none;margin-bottom:0}.sd-set[open] summary{margin-bottom:12px}
+.sd-sub{font-size:13px;font-weight:800;margin:4px 0 8px}.sd-sub small{font-size:11px;font-weight:500;color:#218caa}
 .nav-user-sw{display:block;margin-top:4px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-family:inherit;font-size:11px;padding:2px 10px;cursor:pointer}
 .rq-user{display:flex;align-items:center;gap:8px;background:#fafbfb;border:1.5px solid #c2c1c1;border-radius:9px;padding:6px 10px;margin-bottom:10px}
 .rq-user-l{white-space:nowrap;font-weight:700;font-size:12px;color:#3078a6}.rq-user-v{flex:1;font-weight:800;font-size:14px;color:#15445a}
@@ -1276,77 +1301,57 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
 <div id="pg-sched" class="pg">
   <div class="hdr">
     <div class="hdr-i">📅</div>
-    <div><h1>جدول الإشراف الأسبوعي</h1><p>مواقع ثابتة — معلم مختلف كل يوم</p></div>
+    <div><h1>جدول الإشراف الأسبوعي</h1><p>الطابور · الفسحة · الصلاة · المناوبة</p></div>
   </div>
 
-  <!-- School data 1448 -->
-  <div class="card">
-    <div class="ch">🗂️ بيانات الفصل الدراسي الأول ١٤٤٨هـ</div>
-    <p style="font-size:12px;color:#15445a;margin-bottom:10px;line-height:1.8">تحدّث جهات اتصال المعلمين الـ٣٦ (الأسماء والجوالات والتخصصات)، ومواقع الفسحة الخمسة ومشرفيها لكل يوم، والطابور الصباحي، من الكشوف المعتمدة. المناوبة تُؤخذ تلقائيًا من سجل المناوبة حسب التاريخ. لا تُحذف أي جهة اتصال قائمة.</p>
+  <div class="sd-days" role="tablist"><button class="sd-day on" id="sd-tab-الأحد" onclick="switchSchedDay('الأحد',this)">الأحد</button><button class="sd-day" id="sd-tab-الاثنين" onclick="switchSchedDay('الاثنين',this)">الاثنين</button><button class="sd-day" id="sd-tab-الثلاثاء" onclick="switchSchedDay('الثلاثاء',this)">الثلاثاء</button><button class="sd-day" id="sd-tab-الأربعاء" onclick="switchSchedDay('الأربعاء',this)">الأربعاء</button><button class="sd-day" id="sd-tab-الخميس" onclick="switchSchedDay('الخميس',this)">الخميس</button></div>
+  <div class="sd-dayhead"><div><b id="sd-day-lbl">الأحد</b><span id="sd-day-date"></span></div><span class="sd-prog" id="sd-prog"></span></div>
+
+  <section class="card sd-sec">
+    <div class="sd-sh"><span class="sd-ic">🌅</span><div class="sd-st"><b>الطابور الصباحي</b><small>07:00 – 07:15</small></div><span class="sd-cnt" id="sd-c-taboor"></span></div>
+    <div id="sd-taboor-list"></div>
+    <button class="sd-add" onclick="addMonawabaSlot('taboor')">+ إضافة مشرف</button>
+  </section>
+  <section class="card sd-sec">
+    <div class="sd-sh"><span class="sd-ic">☕</span><div class="sd-st"><b>إشراف الفسحة</b><small>09:45 – 10:05</small></div><span class="sd-cnt" id="sd-c-brk"></span></div>
+    <div id="sd-slots-list"></div>
+    <button class="sd-link" onclick="var d=document.getElementById('sd-settings');d.open=true;d.scrollIntoView({behavior:'smooth'})">تعديل مواقع الإشراف</button>
+  </section>
+  <section class="card sd-sec">
+    <div class="sd-sh"><span class="sd-ic">🕌</span><div class="sd-st"><b>إشراف الصلاة</b><small>12:35 – 12:45</small></div><span class="sd-cnt" id="sd-c-salah"></span></div>
+    <div id="sd-salah-list"></div>
+    <button class="sd-add" onclick="addMonawabaSlot('salah')">+ إضافة مشرف</button>
+  </section>
+  <section class="card sd-sec">
+    <div class="sd-sh"><span class="sd-ic">🔄</span><div class="sd-st"><b>المناوبة لنهاية الدوام</b><small>بعد الحصة السابعة</small></div><span class="sd-cnt" id="sd-c-mon"></span></div>
+    <div id="sd-roster-info" class="sd-note"></div>
+    <div id="sd-monawaba-list"></div>
+    <button class="sd-add" onclick="addMonawabaSlot('monawaba')">+ إضافة مشرف</button>
+  </section>
+  <div class="sd-saved">✓ يُحفظ تلقائيًا عند كل تغيير</div>
+
+  <section class="card sd-sec">
+    <div class="sd-sh"><span class="sd-ic">📸</span><div class="sd-st"><b>صورة جدول اليوم</b><small>بهوية وزارة التعليم — للمعاينة والإرسال</small></div></div>
+    <select id="exp-day-sel" hidden><option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option></select>
+    <canvas id="sched-canvas" style="width:100%;border-radius:10px;border:1px solid #efeff1;margin-bottom:10px;display:none"></canvas>
+    <div class="a2">
+      <button class="bp" onclick="previewSchedImage()" style="background:#224c35">👁 معاينة</button>
+      <button class="bp" onclick="exportSchedImage()" style="background:#a3843e" id="exp-sched-btn" disabled>📲 إرسال</button>
+    </div>
+  </section>
+
+  <details class="card sd-set" id="sd-settings">
+    <summary class="ch">⚙️ الإعدادات: المواقع وبيانات الفصل</summary>
+    <div class="sd-sub">📍 مواقع الإشراف الثابتة <small>تظهر في كل الأيام</small></div>
+    <div id="sd-locs-list"></div>
+    <button class="sd-add" onclick="addSchedLoc()">+ إضافة موقع</button>
+    <button class="bp" onclick="saveSchedLocs()" style="margin:8px 0 14px">💾 حفظ المواقع</button>
+    <div class="sd-sub">🗂️ بيانات الفصل الدراسي الأول ١٤٤٨هـ</div>
+    <p style="font-size:12px;color:#15445a;margin-bottom:10px;line-height:1.8">تحدّث جهات اتصال المعلمين الـ٣٦، ومواقع الفسحة ومشرفيها لكل يوم، والطابور الصباحي من الكشوف المعتمدة. المناوبة تُؤخذ تلقائيًا من سجل المناوبة حسب التاريخ. لا تُحذف أي جهة اتصال قائمة.</p>
     <div id="sd-import-sts" class="sts"></div>
     <button class="bp" onclick="applySchoolData1448()">⟳ تحديث الإشراف وبيانات المعلمين</button>
     <a href="teachers/" style="display:block;text-align:center;margin-top:8px;font-size:12.5px;color:#218caa;font-weight:700;text-decoration:none">عرض ملفات المعلمين ←</a>
-  </div>
-
-  <!-- Fixed locations -->
-  <div class="card">
-    <div class="ch">📍 مواقع الإشراف الثابتة</div>
-    <p style="font-size:11px;color:#218caa;margin-bottom:10px">تُضاف مرة واحدة وتظهر في كل الأيام</p>
-    <div id="sd-locs-list"></div>
-    <button onclick="addSchedLoc()" style="width:100%;padding:9px;margin-top:6px;background:rgba(7,168,105,.08);color:#15445a;border:1.5px dashed #69cee3;border-radius:9px;font-family:inherit;font-size:13px;cursor:pointer">+ إضافة موقع</button>
-  </div>
-  <button class="bp" onclick="saveSchedLocs()" style="margin-bottom:14px">💾 حفظ المواقع</button>
-
-  <!-- Per-day teacher assignment -->
-  <div class="card">
-    <div class="ch">👤 تعيين المعلمين لكل يوم</div>
-    <div style="display:flex;gap:0;background:#fafbfb;border-radius:10px;padding:3px;margin-bottom:12px;border:1px solid #efeff1;overflow-x:auto">
-      <button class="dp on" id="sd-tab-الأحد"    onclick="switchSchedDay('الأحد',this)"    style="flex:1;border-radius:8px;padding:7px 4px;white-space:nowrap;font-size:12px">الأحد</button>
-      <button class="dp"    id="sd-tab-الاثنين"  onclick="switchSchedDay('الاثنين',this)"  style="flex:1;border-radius:8px;padding:7px 4px;white-space:nowrap;font-size:12px">الاثنين</button>
-      <button class="dp"    id="sd-tab-الثلاثاء" onclick="switchSchedDay('الثلاثاء',this)" style="flex:1;border-radius:8px;padding:7px 4px;white-space:nowrap;font-size:12px">الثلاثاء</button>
-      <button class="dp"    id="sd-tab-الأربعاء" onclick="switchSchedDay('الأربعاء',this)" style="flex:1;border-radius:8px;padding:7px 4px;white-space:nowrap;font-size:12px">الأربعاء</button>
-      <button class="dp"    id="sd-tab-الخميس"   onclick="switchSchedDay('الخميس',this)"   style="flex:1;border-radius:8px;padding:7px 4px;white-space:nowrap;font-size:12px">الخميس</button>
-    </div>
-    <div id="sd-slots-list"></div>
-
-    <div class="sep" style="margin:14px 0 10px"></div>
-
-    <!-- طابور -->
-    <div class="ch" style="margin-bottom:8px">🌅 الطابور الصباحي <span style="font-size:11px;font-weight:400;color:#218caa">— يمكن إضافة أكثر من معلم</span></div>
-    <div id="sd-taboor-list"></div>
-    <button onclick="addMonawabaSlot('taboor')" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(7,168,105,.08);color:#07a869;border:1.5px dashed #69cee3;border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer">+ إضافة مشرف على الطابور الصباحي</button>
-
-    <!-- صلاة -->
-    <div class="ch" style="margin-bottom:8px">🕌 الصلاة <span style="font-size:11px;font-weight:400;color:#218caa">— يمكن إضافة أكثر من معلم</span></div>
-    <div id="sd-salah-list"></div>
-    <button onclick="addMonawabaSlot('salah')" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(193,180,137,.2);color:#15445a;border:1.5px dashed #c1b489;border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer">+ إضافة مشرف الصلاة</button>
-
-    <!-- مناوبة -->
-    <div class="ch" style="margin-bottom:8px">🔄 المناوبة <span style="font-size:11px;font-weight:400;color:#218caa">— يمكن إضافة أكثر من معلم</span></div>
-    <div id="sd-roster-info" style="font-size:12px;color:#15445a;background:rgba(61,126,185,.1);border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.8"></div>
-    <div id="sd-monawaba-list"></div>
-    <button onclick="addMonawabaSlot('monawaba')" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(61,126,185,.1);color:#3d7eb9;border:1.5px dashed rgba(61,126,185,.2);border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer">+ إضافة مشرف المناوبة</button>
-
-    <button class="bp" onclick="saveSchedDay()" style="margin-top:6px">💾 حفظ <span id="sd-day-lbl">الأحد</span></button>
-  </div>
-
-  <!-- Export card -->
-  <div class="card">
-    <div class="ch">📸 تصدير الجدول كصورة</div>
-    <div class="mb">
-      <label>اليوم للتصدير</label>
-      <select id="exp-day-sel">
-        <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option>
-        <option>الأربعاء</option><option>الخميس</option>
-      </select>
-    </div>
-    <!-- Preview canvas -->
-    <canvas id="sched-canvas" style="width:100%;border-radius:10px;border:1px solid #efeff1;margin-bottom:10px;display:none"></canvas>
-    <div class="a2">
-      <button class="bp" onclick="previewSchedImage()" style="background:#7258a4">👁 معاينة</button>
-      <button class="bp" onclick="exportSchedImage()" style="background:#07a869" id="exp-sched-btn" disabled>📲 تصدير وإرسال</button>
-    </div>
-  </div>
+  </details>
 </div>
 
 <!-- RAQABA PAGE (teacher_affairs / admin) -->
@@ -2916,7 +2921,7 @@ function nav(id,btn){
   if(id==='tpl')renderTpls();
   if(id==='tc'){renderTC();renderParents();fixParentsCls();updateFilterStage();updateFilterCls();}
   if(id==='settings'){loadSchoolSettingsForm();renderLog();}
-  if(id==='sched'){if(_schedLocsCache===null)getSchedLocs();if(_schedCache===null)getSched();renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');if(typeof renderRosterInfo==='function')renderRosterInfo();}
+  if(id==='sched'){sdInitDay();if(_schedLocsCache===null)getSchedLocs();if(_schedCache===null)getSched();renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');if(typeof renderRosterInfo==='function')renderRosterInfo();}
   if(id==='raqaba')loadRaqabaPage();
   if(id==='abs')loadAbsPage();
   if(id==='counselor'){loadCnsStudents();renderCnsRecords();}
@@ -3193,6 +3198,15 @@ function saveParentEdit(id){
 }
 
 // ── SCHED PAGE FUNCTIONS ──
+function sdCounts(){try{
+  var locs=getSchedLocs(),dd=getSched()[schedDay]||{},f=function(a){return (a||[]).filter(Boolean).length;};
+  var bF=locs.filter(function(l){return dd[l];}).length,tF=f(dd._taboor),sF=f(dd._salah),mF=f(dd._monawaba)||(rosterMonawabaName(schedDay)?1:0);
+  var set=function(id,a,b){var e=document.getElementById(id);if(!e)return;e.textContent=b?(a+' / '+b):(a?a+' مشرف':'—');e.className='sd-cnt'+((b?a>=b:a>0)?' done':'');};
+  set('sd-c-brk',bF,locs.length);set('sd-c-taboor',tF,0);set('sd-c-salah',sF,0);set('sd-c-mon',mF,0);
+  var tot=locs.length+3,ok=bF+(tF?1:0)+(sF?1:0)+(mF?1:0),pe=document.getElementById('sd-prog');
+  if(pe){pe.textContent=ok>=tot?'✓ مكتمل':('مكتمل '+ok+' من '+tot);pe.classList.toggle('done',ok>=tot);}
+}catch(e){}}
+function sdInitDay(){if(window._sdInit)return;window._sdInit=1;var d=new Date().getDay();var day=SD_DAYS[d<=4?d:0];var b=document.getElementById('sd-tab-'+day);if(b)switchSchedDay(day,b);}
 function renderSchedLocs(){
   var locs=getSchedLocs();
   var el=document.getElementById('sd-locs-list');if(!el)return;
@@ -3231,6 +3245,9 @@ function switchSchedDay(day,btn){
   document.querySelectorAll('[id^="sd-tab-"]').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
   var lbl=document.getElementById('sd-day-lbl');if(lbl)lbl.textContent=day;
+  var ds=document.getElementById('sd-day-date');if(ds){var iso=sdDateOfDay(day);ds.textContent=iso?rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م':'';}
+  var ex=document.getElementById('exp-day-sel');if(ex)ex.value=day;
+  var cv=document.getElementById('sched-canvas');if(cv)cv.style.display='none';schedImageDataURL=null;var eb=document.getElementById('exp-sched-btn');if(eb)eb.disabled=true;
   renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');renderRosterInfo();
 }
 function renderSchedSlots(){
@@ -3242,16 +3259,15 @@ function renderSchedSlots(){
   locs.forEach(function(loc,i){
     var curTid=dayData[loc]||'';
     var opts=curTid?tOpts.replace('value="'+curTid+'"','value="'+curTid+'" selected'):tOpts;
-    html+='<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #efeff1">';
-    html+='<span style="font-size:13px;font-weight:600;color:#15445a;min-width:100px;flex-shrink:0">'+loc+'</span>';
-    html+='<select data-loc="'+loc+'" onchange="liveUpdateDay(this)" style="flex:1">'+opts+'</select></div>';
+    html+='<div class="sd-row'+(curTid?' ok':'')+'"><span class="sd-n">'+(i+1)+'</span><span class="sd-loc">'+loc+'</span>';
+    html+='<select data-loc="'+loc+'" onchange="liveUpdateDay(this)">'+opts+'</select></div>';
   });
-  el.innerHTML=html;
+  el.innerHTML=html;sdCounts();
 }
 function liveUpdateDay(sel){
   var loc=sel.getAttribute('data-loc');var tid=sel.value;
   var sched=getSched();if(!sched[schedDay])sched[schedDay]={};
-  sched[schedDay][loc]=tid;saveSched(sched);
+  sched[schedDay][loc]=tid;saveSched(sched);sel.parentNode.classList.toggle('ok',!!tid);sdCounts();
 }
 function saveSchedDay(){
   var sched=getSched();if(!sched[schedDay])sched[schedDay]={};
@@ -3268,10 +3284,10 @@ function renderMonawabaSlots(type){
   var html='';
   tids.forEach(function(tid,i){
     var opts=tid?tOpts.replace('value="'+tid+'"','value="'+tid+'" selected'):tOpts;
-    html+='<div style="display:flex;gap:8px;margin-bottom:8px"><select data-mtype="'+type+'" data-midx="'+i+'" onchange="liveUpdateMulti(this)" style="flex:1">'+opts+'</select>';
-    html+='<button class="bs b-dl" data-rmtype="'+type+'" data-rmidx="'+i+'">✕</button></div>';
+    html+='<div class="sd-row'+(tid?' ok':'')+'"><span class="sd-n">'+(i+1)+'</span><select data-mtype="'+type+'" data-midx="'+i+'" onchange="liveUpdateMulti(this)">'+opts+'</select>';
+    html+='<button class="sd-x" aria-label="حذف" data-rmtype="'+type+'" data-rmidx="'+i+'">✕</button></div>';
   });
-  el.innerHTML=html||'<div class="empty" style="padding:6px;font-size:12px">لم يُضَف أحد بعد</div>';
+  el.innerHTML=html||'<div class="sd-empty">لم يُضَف أحد بعد</div>';sdCounts();
   el.querySelectorAll('[data-rmtype]').forEach(function(b){b.addEventListener('click',function(){removeMonawabaSlot(this.getAttribute('data-rmtype'),+this.getAttribute('data-rmidx'));});});
 }
 function addMonawabaSlot(type){
@@ -3291,7 +3307,7 @@ function liveUpdateMulti(sel){
   var sched=getSched();if(!sched[schedDay])sched[schedDay]={};
   var key=type==='monawaba'?'_monawaba':type==='salah'?'_salah':'_taboor';
   if(!sched[schedDay][key])sched[schedDay][key]=[];
-  sched[schedDay][key][idx]=tid;saveSched(sched);
+  sched[schedDay][key][idx]=tid;saveSched(sched);sel.parentNode.classList.toggle('ok',!!tid);sdCounts();
 }
 function resolveSchedTag(day,locName){
   var sched=_schedCache||getSched();var dayData=sched[day]||{};
@@ -3329,7 +3345,7 @@ function rosterMonawabaName(day){
 function renderRosterInfo(){
   var el=document.getElementById('sd-roster-info');if(!el)return;
   var iso=sdDateOfDay(schedDay),nm=rosterMonawabaName(schedDay);
-  el.innerHTML=nm?('📌 حسب سجل المناوبة المعتمد: <b>'+nm+'</b> — '+schedDay+' '+iso.split('-').reverse().join('/')+'م. يُستخدم تلقائيًا في رسائل الإشراف.')
+  el.innerHTML=nm?('📌 حسب سجل المناوبة المعتمد: <b>'+nm+'</b>. يُستخدم تلقائيًا في الرسائل والصورة.')
     :'لا توجد مناوبة مسجلة في سجل المناوبة لهذا اليوم من الأسبوع الحالي (إجازة أو خارج الفصل).';
 }
 function applySchoolData1448(){
@@ -4104,103 +4120,59 @@ function insHissaFasl(){
 
 // Schedule image export stubs (need canvas element)
 function previewSchedImage(){
-  var canvas = document.getElementById('sched-canvas');
-  if(!canvas){toast('عنصر الرسم غير موجود',true);return;}
-  var day = document.getElementById('exp-day-sel') ? document.getElementById('exp-day-sel').value : 'الأحد';
-  var locs = _schedLocsCache || getSchedLocs();
-  var sched = _schedCache || getSched();
-  var dayData = sched[day] || {};
-  var sc = getSchoolSettings();
-  var now = new Date();
-  var pad = function(n){return String(n).padStart(2,'0');};
-
-  function getTName(tid){var t=DB.teachers.find(function(x){return x.id===tid;});return t?((t.prefix||'')+' '+t.name).trim():'—';}
-  function getMultiNames(key){var tids=dayData[key]||[];return tids.map(function(tid){return getTName(tid);}).filter(Boolean).join(' / ')||'—';}
-
-  var rows = [];
-  locs.forEach(function(loc,i){ rows.push({num:i+1, label:loc, value:getTName(dayData[loc]||''), type:'sup'}); });
-  rows.push({label:'الطابور الصباحي', value:getMultiNames('_taboor'), type:'taboor', icon:'🌅'});
-  rows.push({label:'الصلاة',           value:getMultiNames('_salah'),   type:'salah',   icon:'🕌'});
-  rows.push({label:'المناوبة',         value:(typeof rosterMonawabaName==='function'&&rosterMonawabaName(day))||getMultiNames('_monawaba'),type:'monawaba',icon:'🔄'});
-
-  var W=1200, ROW_H=80, HEADER_H=170, COL_H=46, FOOTER_H=65;
-  var H=HEADER_H+COL_H+rows.length*ROW_H+FOOTER_H;
-  canvas.width=W; canvas.height=H; canvas.style.display='block';
-  var ctx=canvas.getContext('2d');
-  ctx.fillStyle='#efeff1'; ctx.fillRect(0,0,W,H);
-
-  var hg=ctx.createLinearGradient(0,0,W,0);
-  hg.addColorStop(0,'#3078a6'); hg.addColorStop(1,'#15445a');
-  ctx.fillStyle=hg; ctx.fillRect(0,0,W,HEADER_H);
-  ctx.fillStyle='#c1b489'; ctx.fillRect(0,0,W,5);
-
-  var cx=W/2;
-  ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=10;
-  ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.font='bold 52px Arial';
-  ctx.fillText(sc.name||'ثانوية ينبع', W-44, 70); ctx.shadowBlur=0;
-  ctx.font='bold 28px Arial'; ctx.fillStyle='#69cee3';
-  ctx.fillText('الإشراف و المناوبة', W-44, 108);
-  ctx.font='bold 34px Arial'; ctx.fillStyle='#c1b489'; ctx.textAlign='center';
-  ctx.fillText(day, cx, 140);
-  var hijriStr='';
-  try{var hp=new Intl.DateTimeFormat('en-SA-u-ca-islamic',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(now);
-    var hget=function(t){var p=hp.find(function(x){return x.type===t;});return p?p.value:'';};
-    hijriStr=hget('year')+'/'+hget('month')+'/'+hget('day')+' هـ';}catch(e){}
-  ctx.font='18px Arial'; ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.fillText(hijriStr+'  —  '+now.getFullYear()+'/'+pad(now.getMonth()+1)+'/'+pad(now.getDate())+' م', cx, 162);
-  ctx.textAlign='left'; ctx.font='bold 22px Arial'; ctx.fillStyle='#fff';
-  ctx.fillText(sc.sender||'وكيل شؤون المعلمين', 44, 130);
-  ctx.font='15px Arial'; ctx.fillStyle='rgba(255,255,255,0.5)';
-  ctx.fillText(sc.term||'', 44, 108);
-  ctx.fillStyle='#c1b489'; ctx.fillRect(0,HEADER_H-4,W,4);
-
-  var colY=HEADER_H;
-  ctx.fillStyle='#15445a'; ctx.fillRect(0,colY,W,COL_H);
-  ctx.fillStyle='#c1b489'; ctx.font='bold 20px Arial';
-  ctx.textAlign='right'; ctx.fillText('الموقع / النشاط', W-50, colY+COL_H/2+7);
-  ctx.textAlign='left'; ctx.fillText('المسؤول', 50, colY+COL_H/2+7);
-  ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fillRect(W/2,colY+6,1,COL_H-12);
-
-  var cfg={sup:{bg1:'#fff',bg2:'rgba(7,168,105,.08)',bar:'#15445a',lc:'#15445a',vc:'#15445a'},
-    taboor:{bg1:'rgba(7,168,105,.08)',bg2:'rgba(7,168,105,.15)',bar:'#07a869',lc:'#15445a',vc:'#15445a'},
-    salah:{bg1:'rgba(193,180,137,.2)',bg2:'rgba(193,180,137,.2)',bar:'#c1b489',lc:'#15445a',vc:'#15445a'},
-    monawaba:{bg1:'rgba(61,126,185,.1)',bg2:'rgba(61,126,185,.2)',bar:'#3d7eb9',lc:'#15445a',vc:'#15445a'}};
-  var y=HEADER_H+COL_H;
-  rows.forEach(function(row,i){
-    var cf=cfg[row.type]||cfg.sup;
-    ctx.fillStyle=i%2===0?cf.bg1:cf.bg2; ctx.fillRect(0,y,W,ROW_H);
-    ctx.fillStyle=cf.bar; ctx.fillRect(0,y,6,ROW_H);
-    if(row.type==='sup'){
-      ctx.fillStyle=cf.bar; ctx.globalAlpha=0.15;
-      ctx.beginPath(); ctx.arc(W-46,y+ROW_H/2,20,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-      ctx.fillStyle=cf.bar; ctx.font='bold 16px Arial'; ctx.textAlign='center';
-      ctx.fillText(row.num, W-46, y+ROW_H/2+6);
-    } else {
-      ctx.font='22px Arial'; ctx.textAlign='center';
-      ctx.fillText(row.icon||'', W-46, y+ROW_H/2+8);
-    }
-    ctx.textAlign='center'; ctx.fillStyle=cf.lc; ctx.font='bold 24px Arial';
-    ctx.fillText(row.label, W*3/4, y+ROW_H/2+8);
-    ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(W/2,y+10,1,ROW_H-20);
-    ctx.textAlign='center'; ctx.fillStyle=cf.vc;
-    var val=row.value||'—';
-    ctx.font='bold '+(val.length>25?20:24)+'px Arial';
-    ctx.fillText(val, W/4, y+ROW_H/2+8);
-    ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,y+ROW_H-1,W,1);
-    y+=ROW_H;
-  });
-
-  ctx.fillStyle='#15445a'; ctx.fillRect(0,y,W,FOOTER_H);
-  ctx.fillStyle='#c1b489'; ctx.fillRect(0,y,W,3);
-  ctx.textAlign='right'; ctx.font='16px Arial'; ctx.fillStyle='rgba(255,255,255,0.65)';
-  ctx.fillText('منصة تواصل — '+(sc.name||'ثانوية ينبع'), W-30, y+FOOTER_H/2+6);
-  ctx.textAlign='left'; ctx.font='13px Arial'; ctx.fillStyle='rgba(255,255,255,0.35)';
-  ctx.fillText('تطوير: حاتم السفياني', 30, y+FOOTER_H/2+6);
-
+  var go=function(){try{drawSchedImage();}catch(e){console.error(e);toast('تعذّر إنشاء الصورة',true);}};
+  if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('800 40px Tajawal'),document.fonts.load('700 26px Tajawal'),document.fonts.load('500 20px Tajawal')]).then(go,go);else go();
+}
+function drawSchedImage(){
+  var canvas=document.getElementById('sched-canvas');if(!canvas){toast('عنصر الرسم غير موجود',true);return;}
+  var day=schedDay||(document.getElementById('exp-day-sel')||{}).value||'الأحد';
+  var locs=_schedLocsCache||getSchedLocs(),dd=(_schedCache||getSched())[day]||{},sc=getSchoolSettings();
+  var tn=function(tid){var t=DB.teachers.find(function(x){return x.id===tid;});return t?((t.prefix||'')+' '+t.name).trim():'';};
+  var many=function(k){return (dd[k]||[]).map(tn).filter(Boolean).join('  /  ');};
+  var ea=function(v){return String(v).replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});};
+  var rows=[{lbl:'الطابور الصباحي',tm:'07:00 – 07:15',v:many('_taboor'),k:'hi'}];
+  locs.forEach(function(l){rows.push({lbl:'الفسحة — '+l,tm:'09:45 – 10:05',v:tn(dd[l]||''),k:'brk'});});
+  rows.push({lbl:'إشراف الصلاة',tm:'12:35 – 12:45',v:many('_salah'),k:'hi'});
+  rows.push({lbl:'المناوبة لنهاية الدوام',tm:'بعد 13:35',v:(rosterMonawabaName(day)||many('_monawaba')),k:'mon'});
+  var G='#1f4b34',G2='#224c35',GT='#2e6b4a',GOLD='#a3843e',BEI='#e1d3ab',BEI2='#efe6cc',LG='#e8f0ea',ALT='#f6f8f6',INK='#1d2a24',LINE='#d9ded9',F='Tajawal, Arial, sans-serif';
+  var W=1200,HH=200,TH=60,RH=72,FH=80,P=40,H=HH+30+TH+rows.length*RH+30+FH;
+  canvas.width=W;canvas.height=H;canvas.style.display='block';
+  var c=canvas.getContext('2d');c.direction='rtl';
+  c.fillStyle='#ffffff';c.fillRect(0,0,W,H);
+  // header band + gold block
+  c.fillStyle=G;c.fillRect(0,0,W,HH);c.fillStyle=GOLD;c.fillRect(W-120,0,120,HH);
+  c.fillStyle='rgba(255,255,255,.12)';for(var i=0;i<5;i++)c.fillRect(W-120,26+i*34,120,2);
+  var cx=(W-120)/2;c.textAlign='center';
+  c.fillStyle='rgba(255,255,255,.7)';c.font='500 20px '+F;c.fillText('المملكة العربية السعودية · وزارة التعليم · '+(sc.name||'ثانوية ينبع'),cx,44);
+  c.fillStyle='#ffffff';c.font='800 44px '+F;c.fillText('جدول الإشراف والمناوبة — يوم '+day,cx,104);
+  var iso=sdDateOfDay(day);var dstr=iso?(rqHijri(iso)+'  ·  '+iso.split('-').reverse().join('/')+'م'):'';
+  c.fillStyle=BEI;c.font='600 22px '+F;c.fillText('الفصل الدراسي الأول — العام الدراسي ١٤٤٨هـ',cx,146);
+  c.fillStyle='rgba(255,255,255,.75)';c.font='500 20px '+F;c.fillText(ea(dstr),cx,180);
+  // columns (RTL): م | المهمة/الموقع | الوقت | المسؤول
+  var R=W-P,cols=[[R-70,R],[R-470,R-70],[R-700,R-470],[P,R-700]];
+  var y=HH+30;c.fillStyle=G2;c.fillRect(P,y,W-2*P,TH);
+  c.fillStyle='#ffffff';c.font='700 24px '+F;
+  ['م','المهمة / الموقع','الوقت','المسؤول'].forEach(function(t,i){c.fillText(t,(cols[i][0]+cols[i][1])/2,y+TH/2+9);});
+  c.fillStyle=GOLD;c.fillRect(P,y+TH-3,W-2*P,3);y+=TH;
+  rows.forEach(function(r,i){
+    var bg=r.k==='hi'?BEI:r.k==='mon'?LG:(i%2?ALT:'#ffffff');c.fillStyle=bg;c.fillRect(P,y,W-2*P,RH);
+    c.fillStyle=LINE;c.fillRect(P,y+RH-1,W-2*P,1);cols.slice(1).forEach(function(cl){c.fillRect(cl[1],y+10,1,RH-20);});
+    c.fillStyle=r.k==='hi'?'#8a7440':'#6b7a70';c.font='700 22px '+F;c.fillText(ea(i+1),(cols[0][0]+cols[0][1])/2,y+RH/2+8);
+    c.fillStyle=(r.k==='brk')?INK:GT;c.font='800 25px '+F;c.fillText(r.lbl,(cols[1][0]+cols[1][1])/2,y+RH/2+9);
+    c.save();c.direction='ltr';c.fillStyle=INK;c.font='700 23px '+F;c.fillText(ea(r.tm),(cols[2][0]+cols[2][1])/2,y+RH/2+8);c.restore();
+    var v=r.v||'—',vx=(cols[3][0]+cols[3][1])/2,vw=cols[3][1]-cols[3][0]-24;c.fillStyle=r.v?INK:'#9aa39d';
+    var parts=v.split('  /  '),fs=24;c.font='700 '+fs+'px '+F;
+    if(parts.length>1&&c.measureText(v).width>vw){fs=20;c.font='700 '+fs+'px '+F;c.fillText(parts[0],vx,y+RH/2-4);c.fillText(parts.slice(1).join(' / '),vx,y+RH/2+22);}
+    else{while(fs>16&&c.measureText(v).width>vw){fs--;c.font='700 '+fs+'px '+F;}c.fillText(v,vx,y+RH/2+8);}
+    y+=RH;});
+  c.strokeStyle=LINE;c.lineWidth=1;c.strokeRect(P+.5,HH+30.5,W-2*P-1,y-HH-30-1);
+  // footer
+  y+=30;c.fillStyle=GOLD;c.fillRect(0,y,W,4);c.fillStyle=G;c.fillRect(0,y+4,W,FH-4);
+  c.fillStyle='#ffffff';c.font='700 22px '+F;c.textAlign='right';c.fillText((sc.name||'ثانوية ينبع')+' · وكالة شؤون المعلمين',W-P,y+FH/2+10);
+  c.textAlign='left';c.fillStyle=BEI;c.font='600 20px '+F;c.fillText(sc.sender||'وكيل شؤون المعلمين',P,y+FH/2+10);
   schedImageDataURL=canvas.toDataURL('image/png');
-  var btn=document.getElementById('exp-sched-btn');
-  if(btn)btn.disabled=false;
-  toast('✅ الصورة جاهزة — اضغط تصدير وإرسال');
+  var btn=document.getElementById('exp-sched-btn');if(btn)btn.disabled=false;
+  toast('✅ الصورة جاهزة — اضغط إرسال');
 }
 
 function exportSchedImage(){
