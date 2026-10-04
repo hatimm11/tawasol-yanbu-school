@@ -2097,14 +2097,14 @@ function pwSubmit(){var role=_pwPending,v=document.getElementById('pw-in').value
 function pwLogout(){if(currentRole){try{localStorage.removeItem('sd_pw_ok_'+currentRole);}catch(e){}}toggleSideNav(false);showRoleScreen();}
 var _usPending=null;
 var _usrList=null;
-var USR_DEF={admin_assistant:['مساعد إداري ١','مساعد إداري ٢','مساعد إداري ٣']};
+var USR_DEF={admin_assistant:['أ. احمد مضاى']};
 function usrGet(){if(_usrList!==null)return _usrList;try{var d=localStorage.getItem('sd_userlist_v1');_usrList=d?JSON.parse(d):JSON.parse(JSON.stringify(USR_DEF));}catch(e){_usrList=JSON.parse(JSON.stringify(USR_DEF));}return _usrList;}
 function usrSave(){try{localStorage.setItem('sd_userlist_v1',JSON.stringify(_usrList));}catch(e){}if(typeof db!=='undefined')try{db.ref(FB_SCHOOL+'/userlist').set(_usrList);}catch(e){}usrRender();}
 function usrAdd(){var r=document.getElementById('usr-role').value,n=document.getElementById('usr-name').value.trim().replace(/\s+/g,' ');if(n.length<2){toast('اكتب الاسم',true);return;}
   var L=usrGet();L[r]=L[r]||[];if(L[r].indexOf(n)>-1){toast('الاسم موجود',true);return;}L[r].push(n);document.getElementById('usr-name').value='';usrSave();toast('✅ أُضيف '+n);}
 function usrDel(r,i){var L=usrGet();if(!L[r])return;L[r].splice(i,1);if(!L[r].length)delete L[r];usrSave();}
 function usrRender(){var sel=document.getElementById('usr-role'),el=document.getElementById('usr-list');if(!sel||!el)return;
-  var card=document.getElementById('users-card');if(card)card.style.display=(currentRole==='admin'||currentRole==='teacher_affairs'||currentRole==='developer')?'':'none';
+  var card=document.getElementById('users-card');if(card)card.style.display='none'; /* كل الأسماء ثابتة الآن */
   if(!sel.options.length)sel.innerHTML=Object.keys(ROLES).filter(function(k){return k!=='developer';}).map(function(k){return '<option value="'+k+'">'+ROLES[k].label+'</option>';}).join('');
   var L=usrGet(),ks=Object.keys(ROLES).filter(function(k){return L[k]&&L[k].length;});
   el.innerHTML=ks.length?ks.map(function(k){return '<div class="rq-grp">'+ROLES[k].label+'</div>'+L[k].map(function(n,i){return '<div class="tc-row" style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="flex:1;font-weight:700">'+rqEsc(n)+'</span><button class="bs b-dl" onclick="usrDel(\''+k+'\','+i+')">حذف</button></div>';}).join('');}).join(''):'<div class="empty">لم يُضف مستخدمون بعد</div>';}
@@ -2277,7 +2277,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-devplus';
+var APP_VER='2026-10-04-aa1';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -4096,7 +4096,7 @@ function presencePing(role){role=role||currentRole;if(typeof db==='undefined'||!
   db.ref(k).update({name:rqUser(),last:now});db.ref(k+'/devices/'+devId()).set({last:now,d:devDesc(),ver:(typeof APP_VER!=='undefined'?APP_VER:''),w:screen.width+'×'+screen.height});
   if(!_presT)_presT=setInterval(function(){if(!document.hidden)presencePing();},120000);}
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&currentRole)try{presencePing();}catch(e){}});
-var USR_FIXED={admin:'أ. زاهر السناني',teacher_affairs:'أ. نايف الميلبي',student_affairs:'أ. لؤي الأحمدي',counselor:'أ. باسم اللقماني',developer:'أ. حاتم السفياني'};
+var USR_FIXED={admin:'أ. زاهر السناني',teacher_affairs:'أ. نايف الميلبي',student_affairs:'أ. لؤي الأحمدي',counselor:'أ. باسم اللقماني',developer:'أ. حاتم السفياني',admin_assistant:'أ. احمد مضاى'};
 function rqUser(){if(USR_FIXED[currentRole])return USR_FIXED[currentRole];try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
 function rqNeedUser(){if(rqUser())return false;usOpen(currentRole);return true;}
 function rqUserFill(){var v=rqUser();document.querySelectorAll('.rq-user-v').forEach(function(e){e.textContent=v||'—';});}
