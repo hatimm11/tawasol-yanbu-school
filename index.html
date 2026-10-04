@@ -2420,7 +2420,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-logo2';
+var APP_VER='2026-10-04-logo3';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2579,7 +2579,7 @@ function txRender(force){var el=document.getElementById('dv-tx'),ep=document.get
   h+='<div class="tx-h" style="margin-top:12px">معاينة رسالة واتساب <span class="ds-sub">(مثال: تأخر عن بداية الدوام)</span></div><div class="tx-prev" id="tx-prev"></div>'+txBar('dv-tx');
   el.innerHTML=h;txPrev();}
   if(ep&&(force||!ep.innerHTML||!(txFocusIn('dv-px')||ep.querySelector('.tx-ta.chg')))){
-  var g='<div class="tx-chips">المتغيرات: <code>{المدرسة}</code><code>{المرسل}</code><code>{الجهة}</code> (وكالة شؤون المعلمين، أو إدارة المدرسة في ملخص المدير) · <code>{الشهر}</code> في ملخص المدير</div>';
+  var g='<div class="tx-chips">المتغيرات: <code>{المدرسة}</code><code>{المرسل}</code><code>{الجهة}</code> (وكيل شؤون المعلمين، أو إدارة المدرسة في ملخص المدير) · <code>{الشهر}</code> في ملخص المدير</div>';
   TX_GRP.px.forEach(function(G){g+='<div class="tx-h" style="margin-top:14px;font-size:13.5px;color:#351375">'+G[0]+'<span class="tx-sp"></span>'+(G[2]?'<button class="ac-gear" onclick="pxPreview(\''+G[2]+'\')">👁️ معاينة</button>':'')+'</div>';G[1].forEach(function(k){g+=txItem(k);});});
   ep.innerHTML=g+txBar('dv-px');}}
 function pxPreview(w){var keep=TX;TX=Object.assign({},TX,txCur());try{
@@ -2742,7 +2742,7 @@ function dsPrintAdm(){
   var who={};Object.keys(by).forEach(function(k){var b=by[k];if(b&&b.n&&marks[k])who[b.n]=(who[b.n]||0)+1;});
   body+='<h3>'+txP('a_h5')+'</h3><p>'+(Object.keys(who).length?Object.keys(who).map(function(n){return e(n)+': '+who[n]+' رصد';}).join(' · '):'لم تُنفَّذ جولات بعد.')+'</p>';
   body+='<div class="sg"><div>'+txP('a_sig1')+'</div><div>'+txP('a_sig2')+'</div></div>';
-  rqOpenDoc(rqDoc(txP('a_title',{'الجهة':'إدارة المدرسة'}),rqDay(iso)+' '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م · تقرير مدير المدرسة',strip,body,'إدارة المدرسة').split('وكالة شؤون المعلمين').join('إدارة المدرسة'));
+  rqOpenDoc(rqDoc(txP('a_title',{'الجهة':'إدارة المدرسة'}),rqDay(iso)+' '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م · تقرير مدير المدرسة',strip,body,'إدارة المدرسة'));
 }
 function dsPrintDay(){
   if(currentRole==='admin')return dsPrintAdm();
@@ -4245,7 +4245,7 @@ var TX_LBL={rq_greet:'التحية والافتتاح',rq_absent:'غياب عن 
   a_title:'عنوان التقرير',a_h1:'القسم الأول',a_h2:'القسم الثاني',a_h3:'القسم الثالث',a_h4:'القسم الرابع',a_h5:'القسم الخامس',a_sig1:'التوقيع الأول',a_sig2:'التوقيع الثاني'};
 var TX_GRP={tx:['rq_greet','rq_absent','rq_late','rq_early','rq_class','rq_classlate','rq_duty','rq_ask','rq_sign','rq_accept','rq_reject'],
   px:[['ترويسة وتذييل كل المطبوعات',['p_head1','p_head2','p_foot','p_src'],''],['المساءلة المطبوعة',['f_title','f_sig1','f_reply','f_dec','f_sig3'],'f'],['التقرير اليومي (الوكيل)',['d_title','d_h1','d_h2','d_h3','d_h4','d_sig1','d_sig2'],'d'],['الملخص التنفيذي (المدير)',['a_title','a_h1','a_h2','a_h3','a_h4','a_h5','a_sig1','a_sig2'],'a']]};
-function txP(k,extra){var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{},v={'المدرسة':sc.name||'ثانوية ينبع','المرسل':sc.sender||'','الجهة':'وكالة شؤون المعلمين'};if(extra)Object.keys(extra).forEach(function(x){v[x]=extra[x];});return rqEsc(tx(k,v)).replace(/\n/g,'<br>');}
+function txP(k,extra){var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{},v={'المدرسة':sc.name||'ثانوية ينبع','المرسل':sc.sender||'','الجهة':'وكيل شؤون المعلمين'};if(extra)Object.keys(extra).forEach(function(x){v[x]=extra[x];});return rqEsc(tx(k,v)).replace(/\n/g,'<br>');}
 var TX=(function(){try{return JSON.parse(localStorage.getItem('sd_texts_v1')||'{}')||{};}catch(e){return {};}})();
 function txRaw(k){var v=TX&&TX[k];return (typeof v==='string'&&v.trim())?v:TX_DEF[k];}
 function tx(k,vars){vars=vars||{};return txRaw(k).split('\n').map(function(l){var had=/\{[^}]+\}/.test(l);var o=l.replace(/\{([^}]+)\}/g,function(m,n){return vars.hasOwnProperty(n)?(vars[n]==null?'':String(vars[n])):m;});return (had&&!o.trim())?null:o;}).filter(function(l){return l!==null;}).join('\n');}
