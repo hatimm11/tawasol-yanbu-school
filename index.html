@@ -536,6 +536,14 @@ body.rq-only .rq-rooms-card{display:none}
 .tx-prev{white-space:pre-wrap;background:#e7f7ef;border:1px solid rgba(7,168,105,.25);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.9;color:#15445a;margin-top:6px}
 .tx-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tx-tab{border:1px solid #c2c1c1;background:#fff;border-radius:999px;padding:4px 12px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;color:#15445a}.tx-tab.on{background:#15445a;color:#fff;border-color:#15445a}
 .tp-row{display:grid;grid-template-columns:1fr 120px;gap:8px;margin-bottom:6px}.tp-row input,.tp-row select{border:1px solid #c2c1c1;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:13px;color:#15445a;background:#fff}
+.tm-warn{background:#fff8e6;border:1px solid #f0c75e;color:#7a5600;border-radius:12px;padding:9px 12px;font-size:12.5px;line-height:1.9;margin-bottom:10px}
+.tm-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tm-mb{border:1.5px solid #c2c1c1;background:#fff;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:800;color:#15445a;cursor:pointer}.tm-mb.on{border-color:#07a869;background:#e7f7ef;color:#07a869}
+.tm-pd{display:flex;gap:8px;flex-wrap:wrap}.tm-pd label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:800;color:#3078a6}.tm-pd select{border:1px solid #c2c1c1;border-radius:10px;padding:6px 10px;font-family:inherit}
+.tm-gen{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;background:#fafbfb;border:1px dashed #c2c1c1;border-radius:12px;padding:10px;margin-bottom:10px;font-size:12px;color:#3078a6}.tm-gen label{display:flex;flex-direction:column;gap:3px;font-weight:800}.tm-gen b{width:100%;color:#15445a}
+.tm-tbl{width:100%;border-collapse:collapse;font-size:12.5px}.tm-tbl th{background:#15445a;color:#fff;padding:6px 8px;text-align:start;font-weight:800}.tm-tbl td{padding:4px 6px;border-bottom:1px solid #efeff1}.tm-tbl input{width:100%;border:1px solid #e3e3e5;border-radius:8px;padding:6px 8px;font-family:inherit;font-size:12.5px;color:#15445a;background:#fff;box-sizing:border-box}.tm-tbl tr.chg td{background:#fffdf5}.tm-tbl .tm-new td{background:#f3faf6}
+.tm-grid td.off input{background:#efeff1;color:#9aa39d}.tm-grid input{min-width:110px}
+.rm-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#4b53bc,#6264a7);color:#fff;border-radius:14px;padding:10px 14px;margin-bottom:12px;box-shadow:0 4px 14px rgba(75,83,188,.25)}.rm-bar .rm-ic{font-size:22px}.rm-bar b{display:block;font-size:14px}.rm-bar small{font-size:11.5px;opacity:.85}
+.rq-tm{font-size:10.5px;font-weight:800;color:#4b53bc;background:rgba(98,100,167,.12);border-radius:999px;padding:1px 8px}.rq-tm a{color:inherit;text-decoration:none}
 .dv-mini{margin-inline-start:8px;border:1px solid rgba(217,45,32,.4);background:none;color:#d92d20;border-radius:999px;padding:2px 10px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
 .dv-e{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #efeff1}.dv-e:last-child{border-bottom:0}
 .dv-et{font-size:11px;color:#3078a6;font-variant-numeric:tabular-nums;min-width:74px;direction:ltr;text-align:right}
@@ -788,6 +796,8 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   try{db.ref(FB_SCHOOL+'/access').on('value',function(sn){ACC=sn.val()||{};try{localStorage.setItem('sd_access_v1',JSON.stringify(ACC));}catch(e){}try{accCheck();}catch(e){}try{if(currentRole==='developer')renderDev();}catch(e){}});}catch(e){}
   try{db.ref(FB_SCHOOL+'/texts').on('value',function(sn){TX=sn.val()||{};if(Array.isArray(TX))TX={};try{localStorage.setItem('sd_texts_v1',JSON.stringify(TX));}catch(e){}try{if(currentRole==='developer')txRender();}catch(e){}});}catch(e){}
   try{db.ref(FB_SCHOOL+'/xusers').on('value',function(sn){XU=sn.val()||{};if(Array.isArray(XU))XU={};try{localStorage.setItem('sd_xusers_v1',JSON.stringify(XU));}catch(e){}try{xuBtns();}catch(e){}try{accCheck();}catch(e){}try{if(currentRole==='developer')xuRender();}catch(e){}});}catch(e){}
+  try{db.ref(FB_SCHOOL+'/cfg').on('value',function(sn){CFG=sn.val()||{};if(Array.isArray(CFG))CFG={};_ramMemo={};try{localStorage.setItem('sd_cfg_v1',JSON.stringify(CFG));}catch(e){}try{cfgApply();rqRefreshAll();}catch(e){}try{if(currentRole==='developer')tmRender();}catch(e){}});}catch(e){}
+  try{db.ref(FB_SCHOOL+'/termd').on('value',function(sn){var v=sn.val();TERMD=(v&&v.teachers)?v:null;try{if(TERMD)localStorage.setItem('sd_termd_v1',JSON.stringify(TERMD));else localStorage.removeItem('sd_termd_v1');}catch(e){}try{cfgApply();rqRefreshAll();}catch(e){}try{if(currentRole==='developer')tmRender();}catch(e){}});}catch(e){}
   try{db.ref('.info/serverTimeOffset').on('value',function(sn){window.__fbOffset=sn.val()||0;});}catch(e){}
   window.devFlush=function(){try{var role=window.currentRole||'',u=(typeof rqUser==='function')?rqUser():'';
     while(window.__devQ.length){var o=window.__devQ.shift();o.role=role;o.user=u;o.ver=(typeof APP_VER!=='undefined')?APP_VER:'';db.ref(FB_SCHOOL+'/devlog').push(o);}}catch(e){}};
@@ -1043,6 +1053,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <div class="card ds-card"><div class="ch">📈 نشاط المنصة اليوم</div><div id="dv-act"></div></div>
       <div class="card ds-card"><div class="ch">🐢 أبطأ الموارد تحميلًا</div><div id="dv-res"></div></div>
       <div class="card ds-card dv-wide"><div class="ch">🔐 التحكم في الحسابات <span class="ds-sub">يُطبَّق فورًا على كل الأجهزة</span></div><div id="dv-acc"></div></div>
+      <div class="card ds-card dv-wide"><div class="ch">🗓️ إدارة الفصل الدراسي <span class="ds-sub">الفصل، الدراسة عن بُعد، أوقات الحصص، المعلمون، الجدول</span></div><div id="dv-tm"></div></div>
       <div class="card ds-card dv-wide"><div class="ch">📝 نصوص المساءلة <span class="ds-sub">تُطبَّق على رسالة واتساب ونموذج الطباعة لكل الأجهزة</span></div><div id="dv-tx"></div></div>
       <div class="card ds-card dv-wide"><div class="ch">🖨️ نصوص المطبوعات <span class="ds-sub">المساءلة والتقرير اليومي والملخص التنفيذي</span></div><div id="dv-px"></div></div>
       <div class="card ds-card dv-wide"><div class="ch">💬 قوالب الرسائل <span class="ds-sub">المشتركة وقوالب كل حساب</span></div><div id="dv-tp"></div></div>
@@ -1519,7 +1530,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <label>الفصل الدراسي</label>
       <select id="sch-term">
         <option value="الفصل الأول">الفصل الأول</option>
-        <option value="الفصل الثاني" selected>الفصل الثاني</option>
+        <option value="الفصل الثاني">الفصل الثاني</option>
         <option value="الفصل الثالث">الفصل الثالث</option>
       </select>
     </div>
@@ -1674,7 +1685,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   <!-- CLASS ROUND -->
   <div id="rq-cls">
     <div class="card">
-      <div class="ch">🏫 جولة متابعة الحصص</div>
+      <div class="ch" id="rq-c-title">🏫 جولة متابعة الحصص</div>
       <div class="rq-user"><span class="rq-user-l">القائم بالجولة</span><b class="rq-user-v">—</b><button type="button" class="rq-user-sw" onclick="usOpen(currentRole)">تبديل</button></div>
       <label>اليوم</label><div class="rq-pers rq-days" id="rq-c-days"></div>
       <div class="g2 mb"><div><label for="rq-c-date">التاريخ</label><input type="date" id="rq-c-date" onchange="rqRenderCls()"></div>
@@ -2353,8 +2364,9 @@ function saveParents(arr){
 
 // ── SCHOOL SETTINGS ──
 function getSchoolSettings(){
-  var defaults={name:'ثانوية ينبع',phone:'',address:'',term:'الفصل الثاني',sender:''};
+  var defaults={name:'ثانوية ينبع',phone:'',address:'',term:'الفصل الأول',sender:''};
   try{var d=localStorage.getItem(SCHOOL_KEY);var s=d?JSON.parse(d):defaults;}catch(e){var s=defaults;}
+  try{if(typeof CFG!=='undefined'&&CFG.term&&CFG.term.name)s.term=CFG.term.name;}catch(e){}
   try{var rk='sd_sender_'+(currentRole||'default');var rs=localStorage.getItem(rk);if(rs)s.sender=rs;}catch(e){}
   return s;
 }
@@ -2420,7 +2432,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-logo3';
+var APP_VER='2026-10-04-term';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2433,7 +2445,7 @@ function renderDash(){
   document.getElementById('ds-date').textContent=rqDay(iso)+' · '+rqHijri(iso)+' · '+iso.split('-').reverse().join('/')+'م';
   document.getElementById('ds-clock').textContent=rqHM(n);
   var school=dow<=4,cur=null,ks=[-1,0,1,2,-2,3,4,5,6];
-  if(dow===2)ks=ks.filter(function(k){return k!==6;});
+  ks=ks.filter(function(k){return k<0||k<rqMaxP(dow);});if(rqRemote(iso))ks=ks.filter(function(k){return k>=0;});
   ks.forEach(function(k){var w=RQ_TIME[k];if(n>=w[0]&&n<w[1])cur=k;});
   var nx=ks.find(function(k){return RQ_TIME[k][0]>n;});
   var nowEl=document.getElementById('ds-now'),tEl=document.getElementById('ds-now-t'),bar={style:{}},go=document.getElementById('ds-go');
@@ -2556,7 +2568,7 @@ function renderDev(){
     Object.keys(v).forEach(function(r){Object.keys(v[r]||{}).forEach(function(k){var o=v[r][k]||{},dv=o.devices||{},dk=Object.keys(dv);dk.forEach(function(d){devs[d]=1;});
       var last=o.last;dk.forEach(function(d){if((dv[d].last||'')>(last||''))last=dv[d].last;});
       rows.push({r:r,k:k,n:o.name,l:last,dv:dk.map(function(d){return dv[d];}),stale:!devIsCurrentName(r,o.name)});});});
-    rows.sort(function(a,b){return (b.l||'').localeCompare(a.l||'');});try{accRender();}catch(e){}try{txRender();}catch(e){}try{tpRender();}catch(e){}try{xuRender();}catch(e){}var el=document.getElementById('dv-users');if(!el)return;
+    rows.sort(function(a,b){return (b.l||'').localeCompare(a.l||'');});try{accRender();}catch(e){}try{txRender();}catch(e){}try{tpRender();}catch(e){}try{xuRender();}catch(e){}try{tmRender();}catch(e){}var el=document.getElementById('dv-users');if(!el)return;
     var onl=rows.filter(function(x){return Date.now()-Date.parse(x.l)<300000;}).length;
     document.getElementById('dv-users-sub').textContent=rows.filter(function(x){return !x.stale;}).length+' مستخدم · '+Object.keys(devs).length+' جهاز · '+onl+' متصل الآن';
     el.innerHTML=rows.length?'<div class="dv-ut">'+rows.map(function(x){var ago=Date.now()-Date.parse(x.l),live=ago<300000;
@@ -2665,6 +2677,153 @@ function xuSetPw(id){var v=(document.getElementById('xu-ep-'+id).value||'').trim
 function xuToggle(id){var d=!(XU[id]||{}).disabled;xuW(id,{disabled:d||null},d?'⛔ عُطّل الحساب':'✓ فُعّل الحساب');}
 function xuKick(id){if(!xuArmed('k'+id))return;xuW(id,{kickAt:srvNow()},'↩️ سُجّل خروجه من كل الأجهزة');}
 function xuDel(id){if(!xuArmed('d'+id))return;var n=(XU[id]||{}).name;_xuOpen=null;xuW(id,null,'🗑️ حُذف '+(n||'المستخدم'));}
+// ── لوحة المطور: إدارة الفصل الدراسي ──
+var _tmTab='term',_tmTK='normal',_tmTid=null;
+var TM_TABS=[['term','الفصل والوضع'],['times','زمن الحصص'],['teach','المعلمون'],['tt','الجدول المدرسي'],['teams','روابط Teams']];
+var TM_TK=[['normal','الدوام المعتاد'],['ramadan','رمضان'],['remote','الدراسة عن بُعد']];
+function tmIn(id,v,type,ph,w){return '<input id="'+id+'" type="'+(type||'text')+'" value="'+rqEsc(v==null?'':v)+'"'+(ph?' placeholder="'+rqEsc(ph)+'"':'')+' style="'+(w?'width:'+w+';flex:none;':'')+'border:1px solid #c2c1c1;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:13px;color:#15445a;background:#fff">';}
+function tmV(id){var e=document.getElementById(id);return e?String(e.value||'').trim():'';}
+function tmCfgW(key,val,msg){CFG[key]=val;if(val==null)delete CFG[key];try{localStorage.setItem('sd_cfg_v1',JSON.stringify(CFG));}catch(e){}cfgApply();
+  try{rqRefreshAll();}catch(e){}tmRender(1);return db.ref(FB_SCHOOL+'/cfg/'+key).set(val==null?null:val).then(function(){if(msg)toast(msg);}).catch(function(e){toast('تعذّر الحفظ: '+e.message,true);});}
+function tmHM(m){return rqHM(+m);}
+function tmMin(v){var p=String(v||'').split(':');return p.length===2?(+p[0])*60+(+p[1]):NaN;}
+function tmRender(force){var el=document.getElementById('dv-tm');if(!el)return;if(!force&&el.innerHTML&&txFocusIn('dv-tm'))return;
+  var h='<div class="tx-tabs">'+TM_TABS.map(function(t){return '<button class="tx-tab'+(_tmTab===t[0]?' on':'')+'" onclick="_tmTab=\''+t[0]+'\';tmRender(1)">'+t[1]+'</button>';}).join('')+'</div>';
+  h+=({term:tmTerm,times:tmTimes,teach:tmTeach,tt:tmTT,teams:tmTeams}[_tmTab]||tmTerm)();el.innerHTML=h;}
+// ١) الفصل والوضع
+function tmTerm(){var tm=CFG.term||{},m=CFG.mode||{},ra=cfgRamadan(),wk=rqTermWeek(),pd=CFG.pdays||{},kind=rqTimesKind();
+  var src=(TERMD&&TERMD.teachers&&TERMD.teachers.length)?'مرفوع من لوحة المطور ('+rqEsc(TERMD.label||TERMD.v||'')+')':'المضمّن في المنصة (الفصل الأول ١٤٤٨هـ)';
+  var rost=Object.keys(SD1448.roster||{}).sort(),rEnd=rost.length?rost[rost.length-1]:'';
+  var warn=[];if(!tm.start)warn.push('حدّد تاريخ بداية الفصل لتعمل الأسابيع الدراسية');if(rEnd&&rEnd<rqIsoToday())warn.push('سجل المناوبة انتهى في '+rEnd+' — ارفع جدول الفصل الجديد');
+  if(!(CFG.times||{}).ramadan)warn.push('لم تُضبط أوقات رمضان بعد'+(ra.from?' (يبدأ '+rqHijri(ra.from)+' الموافق '+ra.from+')':''));
+  var h=(warn.length?'<div class="tm-warn">⚠️ '+warn.join('<br>⚠️ ')+'</div>':'')+
+   '<div class="tx-h">📅 الفصل الدراسي الحالي</div><div class="ac-pan" style="margin-top:0">'+
+   '<div class="ac-f"><label>الفصل</label><select id="tm-tn" style="flex:1;border:1px solid #c2c1c1;border-radius:10px;padding:7px 10px;font-family:inherit">'+['الفصل الأول','الفصل الثاني','الفصل الثالث'].map(function(x){return '<option'+(x===(tm.name||'الفصل الأول')?' selected':'')+'>'+x+'</option>';}).join('')+'</select></div>'+
+   '<div class="ac-f"><label>العام الهجري</label>'+tmIn('tm-ty',tm.year||'١٤٤٨هـ','text','١٤٤٨هـ')+'</div>'+
+   '<div class="ac-f"><label>بداية الدراسة</label>'+tmIn('tm-ts',tm.start||'','date')+'</div>'+
+   '<div class="ac-f"><label>نهاية الفصل</label>'+tmIn('tm-te',tm.end||rEnd||'','date')+'</div>'+
+   '<div class="ac-f"><button class="tx-btn" onclick="tmSaveTerm()">💾 حفظ بيانات الفصل</button></div>'+
+   '<div class="tx-chips">الأسبوع الحالي: <b>'+(wk?wk.name+' ('+wk.hEnd+' — '+wk.hStart+')':'—')+'</b> · مصدر الجدول: <b>'+src+'</b> · سجل المناوبة حتى: <b>'+(rEnd||'—')+'</b></div></div>'+
+   '<div class="tx-h" style="margin-top:14px">🖥️ وضع الدراسة</div><div class="ac-pan" style="margin-top:0">'+
+   '<div class="tm-mode"><button class="tm-mb'+(m.remote?'':' on')+'" onclick="tmSetMode(0)">🏫 حضوري</button><button class="tm-mb'+(m.remote?' on':'')+'" onclick="tmSetMode(1)">🖥️ عن بُعد عبر Teams</button></div>'+
+   '<div class="ac-f"><label>من تاريخ (اختياري)</label>'+tmIn('tm-mf',m.from||'','date')+'</div><div class="ac-f"><label>إلى تاريخ (اختياري)</label>'+tmIn('tm-mt',m.to||'','date')+'</div>'+
+   '<div class="ac-f"><label>ملاحظة تظهر للجميع</label>'+tmIn('tm-mn',m.note||'','text','مثال: بسبب الأحوال الجوية')+'</div>'+
+   '<div class="ac-f"><button class="tx-btn sec" onclick="tmSetMode('+(m.remote?1:0)+')">💾 حفظ التواريخ والملاحظة</button></div>'+
+   '<div class="tx-chips">في وضع «عن بُعد»: تتحول جولات الحصص إلى متابعة حضور المعلمين في Microsoft Teams، ويتوقف رصد الطابور والفسحة والإشراف، وتُستخدم أوقات «الدراسة عن بُعد». الوضع الآن: <b>'+(rqRemote()?'عن بُعد':'حضوري')+'</b> · الأوقات المطبّقة اليوم: <b>'+({normal:'المعتاد',ramadan:'رمضان',remote:'عن بُعد'})[kind]+'</b></div></div>'+
+   '<div class="tx-h" style="margin-top:14px">🌙 رمضان</div><div class="ac-pan" style="margin-top:0">'+
+   '<div class="ac-f"><label>من</label>'+tmIn('tm-rf',(CFG.ramadan||{}).from||'','date')+'<label style="min-width:auto">إلى</label>'+tmIn('tm-rt',(CFG.ramadan||{}).to||'','date')+'</div>'+
+   '<div class="tx-chips">'+(ra.auto?'محسوب تلقائيًا من تقويم أم القرى: ':'مضبوط يدويًا: ')+'<b>'+(ra.from?ra.from+' ← '+ra.to:'—')+'</b> · اتركه فارغًا للحساب التلقائي</div>'+
+   '<div class="ac-f"><button class="tx-btn sec" onclick="tmSaveRam()">💾 حفظ</button></div></div>'+
+   '<div class="tx-h" style="margin-top:14px">🔢 عدد الحصص في كل يوم</div><div class="ac-pan" style="margin-top:0"><div class="tm-pd">'+
+   ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(d,i){return '<label>'+d+'<select id="tm-pd'+i+'">'+[4,5,6,7].map(function(n){return '<option'+(n===rqMaxP(i)?' selected':'')+'>'+n+'</option>';}).join('')+'</select></label>';}).join('')+
+   '</div><div class="ac-f"><button class="tx-btn sec" onclick="tmSavePD()">💾 حفظ</button></div></div>';
+  return h;}
+function tmSaveTerm(){var o={name:tmV('tm-tn'),year:tmV('tm-ty'),start:tmV('tm-ts'),end:tmV('tm-te')};Object.keys(o).forEach(function(k){if(!o[k])delete o[k];});
+  tmCfgW('term',o,'✓ حُفظت بيانات '+o.name);try{var ss=getSchoolSettings();ss.term=o.name;localStorage.setItem(SCHOOL_KEY,JSON.stringify(ss));db.ref(FB_SCHOOL+'/school_settings/term').set(o.name);}catch(e){}}
+function tmSetMode(on){var o={remote:!!on,from:tmV('tm-mf')||null,to:tmV('tm-mt')||null,note:tmV('tm-mn')||null};Object.keys(o).forEach(function(k){if(o[k]==null)delete o[k];});
+  tmCfgW('mode',o,on?'🖥️ فُعّلت الدراسة عن بُعد لكل المنصة':'🏫 عادت المنصة إلى الدوام الحضوري');}
+function tmSaveRam(){var f=tmV('tm-rf'),t=tmV('tm-rt');if((f&&!t)||(!f&&t)){toast('حدّد البداية والنهاية معًا أو اتركهما فارغين',true);return;}_ramMemo={};tmCfgW('ramadan',f?{from:f,to:t}:null,'✓ حُفظ موعد رمضان');}
+function tmSavePD(){var o={};for(var i=0;i<5;i++)o[i]=+tmV('tm-pd'+i);tmCfgW('pdays',o,'✓ حُفظ عدد الحصص');}
+// ٢) زمن الحصص
+function tmTimes(){var T=(CFG.times||{})[_tmTK],base=T||(_tmTK==='normal'?RQ_TIME_DEF:((CFG.times||{}).normal||RQ_TIME_DEF));
+  var h='<div class="tx-tabs">'+TM_TK.map(function(t){var set=!!(CFG.times||{})[t[0]];return '<button class="tx-tab'+(_tmTK===t[0]?' on':'')+'" onclick="_tmTK=\''+t[0]+'\';tmRender(1)">'+t[1]+(set||t[0]==='normal'?'':' ⚠️')+'</button>';}).join('')+'</div>';
+  if(!T&&_tmTK!=='normal')h+='<div class="tm-warn">لم تُضبط أوقات «'+TM_TK.filter(function(x){return x[0]===_tmTK;})[0][1]+'» بعد — المعروض نسخة من الدوام المعتاد، عدّلها ثم احفظ، أو استخدم المولّد.</div>';
+  h+='<div class="tm-gen"><b>⚡ مولّد سريع</b><label>بداية اليوم'+tmIn('tg-st','07:00','time')+'</label><label>الطابور (د)'+tmIn('tg-tb',_tmTK==='remote'?'0':'15','number','',  '60px')+'</label><label>الحصة (د)'+tmIn('tg-pl',_tmTK==='ramadan'?'35':_tmTK==='remote'?'40':'50','number','','60px')+'</label><label>الفسحة بعد الحصة'+tmIn('tg-ba','3','number','','50px')+'</label><label>مدتها (د)'+tmIn('tg-bl',_tmTK==='remote'?'10':'20','number','','60px')+'</label><label>الصلاة قبل الحصة السابعة (د)'+tmIn('tg-sl',_tmTK==='remote'?'0':'10','number','','60px')+'</label><button class="tx-btn sec" onclick="tmGen()">توليد</button></div>';
+  h+='<table class="tm-tbl"><thead><tr><th>الفترة</th><th>من</th><th>إلى</th><th>المدة</th></tr></thead><tbody>'+TM_SLOTS.map(function(x){var v=base[x[0]]||RQ_TIME_DEF[x[0]];
+    return '<tr><td>'+x[1]+'</td><td><input type="time" id="tmt-a'+x[0]+'" value="'+tmHM(v[0])+'" oninput="tmDur()"></td><td><input type="time" id="tmt-b'+x[0]+'" value="'+tmHM(v[1])+'" oninput="tmDur()"></td><td id="tmt-d'+x[0]+'">'+(v[1]-v[0])+' د</td></tr>';}).join('')+'</tbody></table>'+
+    '<div class="tx-bar" style="position:static"><button class="tx-btn" onclick="tmSaveTimes()">💾 حفظ أوقات «'+TM_TK.filter(function(x){return x[0]===_tmTK;})[0][1]+'»</button>'+(T&&_tmTK!=='normal'?'<button class="tx-btn sec" style="color:#d92d20" onclick="tmClrTimes()">حذف هذه الأوقات</button>':'')+(T&&_tmTK==='normal'?'<button class="tx-btn sec" onclick="tmClrTimes()">استعادة الأصل</button>':'')+'</div>';
+  return h;}
+function tmDur(){TM_SLOTS.forEach(function(x){var a=tmMin(tmV('tmt-a'+x[0])),b=tmMin(tmV('tmt-b'+x[0])),d=document.getElementById('tmt-d'+x[0]);if(d)d.textContent=(isNaN(a)||isNaN(b))?'—':(b-a)+' د';});}
+function tmGen(){var t=tmMin(tmV('tg-st')),tb=+tmV('tg-tb')||0,pl=+tmV('tg-pl')||45,ba=+tmV('tg-ba')||3,bl=+tmV('tg-bl')||0,sl=+tmV('tg-sl')||0;if(isNaN(t)){toast('اكتب بداية اليوم',true);return;}
+  var set=function(k,a,b){var A=document.getElementById('tmt-a'+k),B=document.getElementById('tmt-b'+k);if(A)A.value=tmHM(a);if(B)B.value=tmHM(b);};
+  set('-1',t,t+tb);t+=tb;for(var p=0;p<7;p++){if(p===6){set('s',t,t+sl);t+=sl;}set(String(p),t,t+pl);t+=pl;if(p===ba-1){set('-2',t,t+bl);t+=bl;}}tmDur();toast('وُلّدت الأوقات — راجعها ثم احفظ');}
+function tmSaveTimes(){var o={},bad='';TM_SLOTS.forEach(function(x){var a=tmMin(tmV('tmt-a'+x[0])),b=tmMin(tmV('tmt-b'+x[0]));if(isNaN(a)||isNaN(b)||b<a)bad=x[1];o[x[0]]=[a,b];});
+  if(bad){toast('تحقق من وقت: '+bad,true);return;}var T=Object.assign({},CFG.times||{});T[_tmTK]=o;tmCfgW('times',T,'✓ حُفظت الأوقات وتُطبَّق على قفل الحصص في كل الأجهزة');}
+function tmClrTimes(){var T=Object.assign({},CFG.times||{});delete T[_tmTK];tmCfgW('times',Object.keys(T).length?T:null,'✓ حُذفت الأوقات المخصّصة');}
+// ٣) المعلمون (جهات الاتصال)
+function tmTeach(){var L=DB.teachers.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'','ar');});
+  var h='<div class="tx-chips">'+L.length+' معلمًا · التعديل هنا يحدّث جهات الاتصال وملفات المعلمين والجدول لكل الحسابات. الجوال بصيغة 9665xxxxxxxx.</div>'+
+   '<table class="tm-tbl tm-te"><thead><tr><th>اللقب</th><th>الاسم</th><th>الجوال</th><th>العمل</th><th></th></tr></thead><tbody>'+
+   '<tr class="tm-new"><td>'+tmIn('tn-p','أ.','text','','52px')+'</td><td>'+tmIn('tn-n','','text','اسم معلم جديد')+'</td><td>'+tmIn('tn-ph','','tel','9665…')+'</td><td>'+tmIn('tn-j','معلم')+'</td><td><button class="ac-gear" onclick="tmTAdd()">➕ إضافة</button></td></tr>'+
+   L.map(function(t){var id=rqEsc(t.id);return '<tr data-id="'+id+'"><td><input class="tq-p" value="'+rqEsc(t.prefix||'أ.')+'" style="width:52px" oninput="tmTChg(this)"></td><td><input class="tq-n" value="'+rqEsc(t.name||'')+'" oninput="tmTChg(this)"></td><td><input class="tq-ph" value="'+rqEsc(t.phone||'')+'" dir="ltr" oninput="tmTChg(this)"></td><td><input class="tq-j" value="'+rqEsc(t.job||'')+'" oninput="tmTChg(this)"></td><td style="white-space:nowrap"><button class="ac-gear tq-s" style="display:none" onclick="tmTSave(\''+id+'\')">حفظ</button><button class="ac-gear" style="color:#d92d20" onclick="tmTDel(\''+id+'\',this)">حذف</button></td></tr>';}).join('')+'</tbody></table>';
+  return h;}
+function tmTChg(x){var tr=x.closest('tr');tr.classList.add('chg');tr.querySelector('.tq-s').style.display='';}
+function tmPh(v){v=String(v||'').replace(/[^\d]/g,'');if(/^05\d{8}$/.test(v))v='966'+v.slice(1);else if(/^5\d{8}$/.test(v))v='966'+v;return v;}
+function tmTPersist(msg){save._skipTpl=1;try{save();}finally{save._skipTpl=0;}try{localStorage.setItem(SHARED_TEACHERS_KEY,JSON.stringify(DB.teachers));}catch(e){}
+  if(typeof fbSaveTeachers!=='undefined')fbSaveTeachers(DB.teachers);if(msg)toast(msg);tmRender(1);}
+function tmTSave(id){var tr=document.querySelector('#dv-tm tr[data-id="'+id+'"]'),t=DB.teachers.find(function(x){return x.id===id;});if(!tr||!t)return;
+  var oldPh=t.phone,ph=tmPh(tr.querySelector('.tq-ph').value),n=tr.querySelector('.tq-n').value.trim();if(n.length<3){toast('اكتب الاسم',true);return;}
+  t.prefix=tr.querySelector('.tq-p').value.trim()||'أ.';t.name=n;t.phone=ph;t.job=tr.querySelector('.tq-j').value.trim();
+  if(oldPh&&ph&&oldPh!==ph&&SD1448.teachers.some(function(s){return s.ph===oldPh;})){var td=tmTermCopy();td.teachers.forEach(function(s){if(s.ph===oldPh)s.ph=ph;});tmTermSave(td);}
+  tmTPersist('✓ حُفظت بيانات '+n);}
+function tmTAdd(){var n=tmV('tn-n'),ph=tmPh(tmV('tn-ph'));if(n.length<3){toast('اكتب اسم المعلم',true);return;}if(ph&&DB.teachers.some(function(t){return t.phone===ph;})){toast('هذا الجوال مسجل لمعلم آخر',true);return;}
+  DB.teachers.push({id:uid(),prefix:tmV('tn-p')||'أ.',name:n,phone:ph,job:tmV('tn-j')||'معلم'});tmTPersist('✓ أُضيف '+n);}
+var _tmDel='';
+function tmTDel(id,b){if(_tmDel!==id){_tmDel=id;b.textContent='تأكيد';setTimeout(function(){if(_tmDel===id){_tmDel='';b.textContent='حذف';}},3500);return;}
+  _tmDel='';DB.teachers=DB.teachers.filter(function(t){return t.id!==id;});tmTPersist('✓ حُذف المعلم');}
+// ٤) الجدول المدرسي
+function tmTermCopy(){return JSON.parse(JSON.stringify({v:SD1448.v,label:(TERMD&&TERMD.label)||((CFG.term||{}).name||'')+' '+((CFG.term||{}).year||''),teachers:SD1448.teachers||[],roster:SD1448.roster||{}}));}
+function tmTermSave(td,msg){td.saved=new Date().toISOString();TERMD=td;try{localStorage.setItem('sd_termd_v1',JSON.stringify(td));}catch(e){}cfgApply();try{rqRefreshAll();}catch(e){}
+  return db.ref(FB_SCHOOL+'/termd').set(td).then(function(){if(msg)toast(msg);}).catch(function(e){toast('تعذّر الحفظ: '+e.message,true);});}
+function tmTT(){var T=SD1448.teachers||[];if(_tmTid===null&&T.length)_tmTid=0;var s=T[_tmTid];
+  var h='<div class="ac-pan" style="margin-top:0"><div class="ac-f"><b style="font-size:12.5px">📥 Excel</b><button class="tx-btn sec" onclick="tmXExport()">⬇️ تنزيل الجدول الحالي</button><label class="tx-btn sec" style="cursor:pointer">⬆️ رفع جدول فصل جديد<input type="file" accept=".xlsx,.xls" style="display:none" onchange="tmXImport(this)"></label>'+
+   ((TERMD&&TERMD.teachers)?'<button class="tx-btn sec" style="color:#d92d20" onclick="tmTTReset(this)">العودة للجدول المضمّن</button>':'')+'</div>'+
+   '<div class="tx-chips">نزّل الملف، عدّل أوراقه (الجدول · المناوبة) ثم ارفعه. خانة الحصة: «1-1 رياضيات» للحصة، «M1» لترتيب الانتظار، وفارغة للفراغ.</div></div>';
+  h+='<div class="ac-f" style="margin:10px 0"><label>المعلم</label><select style="flex:1;border:1px solid #c2c1c1;border-radius:10px;padding:7px 10px;font-family:inherit" onchange="_tmTid=+this.value;tmRender(1)">'+T.map(function(x,i){return '<option value="'+i+'"'+(i===_tmTid?' selected':'')+'>'+rqEsc(x.n)+' · '+rqEsc(x.job||'')+'</option>';}).join('')+'</select><button class="ac-gear" onclick="tmTTAddT()">➕ معلم للجدول</button></div>';
+  if(!s)return h+'<div class="tx-chips">لا يوجد جدول.</div>';
+  var days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+  h+='<div style="overflow-x:auto"><table class="tm-tbl tm-grid"><thead><tr><th>اليوم</th>'+[1,2,3,4,5,6,7].map(function(p){return '<th>'+p+'</th>';}).join('')+'</tr></thead><tbody>'+
+    days.map(function(d,di){var row=(s.tt[di]||'').split('|');return '<tr><td>'+d+'</td>'+[0,1,2,3,4,5,6].map(function(p){var off=p>=rqMaxP(di);return '<td'+(off?' class="off"':'')+'><input id="tg-'+di+'-'+p+'" value="'+rqEsc(row[p]||'')+'"'+(off?' disabled':'')+'></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>'+
+    '<div class="ac-f" style="margin-top:8px"><label>الاسم المختصر</label>'+tmIn('tg-n',s.n)+'<label style="min-width:auto">الجوال</label>'+tmIn('tg-ph',s.ph,'tel','','150px')+'</div>'+
+    '<div class="tx-bar" style="position:static"><button class="tx-btn" onclick="tmTTSave()">💾 حفظ جدول '+rqEsc(s.n)+'</button><button class="tx-btn sec" style="color:#d92d20" onclick="tmTTDelT(this)">حذف من الجدول</button></div>';
+  return h;}
+function tmTTSave(){var td=tmTermCopy(),s=td.teachers[_tmTid];if(!s)return;s.n=tmV('tg-n')||s.n;s.ph=tmPh(tmV('tg-ph'))||s.ph;
+  s.tt=[0,1,2,3,4].map(function(di){var r=[];for(var p=0;p<7;p++){var e=document.getElementById('tg-'+di+'-'+p);r.push(e?e.value.trim().replace(/\|/g,''):'');}return r.join('|');});
+  tmTermSave(td,'✓ حُفظ جدول '+s.n);}
+function tmTTAddT(){var have={};(SD1448.teachers||[]).forEach(function(s){have[s.ph]=1;});var c=DB.teachers.filter(function(t){return t.phone&&!have[t.phone];});
+  if(!c.length){toast('كل المعلمين موجودون في الجدول. أضف المعلم أولًا من تبويب «المعلمون»',true);return;}
+  var el=document.getElementById('dv-tm');el.insertAdjacentHTML('beforeend','<div class="ac-pan"><div class="ac-f"><label>اختر المعلم</label><select id="tm-addt" style="flex:1;border:1px solid #c2c1c1;border-radius:10px;padding:7px 10px;font-family:inherit">'+c.map(function(t){return '<option value="'+rqEsc(t.phone)+'">'+rqEsc(t.name)+'</option>';}).join('')+'</select><button class="tx-btn" onclick="tmTTAddGo()">إضافة</button></div></div>');}
+function tmTTAddGo(){var ph=tmV('tm-addt'),t=DB.teachers.find(function(x){return x.phone===ph;});if(!t)return;var td=tmTermCopy();td.teachers.push({n:t.name.split(' ').slice(0,2).join(' '),ph:ph,job:t.job||'معلم',tt:['','','','','']});_tmTid=td.teachers.length-1;tmTermSave(td,'✓ أُضيف '+t.name+' إلى الجدول');}
+var _tmTTDel=0;
+function tmTTDelT(b){if(!_tmTTDel){_tmTTDel=1;b.textContent='تأكيد الحذف';setTimeout(function(){_tmTTDel=0;},3500);return;}_tmTTDel=0;
+  // المناوبة تُخزَّن بفهرس المعلم، فنعيد ترقيمها بعد الحذف
+  var td=tmTermCopy(),i=_tmTid;td.teachers.splice(i,1);Object.keys(td.roster).forEach(function(d){var x=td.roster[d];if(x===i)delete td.roster[d];else if(x>i)td.roster[d]=x-1;});_tmTid=0;tmTermSave(td,'✓ حُذف من الجدول');}
+var _tmRst=0;
+function tmTTReset(b){if(!_tmRst){_tmRst=1;b.textContent='تأكيد العودة';setTimeout(function(){_tmRst=0;},3500);return;}_tmRst=0;TERMD=null;try{localStorage.removeItem('sd_termd_v1');}catch(e){}cfgApply();_tmTid=0;
+  db.ref(FB_SCHOOL+'/termd').remove().then(function(){toast('✓ عادت المنصة للجدول المضمّن');});tmRender(1);}
+function tmXExport(){if(typeof XLSX==='undefined'){toast('مكتبة Excel لم تُحمَّل بعد',true);return;}var td=tmTermCopy(),wb=XLSX.utils.book_new(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+  var rows=[['الاسم المختصر','الجوال','العمل','اليوم','ح1','ح2','ح3','ح4','ح5','ح6','ح7']];
+  td.teachers.forEach(function(s){days.forEach(function(d,di){var r=(s.tt[di]||'').split('|');rows.push([s.n,s.ph,s.job||'',d].concat([0,1,2,3,4,5,6].map(function(p){return r[p]||'';})));});});
+  var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:18},{wch:14},{wch:10},{wch:9}].concat([1,2,3,4,5,6,7].map(function(){return {wch:16};}));XLSX.utils.book_append_sheet(wb,ws,'الجدول');
+  var rr=[['التاريخ','الجوال','الاسم']];Object.keys(td.roster).sort().forEach(function(d){var s=td.teachers[td.roster[d]];rr.push([d,s?s.ph:'',s?s.n:'']);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rr),'المناوبة');
+  wb.Workbook={Views:[{RTL:true}]};XLSX.writeFile(wb,'جدول-الفصل-'+rqIsoToday()+'.xlsx');}
+function tmXImport(inp){var f=inp.files&&inp.files[0];inp.value='';if(!f)return;if(typeof XLSX==='undefined'){toast('مكتبة Excel لم تُحمَّل بعد',true);return;}
+  var rd=new FileReader();rd.onload=function(e){try{var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+    var sh=wb.Sheets['الجدول']||wb.Sheets[wb.SheetNames[0]];if(!sh)throw new Error('لا توجد ورقة «الجدول»');
+    var rows=XLSX.utils.sheet_to_json(sh,{header:1,defval:''}),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'],by={},order=[];
+    rows.slice(1).forEach(function(r){var n=String(r[0]).trim(),ph=tmPh(r[1]),di=days.indexOf(String(r[3]).trim());if(!n||!ph||di<0)return;
+      if(!by[ph]){by[ph]={n:n,ph:ph,job:String(r[2]||'معلم').trim(),tt:['','','','','']};order.push(ph);}
+      by[ph].tt[di]=[4,5,6,7,8,9,10].map(function(c){return String(r[c]==null?'':r[c]).trim().replace(/\|/g,'');}).join('|');});
+    if(!order.length)throw new Error('لم يُقرأ أي معلم — تأكد من الأعمدة: الاسم، الجوال، العمل، اليوم، ح1…ح7');
+    var teachers=order.map(function(ph){return by[ph];}),idx={};teachers.forEach(function(s,i){idx[s.ph]=i;});
+    var roster={},rs=wb.Sheets['المناوبة'],rn=0;if(rs){XLSX.utils.sheet_to_json(rs,{header:1,defval:''}).slice(1).forEach(function(r){var d=r[0];
+      if(typeof d==='number'){var dt=XLSX.SSF.parse_date_code(d);d=dt.y+'-'+String(dt.m).padStart(2,'0')+'-'+String(dt.d).padStart(2,'0');}d=String(d).trim();
+      var ph=tmPh(r[1]);if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&ph in idx){roster[d]=idx[ph];rn++;}});}
+    var cls=0;teachers.forEach(function(s){s.tt.forEach(function(x){x.split('|').forEach(function(c){if(c&&c.charAt(0)!=='M')cls++;});});});
+    var unknown=teachers.filter(function(s){return !DB.teachers.some(function(t){return t.phone===s.ph;});}).length;
+    var nm=((CFG.term||{}).name||'')+' '+((CFG.term||{}).year||'');
+    if(!confirm('سيُستبدل الجدول الحالي بـ:\n• '+teachers.length+' معلمًا\n• '+cls+' حصة أسبوعيًا\n• '+rn+' يوم مناوبة'+(unknown?'\n\n⚠️ '+unknown+' معلمين غير موجودين في جهات الاتصال (أضفهم من تبويب «المعلمون» ليُرصدوا في المساءلات)':'')+'\n\nمتابعة؟'))return;
+    _tmTid=0;tmTermSave({v:'custom',label:nm.trim()||f.name,teachers:teachers,roster:roster},'✓ رُفع جدول الفصل ('+teachers.length+' معلمًا)');tmRender(1);
+  }catch(err){toast('تعذّر قراءة الملف: '+err.message,true);}};rd.readAsArrayBuffer(f);}
+// ٥) روابط Teams
+function tmTeams(){var T=CFG.teams||{};
+  return '<div class="tx-chips">ضع رابط فريق Teams لكل فصل (اختياري) ليظهر زر «فتح في Teams» في جولة الحصص أثناء الدراسة عن بُعد. الرابط العام يُستخدم للفصول التي ليس لها رابط.</div>'+
+   '<table class="tm-tbl"><tbody><tr><td><b>رابط عام</b></td><td><input id="tl-_all" dir="ltr" value="'+rqEsc(T._all||'')+'" placeholder="https://teams.microsoft.com/…"></td></tr>'+
+   RQ_CLASSES.map(function(c){var k=rqKey(c);return '<tr><td>'+c+'</td><td><input id="tl-'+k+'" dir="ltr" value="'+rqEsc(T[k]||'')+'" placeholder="https://teams.microsoft.com/…"></td></tr>';}).join('')+'</tbody></table>'+
+   '<div class="tx-bar" style="position:static"><button class="tx-btn" onclick="tmSaveTeams()">💾 حفظ الروابط</button></div>';}
+function tmSaveTeams(){var o={},bad='';['_all'].concat(RQ_CLASSES.map(rqKey)).forEach(function(k){var v=tmV('tl-'+k);if(v){if(!/^https:\/\//.test(v)&&!/^msteams:/.test(v))bad=k;o[k]=v;}});
+  if(bad){toast('الرابط يجب أن يبدأ بـ https://',true);return;}tmCfgW('teams',Object.keys(o).length?o:null,'✓ حُفظت روابط Teams');}
 function accRender(){var el=document.getElementById('dv-acc');if(!el)return;var U=window.__usersRaw||{};
   el.innerHTML=Object.keys(ROLES).map(function(r){var a=accOf(r),nm=a.name||USR_FIXED[r]||'—',devs={},last='';
     Object.keys(U[r]||{}).forEach(function(k){var o=U[r][k]||{};if((o.last||'')>last)last=o.last;Object.keys(o.devices||{}).forEach(function(d){var x=o.devices[d];if(!devs[d]||(x.last||'')>(devs[d].last||''))devs[d]=Object.assign({k:k},x);});});
@@ -2707,8 +2866,8 @@ function devExport(){var d={ver:APP_VER,at:new Date().toISOString(),ua:navigator
   perf:(performance.getEntriesByType?performance.getEntriesByType('navigation')[0]:null),ls:(function(){var o={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);o[k]=Math.round((localStorage.getItem(k)||'').length/1024)+'KB';}}catch(e){}return o;})()};
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download='tawasol-diagnostics-'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.json';a.click();}
 function dsSlots(dow){var L=[[-1,'ط'],[0,'1'],[1,'2'],[2,'3'],[-2,'ف'],[3,'4'],[4,'5'],[5,'6'],['s','ص'],[6,'7']];
-  if(dow===2)L=L.filter(function(x){return x[0]!==6;});
-  return L.map(function(x){var w=x[0]==='s'?[755,765]:RQ_TIME[x[0]];return {p:x[0],l:x[1],a:w[0],b:w[1]};});}
+  L=L.filter(function(x){return typeof x[0]!=='number'||x[0]<0||x[0]<rqMaxP(dow);});if(rqRemote())L=L.filter(function(x){return typeof x[0]==='number'&&x[0]>=0;});
+  return L.map(function(x){var w=RQ_TIME[x[0]]||[755,765];return {p:x[0],l:x[1],a:w[0],b:w[1]};});}
 function dsTimeline(dow,n,school){var el=document.getElementById('ds-tl'),tt=document.getElementById('ds-tl-t');if(!el)return;
   if(!school){el.innerHTML='';tt.textContent='لا دوام اليوم';return;}
   var S=dsSlots(dow),A=S[0].a,B=S[S.length-1].b,T=B-A;
@@ -3689,7 +3848,7 @@ function loadSchoolSettingsForm(){try{usrRender();}catch(e){}
   var s=getSchoolSettings();
   var fields={  'sch-name':s.name,'sch-phone':s.phone,'sch-address':s.address,'sch-sender':s.sender};
   Object.keys(fields).forEach(function(id){var el=document.getElementById(id);if(el)el.value=fields[id]||'';});
-  var term=document.getElementById('sch-term');if(term)term.value=s.term||'الفصل الثاني';
+  var term=document.getElementById('sch-term');if(term)term.value=s.term||'الفصل الأول';
   renderSettingsVars();
 }
 function saveSchoolSettings(){
@@ -4097,7 +4256,7 @@ function applySchoolData1448(){
   renderSchedLocs();renderSchedSlots();renderMonawabaSlots('taboor');renderMonawabaSlots('salah');renderMonawabaSlots('monawaba');renderRosterInfo();
   var st=document.getElementById('sd-import-sts');
   if(st){st.className='sts ok';st.textContent='تم التحديث: '+added+' معلمًا جديدًا، و'+updated+' محدّثًا، ومواقع الفسحة الخمسة، والطابور الصباحي لكل الأيام.';}
-  toast('✅ تم تحديث بيانات الفصل الأول ١٤٤٨هـ');
+  toast('✅ تم تحديث بيانات الفصل الحالي');
 }
 
 
@@ -4433,13 +4592,54 @@ var RQ_CLASSES=['1-1','1-2','1-3','1-4','1-5','2-1','2-2','2-3','2-4','2ش','3-1
 var _rqPer=0,_rqPerAuto=true;
 // التوقيت الزمني لليوم الدراسي ١٤٤٨هـ (بالدقائق من منتصف الليل)
 var RQ_TIME={'-1':[420,435],'-2':[585,605],0:[435,485],1:[485,535],2:[535,585],3:[605,655],4:[655,705],5:[705,755],6:[765,815]};
+// ══ إعدادات الفصل الدراسي (تُدار من لوحة المطور) ══
+RQ_TIME.s=[755,765];
+var RQ_TIME_DEF=JSON.parse(JSON.stringify(RQ_TIME));
+var SD_BUILTIN=SD1448;
+var CFG=(function(){try{return JSON.parse(localStorage.getItem('sd_cfg_v1')||'{}')||{};}catch(e){return {};}})();
+var TERMD=(function(){try{return JSON.parse(localStorage.getItem('sd_termd_v1')||'null');}catch(e){return null;}})();
+var TM_SLOTS=[['-1','الطابور الصباحي'],['0','الحصة الأولى'],['1','الحصة الثانية'],['2','الحصة الثالثة'],['-2','الفسحة'],['3','الحصة الرابعة'],['4','الحصة الخامسة'],['5','الحصة السادسة'],['s','الصلاة'],['6','الحصة السابعة']];
+function rqHijriOf(iso){var h=rqHijriParts(iso);return h;}
+var _ramMemo={};
+function cfgRamadan(){var r=CFG.ramadan||{};if(r.from&&r.to)return {from:r.from,to:r.to,auto:false};var mk=rqIsoToday();if(_ramMemo[mk])return _ramMemo[mk];
+  // حساب تلقائي من التقويم الهجري (أم القرى) للعام الحالي
+  var d=new Date();d.setHours(12,0,0,0);var from='',to='';
+  for(var i=-30;i<400;i++){var x=new Date(d.getTime()+i*864e5),iso=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+    var h=rqHijriParts(iso);if(h.m===9){if(!from)from=iso;to=iso;}else if(from)break;}
+  return (_ramMemo[mk]={from:from,to:to,auto:true});}
+function rqIsRamadan(iso){var r=cfgRamadan();return !!(r.from&&iso>=r.from&&iso<=r.to);}
+function rqRemote(iso){var m=CFG.mode||{};if(!m.remote)return false;iso=iso||rqIsoToday();return (!m.from||iso>=m.from)&&(!m.to||iso<=m.to);}
+function rqTimesKind(iso){iso=iso||rqIsoToday();return rqRemote(iso)?'remote':rqIsRamadan(iso)?'ramadan':'normal';}
+function rqTimesFor(iso){var T=CFG.times||{},k=rqTimesKind(iso);var t=T[k]||(k==='remote'&&rqIsRamadan(iso||rqIsoToday())?T.ramadan:null)||T.normal||RQ_TIME_DEF;
+  var o={};Object.keys(RQ_TIME_DEF).forEach(function(x){var v=t[x]||RQ_TIME_DEF[x];o[x]=[+v[0],+v[1]];});return o;}
+function rqMaxP(dow){var p=CFG.pdays&&CFG.pdays[dow];return p?Math.min(7,Math.max(1,+p)):(dow===2?6:7);}
+function cfgApply(){
+  SD1448=(TERMD&&TERMD.teachers&&TERMD.teachers.length)?Object.assign({},SD_BUILTIN,TERMD):SD_BUILTIN;
+  _rqTT=null;
+  var t=rqTimesFor(rqIsoToday());Object.keys(RQ_TIME).forEach(function(k){delete RQ_TIME[k];});Object.keys(t).forEach(function(k){RQ_TIME[k]=t[k];});
+  rmBars();}
+function rmBars(){var on=rqRemote();document.body.classList.toggle('remote-on',on);
+  ['dash','rq-cls','rq-sup'].forEach(function(id){var box=document.getElementById(id);if(!box)return;var b=box.querySelector(':scope > .rm-bar');
+    if(on&&!b){b=document.createElement('div');b.className='rm-bar';box.insertBefore(b,box.firstChild);}
+    if(b){b.style.display=on?'':'none';if(on){var m=CFG.mode||{};b.innerHTML='<span class="rm-ic">🖥️</span><div><b>الدراسة عن بُعد عبر Microsoft Teams</b><small>'+(m.to?'حتى '+rqDay(m.to)+' '+rqHijri(m.to):'مفعّلة حتى إشعار آخر')+(m.note?' · '+rqEsc(m.note):'')+'</small></div>';}}});}
+function rqTeamsUrl(c){var T=CFG.teams||{};return T[rqKey(c)]||T._all||'';}
+// الأسابيع الدراسية تُحسب من تاريخ بداية الفصل
+function rqArNum(s){return String(s).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});}
+var RQ_WK_ORD=['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر','السادس عشر','السابع عشر','الثامن عشر','التاسع عشر','العشرون','الحادي والعشرون','الثاني والعشرون'];
+function rqTermWeek(iso){var tm=CFG.term||{};if(!tm.start)return null;iso=iso||rqIsoToday();var s=rqDateObj(tm.start);s.setDate(s.getDate()-s.getDay());
+  var d=rqDateObj(iso),n=Math.floor((d-s)/(7*864e5));if(n<0)return null;if(tm.end&&iso>tm.end)return null;
+  var a=new Date(s.getTime()+n*7*864e5),b=new Date(a.getTime()+4*864e5);var f=function(x){return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
+  var ha=rqHijriParts(f(a)),hb=rqHijriParts(f(b));
+  return {n:n+1,name:'الأسبوع '+(RQ_WK_ORD[n]||(n+1)),mStart:f(a),mEnd:f(b),hEnd:rqArNum(ha.y+'/'+ha.m+'/'+ha.d),hStart:rqArNum(hb.y+'/'+hb.m+'/'+hb.d)};}
+try{cfgApply();}catch(e){console.error(e);}
+setInterval(function(){try{cfgApply();}catch(e){}},600000);
 function rqHM(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function rqNowMin(){var d=new Date();return d.getHours()*60+d.getMinutes();}
 function rqPerState(iso,p){var t=rqIsoToday();if(iso<t)return 'past';if(iso>t)return 'future';var w=RQ_TIME[p];if(!w)return 'now';var n=rqNowMin();return n<w[0]?'future':n>=w[1]?'past':'now';}
 function rqPerOpen(iso,p){return currentRole==='developer'||rqPerState(iso,p)==='now';}
 function rqPerMsg(iso,p){var st=rqPerState(iso,p),w=RQ_TIME[p];var nm=RQ_SLOT[p]?RQ_SLOT[p].nm:'الحصة '+RQ_PER[p];
   toast(st==='past'?'🔒 انتهى وقت '+nm+' — لا يمكن تعديل الرصد':'🔒 لم يبدأ وقت '+nm+' بعد'+(w?' ('+rqHM(w[0])+')':''),true);}
-function rqCurPer(){var n=rqNowMin(),ks=[-1,0,1,2,-2,3,4,5,6];for(var i=0;i<ks.length;i++){var w=RQ_TIME[ks[i]];if(n<w[1])return n>=w[0]?ks[i]:(i?ks[i]:-1);}return 6;}
+function rqCurPer(){var n=rqNowMin(),ks=rqRemote()?[0,1,2,3,4,5,6]:[-1,0,1,2,-2,3,4,5,6];for(var i=0;i<ks.length;i++){var w=RQ_TIME[ks[i]];if(n<w[1])return n>=w[0]?ks[i]:(i?ks[i]:-1);}return 6;}
 function rqSetPer(p){_rqPer=p;_rqPerAuto=false;rqRenderCls();}
 function rqWeekDate(dow){var n=new Date();n.setHours(12,0,0,0);var d=n.getDay();if(d>4)n.setDate(n.getDate()+(7-d));else n.setDate(n.getDate()-d);n.setDate(n.getDate()+dow);
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
@@ -4450,21 +4650,23 @@ function rqRenderCls(){
   var iso=dEl.value, dow=rqDateObj(iso).getDay();
   document.getElementById('rq-c-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){var lk=rqAA()&&i!==dow;return '<button class="dp'+(i===dow?' on':'')+(lk?' rq-lock':'')+'"'+(lk?' disabled':'')+' onclick="rqSetDay('+i+')">'+n+'</button>';}).join('');
   document.getElementById('rq-c-day').textContent=rqDay(iso)+' '+rqHijri(iso);
-  var maxP=dow===2?6:7;if(_rqPerAuto&&iso===rqIsoToday())_rqPer=rqCurPer();if(_rqPer>=maxP)_rqPer=maxP-1;
+  var maxP=rqMaxP(dow);if(_rqPerAuto&&iso===rqIsoToday())_rqPer=rqCurPer();if(_rqPer>=maxP)_rqPer=maxP-1;
   var pst=function(p){var st=rqPerState(iso,p);return st==='now'?' rq-now':st==='past'?' rq-past':' rq-fut';};
-  document.getElementById('rq-c-pers').innerHTML='<button class="dp rq-tab-taboor'+pst(-1)+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>'+RQ_PER.slice(0,maxP).map(function(n,i){return (i===3?'<button class="dp rq-tab-taboor'+pst(-2)+(_rqPer===-2?' on':'')+'" onclick="rqSetPer(-2)">الفسحة</button>':'')+'<button class="dp'+pst(i)+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
+  var _rm=rqRemote(iso);if(_rm&&_rqPer<0)_rqPer=0;
+  var _tt=document.getElementById('rq-c-title');if(_tt)_tt.textContent=_rm?'🖥️ متابعة حضور المعلمين في حصص Teams':'🏫 جولة متابعة الحصص';
+  document.getElementById('rq-c-pers').innerHTML=(_rm?'':'<button class="dp rq-tab-taboor'+pst(-1)+(_rqPer===-1?' on':'')+'" onclick="rqSetPer(-1)">الطابور</button>')+RQ_PER.slice(0,maxP).map(function(n,i){return (i===3&&!_rm?'<button class="dp rq-tab-taboor'+pst(-2)+(_rqPer===-2?' on':'')+'" onclick="rqSetPer(-2)">الفسحة</button>':'')+'<button class="dp'+pst(i)+(i===_rqPer?' on':'')+'" onclick="rqSetPer('+i+')">'+(i+1)+'</button>';}).join('');
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
   if(_rqPer<0){rqRenderTaboor(iso,list,info,_rqPer);return;}
   var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
   var done=0,miss=0,lk=!rqPerOpen(iso,_rqPer);list.classList.toggle('rq-locked',lk);
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur==='late'||cur==='abs')miss++;
-    var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span><span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span></div>';
+    var tu=_rm?rqTeamsUrl(c):'';var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span>'+(_rm?'<span class="rq-tm">'+(tu?'<a href="'+rqEsc(tu)+'" target="_blank" rel="noopener">Teams ↗</a>':'Teams')+'</span>':'<span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span>')+'</div>';
     if(!a)return '<div class="rq-bx rq-free">'+head+'<div class="rq-bx-s">لا حصة</div></div>';
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
       rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,k)):'')+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
-  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+' ('+rqHM(RQ_TIME[_rqPer][0])+'–'+rqHM(RQ_TIME[_rqPer][1])+'):</b> '+n+' فصلًا · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
+  info.innerHTML='<b>'+rqDay(iso)+' — الحصة '+RQ_PER[_rqPer]+' ('+rqHM(RQ_TIME[_rqPer][0])+'–'+rqHM(RQ_TIME[_rqPer][1])+'):</b> '+n+(_rm?' حصة على Teams':' فصلًا')+' · تمّت متابعة '+done+' من '+n+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'')+
     (cm.waits.length?'<br><b>المنتظرون:</b> '+cm.waits.map(function(w){return w.n+'. '+rqEsc(w.name);}).join('، '):'')+rqLockNote(iso,_rqPer);
 }
 var RQ_SLOT={'-1':{grp:'الطابور الصباحي',nm:'الطابور',pfx:/^taboor_/},'-2':{grp:'إشراف الفسحة',nm:'الفسحة',pfx:/^brk_/}};
@@ -4504,7 +4706,7 @@ function rqMarkCls(iso,p,c,m){
   var tid=rqTidByPhone(a.ph);if((m==='late'||m==='abs')&&!tid){toast('المعلم غير موجود في جهات الاتصال',true);return;}
   var id='rc'+iso.replace(/-/g,'')+'p'+p+rqKey(c);
   var before=rqApplyRoundCase(id,m,function(ex){return {id:id,tid:tid,name:rqTName(tid),phone:a.ph,date:iso,type:m==='abs'?'class':'classlate',period:p,
-      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj+(rqRoom(c)?' ('+rqRoom(c)+')':''),note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,byName:rqUser(),src:'round',rkey:k};});
+      detail:'الحصة '+RQ_PER[p]+' — '+c+' '+a.subj+(rqRemote(iso)?' (عن بُعد عبر Microsoft Teams)':(rqRoom(c)?' ('+rqRoom(c)+')':'')),remote:rqRemote(iso)||undefined,note:ex?ex.note:'',status:'new',ts:ex?ex.ts:new Date().toISOString(),by:ex?ex.by:currentRole,byName:rqUser(),src:'round',rkey:k};});
   var prevBy=rqRoundBy(iso,k);
   rqRoundSet(iso,k,m);
   rqUndoable((m?RQ_MARK[m]:'إزالة الرصد')+' — '+c+' الحصة '+(p+1),[[id,before]],[[iso,k,cur,prevBy]]);
@@ -4533,6 +4735,7 @@ function rqRenderSup(){
   document.getElementById('rq-s-grps').innerHTML=RQ_GRPS.map(function(g){var n=g[0]==='all'?all.length:all.filter(function(r){return r.group===g[0];}).length;
     return '<button class="dp'+(_rqGrp===g[0]?' on':'')+'" onclick="_rqGrp=\''+g[0]+'\';rqRenderSup()">'+g[1]+' <small>'+n+'</small></button>';}).join('');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';el.innerHTML='';return;}
+  if(rqRemote(iso)){info.innerHTML='🖥️ <b>الدراسة عن بُعد:</b> لا يوجد طابور أو فسحة أو إشراف في هذه الفترة.';el.innerHTML='<div class="empty" style="grid-column:1/-1">رصد الإشراف متوقف أثناء الدراسة عن بُعد — تابع حضور المعلمين في Teams من «جولة الحصص».</div>';return;}
   var rows=_rqGrp==='all'?all:all.filter(function(r){return r.group===_rqGrp;});
   var done=0,miss=0;rows.forEach(function(r){var c=marks['d_'+r.k];if(c)done++;if(c==='late'||c==='abs')miss++;});
   info.innerHTML='<b>'+rqDay(iso)+':</b> '+rows.length+' مهمة · تمّت متابعة '+done+' من '+rows.length+(miss?' · <span class="rq-miss">'+miss+' حالة</span>':'');
@@ -4579,7 +4782,7 @@ function rqRenderDay(){
   rqLoadTT();
   if(_rqDayIdx===null){var dw=new Date().getDay();_rqDayIdx=dw>4?0:dw;}
   document.getElementById('rq-d-days').innerHTML=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(function(n,i){return '<button class="dp'+(i===_rqDayIdx?' on':'')+'" onclick="_rqDayIdx='+i+';rqRenderDay()">'+n+'</button>';}).join('');
-  var dow=_rqDayIdx,maxP=dow===2?6:7,total=0,waits=0;
+  var dow=_rqDayIdx,maxP=rqMaxP(dow),total=0,waits=0;
   var head='<thead><tr><th>الفصل</th>'+RQ_PER.slice(0,maxP).map(function(n,i){return '<th>'+(i+1)+'</th>';}).join('')+'</tr></thead>';
   var maps=[];for(var p=0;p<maxP;p++){var cm=rqClassMap(dow,p);maps.push(cm);total+=Object.keys(cm.map).length;waits+=cm.waits.length;}
   var body=RQ_CLASSES.map(function(c){return '<tr><th class="rq-gc">'+c+'<small>'+rqEsc(rqRoom(c))+'</small></th>'+maps.map(function(cm,p){var a=cm.map[c];
@@ -5003,6 +5206,7 @@ var WEEKS = [
 ];
 
 function getCurrentWeek(){
+  try{if(CFG&&CFG.term&&CFG.term.start)return rqTermWeek();}catch(e){}
   var today=new Date(); today.setHours(0,0,0,0);
   for(var i=0;i<WEEKS.length;i++){
     var w=WEEKS[i];
