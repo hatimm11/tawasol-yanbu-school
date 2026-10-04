@@ -519,6 +519,16 @@ body.rq-only .rq-rooms-card{display:none}
 .dv-ud{display:flex;flex-wrap:wrap;gap:4px}.dv-ud span{font-size:11px;background:#efeff1;border-radius:6px;padding:2px 8px}.dv-ud span.na{background:none;color:#9aa39d}.dv-ud em{font-style:normal;color:#d92d20;font-weight:800}
 .dv-ul{font-size:11.5px;color:#3078a6;text-align:left}
 @media(max-width:600px){.dv-u{grid-template-columns:12px 1fr 70px}.dv-ud{grid-column:2/-1}}
+.ac-row{display:grid;grid-template-columns:12px minmax(150px,1.4fr) 60px 60px 90px auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #efeff1}.ac-row.dis .dv-un b{text-decoration:line-through;color:#9aa39d}
+.ac-st{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;text-align:center}.ac-st.on{background:rgba(7,168,105,.1);color:#07a869}.ac-st.off{background:rgba(217,45,32,.1);color:#d92d20}
+.ac-dc{font-size:11.5px;color:#3078a6}.ac-gear{border:1px solid #c2c1c1;background:#fff;border-radius:999px;padding:4px 12px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;color:#15445a}
+.ac-pan{background:#fafbfb;border:1px solid #efeff1;border-radius:12px;padding:12px;margin:2px 0 10px;display:grid;gap:10px}
+.ac-f{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ac-f label,.ac-devs>label{font-size:12px;font-weight:800;color:#3078a6;min-width:110px}.ac-f input{flex:1;min-width:160px}
+.ac-f button,.ac-btns button,.ac-dev button{border:0;border-radius:9px;padding:7px 14px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer;background:#15445a;color:#fff}
+.ac-f button.ghost{background:#efeff1;color:#15445a}.ac-btns{display:flex;gap:8px;flex-wrap:wrap}.ac-btns button.warn{background:rgba(217,45,32,.1);color:#d92d20}.ac-btns button.ok{background:#07a869}
+.ac-dev{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12.5px}.ac-dev span{flex:1}.ac-dev small{color:#3078a6}.ac-dev em{color:#d92d20;font-style:normal;font-weight:800}.ac-dev button{background:rgba(217,45,32,.1);color:#d92d20;padding:4px 10px}
+.ac-note{font-size:12px;color:#8a7440;background:rgba(193,180,137,.18);border-radius:8px;padding:7px 10px}
+@media(max-width:700px){.ac-row{grid-template-columns:12px 1fr auto auto}.ac-dc,.ac-row .dv-ul{display:none}}
 .dv-mini{margin-inline-start:8px;border:1px solid rgba(217,45,32,.4);background:none;color:#d92d20;border-radius:999px;padding:2px 10px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
 .dv-e{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #efeff1}.dv-e:last-child{border-bottom:0}
 .dv-et{font-size:11px;color:#3078a6;font-variant-numeric:tabular-nums;min-width:74px;direction:ltr;text-align:right}
@@ -686,6 +696,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   // Listen for real-time updates
   var _fbInitialized = false;
   var __sync={};window.__sync=__sync;
+  try{db.ref(FB_SCHOOL+'/access').on('value',function(sn){ACC=sn.val()||{};try{localStorage.setItem('sd_access_v1',JSON.stringify(ACC));}catch(e){}try{accCheck();}catch(e){}try{if(currentRole==='developer')renderDev();}catch(e){}});}catch(e){}
   try{db.ref('.info/serverTimeOffset').on('value',function(sn){window.__fbOffset=sn.val()||0;});}catch(e){}
   window.devFlush=function(){try{var role=window.currentRole||'',u=(typeof rqUser==='function')?rqUser():'';
     while(window.__devQ.length){var o=window.__devQ.shift();o.role=role;o.user=u;o.ver=(typeof APP_VER!=='undefined')?APP_VER:'';db.ref(FB_SCHOOL+'/devlog').push(o);}}catch(e){}};
@@ -939,6 +950,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
       <div class="card ds-card"><div class="ch">⏱️ مؤشرات تجربة الاستخدام <span class="ds-sub">Web Vitals</span></div><div id="dv-vit"></div></div>
       <div class="card ds-card"><div class="ch">📈 نشاط المنصة اليوم</div><div id="dv-act"></div></div>
       <div class="card ds-card"><div class="ch">🐢 أبطأ الموارد تحميلًا</div><div id="dv-res"></div></div>
+      <div class="card ds-card dv-wide"><div class="ch">🔐 التحكم في الحسابات <span class="ds-sub">يُطبَّق فورًا على كل الأجهزة</span></div><div id="dv-acc"></div></div>
       <div class="card ds-card dv-wide"><div class="ch">👥 المستخدمون والأجهزة <span class="ds-sub" id="dv-users-sub"></span><button class="dv-mini" id="dv-uclr" onclick="devCleanUsers()">مسح الأسماء القديمة</button></div><div id="dv-users"></div></div>
     </div>
   </div>
@@ -2086,14 +2098,25 @@ var currentRole = null;
 // كلمات مرور الأدوار (مخزّنة مُجزّأة SHA-256 لا نصًّا صريحًا)
 var RQ_PW={teacher_affairs:'66aaa9a923f2399a20904d46efd41f26e76d8f94139d9fca433bcbbe214f3bd7',student_affairs:'40fed40ee634dd0eec52a2f2b6a0762b072570d7cf4a60a2f6010062bc8bd644',admin_assistant:'33704ce9f89b6344a5edf24197b2c712ac1ea4c6061762d42b422fc9277c48c3',admin:'aa8b76f19fd3736e6d2abe47c40eb99038ad0bfb753c0fde07293cf369586545',counselor:'a12a09021f67a037394c0960f079099c8be7376da971f5cf241a420bdbf1c4e8',developer:'26fd1294037e101c5bd7e327776b6f5d0f3fb3e6c816b55bc6f02e4456ad0cc7'};
 var _pwPending=null;
-function pwOk(role){if(!RQ_PW[role])return true;try{return localStorage.getItem('sd_pw_ok_'+role)===RQ_PW[role];}catch(e){return false;}}
+var ACC=(function(){try{return JSON.parse(localStorage.getItem('sd_access_v1')||'{}');}catch(e){return {};}})();
+function accOf(r){return ACC[r]||{};}
+function pwHash(r){return accOf(r).pw||RQ_PW[r];}
+function srvNow(){return Date.now()+(window.__fbOffset||0);}
+function pwOk(role){if(!pwHash(role))return true;try{return localStorage.getItem('sd_pw_ok_'+role)===pwHash(role);}catch(e){return false;}}
+function accForceOut(msg){var r=currentRole;try{if(r)localStorage.removeItem('sd_pw_ok_'+r);}catch(e){}currentRole=null;try{toggleSideNav(false);}catch(e){}showRoleScreen();setTimeout(function(){toast(msg,true);},300);}
+function accCheck(){var r=currentRole;if(!r)return;var a=accOf(r),login=+(localStorage.getItem('sd_login_'+r)||0);
+  if(a.disabled&&r!=='developer'){accForceOut('🔒 هذا الحساب معطّل من المطور');return;}
+  if(a.kickAt&&a.kickAt>login){accForceOut('🔒 سُجِّل خروجك من المطور — ادخل مجددًا');return;}
+  var kd=(a.kickDev||{})[devId()];if(kd&&kd>login){accForceOut('🔒 أُزيل هذا الجهاز من الحساب');return;}
+  if(!pwOk(r)&&r!=='developer'){accForceOut('🔑 تغيّرت كلمة المرور — ادخل بالكلمة الجديدة');return;}
+  try{syncTopbar(document.querySelector('.nav .nb.on'));}catch(e){}}
 function pwOpen(role){_pwPending=role;document.getElementById('pw-role').textContent=(ROLES[role]||{}).label||'';var i=document.getElementById('pw-in');i.value='';document.getElementById('pw-err').textContent='';document.getElementById('pw-screen').classList.remove('hidden');setTimeout(function(){i.focus();},50);}
 function pwCancel(){_pwPending=null;document.getElementById('pw-screen').classList.add('hidden');}
 function pwSubmit(){var role=_pwPending,v=document.getElementById('pw-in').value.trim(),err=document.getElementById('pw-err');if(!role)return;
   if(!(window.crypto&&crypto.subtle)){err.textContent='المتصفح لا يدعم التحقق الآمن';return;}
   crypto.subtle.digest('SHA-256',new TextEncoder().encode('tawasol:'+v)).then(function(b){var h=Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');
-    if(h!==RQ_PW[role]){err.textContent='كلمة المرور غير صحيحة';var i=document.getElementById('pw-in');i.value='';i.focus();return;}
-    try{localStorage.setItem('sd_pw_ok_'+role,h);}catch(e){}document.getElementById('pw-screen').classList.add('hidden');_pwPending=null;selectRole(role);});}
+    if(h!==pwHash(role)){err.textContent='كلمة المرور غير صحيحة';var i=document.getElementById('pw-in');i.value='';i.focus();return;}
+    try{localStorage.setItem('sd_pw_ok_'+role,h);localStorage.setItem('sd_login_'+role,String(srvNow()));}catch(e){}document.getElementById('pw-screen').classList.add('hidden');_pwPending=null;selectRole(role);});}
 function pwLogout(){if(currentRole){try{localStorage.removeItem('sd_pw_ok_'+currentRole);}catch(e){}}toggleSideNav(false);showRoleScreen();}
 var _usPending=null;
 var _usrList=null;
@@ -2121,6 +2144,7 @@ function usSubmit(){var v=document.getElementById('us-name').value.trim().replac
   document.getElementById('user-screen').classList.add('hidden');_usPending=null;
   if(currentRole===role){syncTopbar(document.querySelector('.nav .nb.on'));rqRefreshAll();toast('✅ المستخدم الحالي: '+v);}else selectRole(role,true);}
 function selectRole(role,signed){
+  if(accOf(role).disabled&&role!=='developer'){toast('🔒 هذا الحساب معطّل — راجع المطور',true);return;}
   if(!pwOk(role)){pwOpen(role);return;}
   if(USR_FIXED[role]){try{localStorage.setItem('sd_rquser_'+role,USR_FIXED[role]);}catch(e){}}
   else if(!signed){var u='';try{u=localStorage.getItem('sd_rquser_'+role)||'';}catch(e){}if(!u){usOpen(role);return;}}
@@ -2161,7 +2185,9 @@ function selectRole(role,signed){
   if(role==='admin'){nav('today');}
   if(role==='admin_assistant'){nav('raqaba',document.getElementById('nav-raqaba'));}else{syncTopbar(document.querySelector('.nav .nb.on'));}
   if(typeof fbListen !== 'undefined') fbListen();
+  try{if(!localStorage.getItem('sd_login_'+role))localStorage.setItem('sd_login_'+role,String(srvNow()));}catch(e){}
   try{presencePing(role);}catch(e){}
+  try{accCheck();}catch(e){}
   if(typeof hideLoadingScreen==='function') hideLoadingScreen();
 }
 function showRoleScreen(){
@@ -2277,7 +2303,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-aa1';
+var APP_VER='2026-10-04-acc';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -2413,7 +2439,7 @@ function renderDev(){
     Object.keys(v).forEach(function(r){Object.keys(v[r]||{}).forEach(function(k){var o=v[r][k]||{},dv=o.devices||{},dk=Object.keys(dv);dk.forEach(function(d){devs[d]=1;});
       var last=o.last;dk.forEach(function(d){if((dv[d].last||'')>(last||''))last=dv[d].last;});
       rows.push({r:r,k:k,n:o.name,l:last,dv:dk.map(function(d){return dv[d];}),stale:!devIsCurrentName(r,o.name)});});});
-    rows.sort(function(a,b){return (b.l||'').localeCompare(a.l||'');});var el=document.getElementById('dv-users');if(!el)return;
+    rows.sort(function(a,b){return (b.l||'').localeCompare(a.l||'');});try{accRender();}catch(e){}var el=document.getElementById('dv-users');if(!el)return;
     var onl=rows.filter(function(x){return Date.now()-Date.parse(x.l)<300000;}).length;
     document.getElementById('dv-users-sub').textContent=rows.filter(function(x){return !x.stale;}).length+' مستخدم · '+Object.keys(devs).length+' جهاز · '+onl+' متصل الآن';
     el.innerHTML=rows.length?'<div class="dv-ut">'+rows.map(function(x){var ago=Date.now()-Date.parse(x.l),live=ago<300000;
@@ -2421,7 +2447,35 @@ function renderDev(){
         '<div class="dv-ud">'+(x.dv.length?x.dv.map(function(d){return '<span title="'+rqEsc(d.w||'')+'">'+rqEsc(d.d||'جهاز')+(d.ver&&d.ver!==APP_VER?' <em>نسخة قديمة</em>':'')+'</span>';}).join(''):'<span class="na">لم يُسجَّل جهاز</span>')+'</div>'+
         '<div class="dv-ul">'+(live?'متصل الآن':'قبل '+devAgo(Date.parse(x.l)))+'</div></div>';}).join('')+'</div>':'<div class="ds-empty">لا بيانات دخول</div>';});}catch(e){}
 }
-function devIsCurrentName(r,n){if(USR_FIXED[r])return n===USR_FIXED[r];var L=usrGet()[r];return !L||!L.length||L.indexOf(n)>-1;}
+var _accOpen=null,_accArm={};
+function accRender(){var el=document.getElementById('dv-acc');if(!el)return;var U=window.__usersRaw||{};
+  el.innerHTML=Object.keys(ROLES).map(function(r){var a=accOf(r),nm=a.name||USR_FIXED[r]||'—',devs={},last='';
+    Object.keys(U[r]||{}).forEach(function(k){var o=U[r][k]||{};if((o.last||'')>last)last=o.last;Object.keys(o.devices||{}).forEach(function(d){var x=o.devices[d];if(!devs[d]||(x.last||'')>(devs[d].last||''))devs[d]=Object.assign({k:k},x);});});
+    var dk=Object.keys(devs),live=last&&Date.now()-Date.parse(last)<300000,isDev=r==='developer',open=_accOpen===r;
+    var st=a.disabled?'<span class="ac-st off">معطّل</span>':'<span class="ac-st on">مفعّل</span>';
+    var h='<div class="ac-row'+(a.disabled?' dis':'')+'"><span class="dv-dot'+(live?' on':'')+'"></span><div class="dv-un"><b>'+rqEsc(nm)+'</b><small>'+ROLES[r].label+(a.pw?' · كلمة مرور مخصّصة':'')+'</small></div>'+st+
+      '<span class="ac-dc">'+dk.length+' جهاز</span><span class="dv-ul">'+(last?(live?'متصل الآن':'قبل '+devAgo(Date.parse(last))):'—')+'</span>'+
+      '<button class="ac-gear" onclick="_accOpen=_accOpen===\''+r+'\'?null:\''+r+'\';accRender()">'+(open?'إغلاق':'⚙️ تحكم')+'</button></div>';
+    if(open){h+='<div class="ac-pan">'+
+      '<div class="ac-f"><label>الاسم الظاهر</label><input id="ac-n-'+r+'" value="'+rqEsc(nm==='—'?'':nm)+'"><button onclick="accSetName(\''+r+'\')">حفظ</button></div>'+
+      '<div class="ac-f"><label>كلمة مرور جديدة</label><input id="ac-p-'+r+'" type="password" inputmode="numeric" placeholder="٤ أرقام على الأقل" dir="ltr"><button onclick="accSetPw(\''+r+'\')">تغيير</button>'+(a.pw?'<button class="ghost" onclick="accResetPw(\''+r+'\')">إرجاع الأصلية</button>':'')+'</div>'+
+      (isDev?'<div class="ac-note">حساب المطور لا يمكن تعطيله أو إخراجه حتى لا تُقفل المنصة.</div>':
+      '<div class="ac-btns"><button class="'+(a.disabled?'ok':'warn')+'" onclick="accToggle(\''+r+'\')">'+(a.disabled?'✓ تفعيل الحساب':'⛔ تعطيل الحساب')+'</button><button class="warn" onclick="accKick(\''+r+'\')">'+(_accArm['k'+r]?'اضغط للتأكيد':'↩️ تسجيل خروج من كل الأجهزة')+'</button></div>')+
+      '<div class="ac-devs"><label>الأجهزة</label>'+(dk.length?dk.map(function(d){var x=devs[d];return '<div class="ac-dev"><span>'+rqEsc(x.d||'جهاز')+(x.w?' · '+rqEsc(x.w):'')+(x.ver&&x.ver!==APP_VER?' <em>نسخة قديمة</em>':'')+(d===devId()?' <b>(هذا الجهاز)</b>':'')+'</span><small>قبل '+devAgo(Date.parse(x.last))+'</small>'+
+        (isDev&&d===devId()?'':'<button onclick="accRmDev(\''+r+'\',\''+d+'\',\''+x.k+'\')">'+(_accArm['d'+d]?'تأكيد الإزالة':'✕ إزالة')+'</button>')+'</div>';}).join(''):'<div class="ds-empty">لم يُسجَّل جهاز بعد</div>')+'</div></div>';}
+    return h;}).join('');}
+function accW(r,obj,msg){if(typeof db==='undefined'){toast('قاعدة البيانات غير متاحة',true);return;}db.ref(FB_SCHOOL+'/access/'+r).update(obj).then(function(){toast(msg);}).catch(function(e){toast('تعذّر الحفظ: '+e.message,true);});}
+function accArm(k){if(_accArm[k])return true;_accArm[k]=1;accRender();setTimeout(function(){delete _accArm[k];accRender();},3500);return false;}
+function accSetName(r){var v=(document.getElementById('ac-n-'+r).value||'').trim().replace(/\s+/g,' ');if(v.length<3){toast('اكتب الاسم',true);return;}accW(r,{name:v},'✓ تغيّر الاسم إلى '+v);}
+function accSetPw(r){var v=(document.getElementById('ac-p-'+r).value||'').trim();if(v.length<4){toast('كلمة المرور ٤ أرقام على الأقل',true);return;}
+  crypto.subtle.digest('SHA-256',new TextEncoder().encode('tawasol:'+v)).then(function(b){var h=Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');
+    if(r===currentRole){try{localStorage.setItem('sd_pw_ok_'+r,h);}catch(e){}}accW(r,{pw:h},'✓ تغيّرت كلمة مرور '+ROLES[r].label+' — سيُطلب الإدخال من جديد على أجهزته');});}
+function accResetPw(r){if(r===currentRole){try{localStorage.setItem('sd_pw_ok_'+r,RQ_PW[r]);}catch(e){}}accW(r,{pw:null},'✓ أُعيدت كلمة المرور الأصلية');}
+function accToggle(r){var d=!accOf(r).disabled;accW(r,{disabled:d||null},d?'⛔ عُطّل حساب '+ROLES[r].label:'✓ فُعّل الحساب');}
+function accKick(r){if(!accArm('k'+r))return;accW(r,{kickAt:srvNow()},'↩️ سُجّل خروج '+ROLES[r].label+' من كل الأجهزة');}
+function accRmDev(r,d,k){if(!accArm('d'+d))return;var up={};up['access/'+r+'/kickDev/'+d]=srvNow();up['users/'+r+'/'+k+'/devices/'+d]=null;
+  db.ref(FB_SCHOOL).update(up).then(function(){toast('✓ أُزيل الجهاز');renderDev();});}
+function devIsCurrentName(r,n){var an=accOf(r).name;if(an)return n===an;if(USR_FIXED[r])return n===USR_FIXED[r];var L=usrGet()[r];return !L||!L.length||L.indexOf(n)>-1;}
 var _devUClr=0;
 function devCleanUsers(){var b=document.getElementById('dv-uclr'),v=window.__usersRaw||{},del=[];
   Object.keys(v).forEach(function(r){Object.keys(v[r]||{}).forEach(function(k){if(!devIsCurrentName(r,(v[r][k]||{}).name))del.push(r+'/'+k);});});
@@ -4097,7 +4151,7 @@ function presencePing(role){role=role||currentRole;if(typeof db==='undefined'||!
   if(!_presT)_presT=setInterval(function(){if(!document.hidden)presencePing();},120000);}
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&currentRole)try{presencePing();}catch(e){}});
 var USR_FIXED={admin:'أ. زاهر السناني',teacher_affairs:'أ. نايف الميلبي',student_affairs:'أ. لؤي الأحمدي',counselor:'أ. باسم اللقماني',developer:'أ. حاتم السفياني',admin_assistant:'أ. احمد مضاى'};
-function rqUser(){if(USR_FIXED[currentRole])return USR_FIXED[currentRole];try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
+function rqUser(){var an=accOf(currentRole).name;if(an)return an;if(USR_FIXED[currentRole])return USR_FIXED[currentRole];try{return (localStorage.getItem('sd_rquser_'+(currentRole||'default'))||'').trim();}catch(e){return '';}}
 function rqNeedUser(){if(rqUser())return false;usOpen(currentRole);return true;}
 function rqUserFill(){var v=rqUser();document.querySelectorAll('.rq-user-v').forEach(function(e){e.textContent=v||'—';});}
 function rqNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
