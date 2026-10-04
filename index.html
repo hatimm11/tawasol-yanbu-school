@@ -2420,7 +2420,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-xu';
+var APP_VER='2026-10-04-logo';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -4352,8 +4352,8 @@ function rqRecTable(rows){
     rows.map(function(o){return '<tr><td>'+rqEsc(o.name)+'</td><td>'+o.d+'</td><td>'+o.n+'</td><td>'+o.ok+'</td><td>'+o.abs+'</td><td>'+o.late+'</td><td>'+o.exc+'</td></tr>';}).join('')+'</tbody></table></div>';}
 function rqRenderRep(){var s=document.getElementById('rq-month');var v=s.value;var ms=rqMonths();s.innerHTML=ms.map(function(k){return '<option value="'+k+'">'+rqMonthLabel(k)+'</option>';}).join('');if(v&&ms.indexOf(v)>-1)s.value=v;
   document.getElementById('rq-rep-body').innerHTML=rqRepTable(rqReportRows(s.value))+'<div class="rq-grp" style="margin-top:14px">القائمون بالجولات</div>'+rqRecTable(rqRecRows(s.value));}
-function rqDoc(title,sub,strip,body,dept){
-  var _dx=dept?{'الجهة':dept}:null;var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
+function rqDoc(title,sub,strip,body,dept,lh){
+  var _dx=dept?{'الجهة':dept}:null,_b=location.href.replace(/[#?].*$/,'').replace(/[^\/]*$/,'');var sc=(typeof getSchoolSettings==='function')?getSchoolSettings():{};
   return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>'+title+'</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"><style>'+
   '@page{size:A4;margin:12mm 15mm 16mm}*{box-sizing:border-box}body{font-family:Tajarib,Tajawal,Cairo,sans-serif;color:#15445a;font-size:12.5px;line-height:2;margin:0}'+rqFontFace()+
   '.mh{text-align:center;border-bottom:1px solid #c2c1c1;padding-bottom:8px;margin-bottom:12px}.mh b{font-size:14px;font-weight:800;display:block}.mh span{color:#3078a6;font-size:12px}'+
@@ -4364,7 +4364,8 @@ function rqDoc(title,sub,strip,body,dept){
   '.sg{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.sg div{border-top:1px solid #c2c1c1;padding-top:4px;font-size:11.5px}'+
   'table{width:100%;border-collapse:separate;border-spacing:0;font-size:10.5px;border:1px solid #c2c1c1;border-radius:8px 8px 0 0;overflow:hidden}th{background:#15445a;color:#fff;padding:5px 6px;text-align:start}td{padding:5px 6px;border-top:1px solid #efeff1}tbody tr:nth-child(even) td{background:#fafbfb}tr.tot td{font-weight:800;background:#efeff1}'+
   '.ft{position:fixed;bottom:0;left:0;right:0;font-size:8.5px;color:#3078a6}.ft div{display:flex;justify-content:space-between;padding:0 0 3px}.ft i{display:block;height:1.6mm;background:linear-gradient(90deg,#07a869,#3d7eb9);-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-  '</style></head><body><div class="mh"><b>'+txP('p_head1',_dx)+'</b><span>'+txP('p_head2',_dx)+'</span></div>'+
+  '.lh{display:grid;grid-template-columns:1fr 34mm 1fr;align-items:center;gap:8px;border-bottom:1px solid #c2c1c1;padding-bottom:8px;margin-bottom:12px}.lh .r{text-align:right;font-size:11.5px;line-height:1.8;color:#3078a6}.lh .r b{display:block;font-size:13px;font-weight:800;color:#15445a}.lh img{width:34mm;display:block}.lh .l{text-align:left;font-size:11px;line-height:1.9;color:#3078a6}.lh .l b{color:#15445a}'+
+  '</style></head><body>'+(lh?'<div class="lh"><div class="r"><b>'+txP('p_head1',_dx).split(' · ').join('<br>')+'</b>'+txP('p_head2',_dx).split(' · ').join('<br>')+'</div><img src="'+_b+'moe-logo.png" alt="وزارة التعليم"><div class="l">'+lh+'</div></div>':'<div class="mh"><b>'+txP('p_head1',_dx)+'</b><span>'+txP('p_head2',_dx)+'</span></div>')+
   '<div class="tb"><h1>'+title+'</h1><div>'+sub+'</div></div>'+strip+body+
   '<div class="ft"><div><span>'+txP('p_foot',_dx)+'</span><span>'+txP('p_src',_dx)+'</span><span>صفحة ١ من ١</span></div><i></i></div>'+
   '<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script></body></html>';
@@ -4381,7 +4382,7 @@ function rqPrintForm(r){
     '<div class="sg"><div>الاسم: '+rqEsc(t?t.name:r.name)+'</div><div>التوقيع:                التاريخ:</div></div>'+
     '<h3>'+txP('f_dec')+'</h3><p>'+box(r.decision==='accept')+rqEsc(tx('rq_accept',_v))+'</p><p>'+box(r.decision==='reject')+rqEsc(tx('rq_reject',_v))+'</p>'+(r.decisionNote?'<p>ملاحظة: '+rqEsc(r.decisionNote)+'</p>':'')+
     '<div class="sg"><div>'+txP('f_sig3')+'</div><div>التوقيع:                التاريخ:</div></div>';
-  rqOpenDoc(rqDoc(txP('f_title'),'رقم الحالة: '+r.id.toUpperCase()+' · '+RQ_TYPES[r.type],strip,body));
+  rqOpenDoc(rqDoc(txP('f_title'),'رقم الحالة: '+r.id.toUpperCase()+' · '+RQ_TYPES[r.type],strip,body,null,'التاريخ: <b>'+rqHijri(rqIsoToday())+'</b><br>الرقم: <b>'+rqEsc(r.id.toUpperCase())+'</b><br>المرفقات: <b>—</b>'));
 }
 function rqPrintReport(){
   var k=document.getElementById('rq-month').value;if(!k)return;var rows=rqReportRows(k);
