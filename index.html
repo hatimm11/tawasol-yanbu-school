@@ -2019,7 +2019,7 @@ var currentRole = null;
 
 
 // كلمات مرور الأدوار (مخزّنة مُجزّأة SHA-256 لا نصًّا صريحًا)
-var RQ_PW={teacher_affairs:'66aaa9a923f2399a20904d46efd41f26e76d8f94139d9fca433bcbbe214f3bd7',student_affairs:'40fed40ee634dd0eec52a2f2b6a0762b072570d7cf4a60a2f6010062bc8bd644',admin_assistant:'33704ce9f89b6344a5edf24197b2c712ac1ea4c6061762d42b422fc9277c48c3'};
+var RQ_PW={teacher_affairs:'66aaa9a923f2399a20904d46efd41f26e76d8f94139d9fca433bcbbe214f3bd7',student_affairs:'40fed40ee634dd0eec52a2f2b6a0762b072570d7cf4a60a2f6010062bc8bd644',admin_assistant:'33704ce9f89b6344a5edf24197b2c712ac1ea4c6061762d42b422fc9277c48c3',admin:'aa8b76f19fd3736e6d2abe47c40eb99038ad0bfb753c0fde07293cf369586545',counselor:'a12a09021f67a037394c0960f079099c8be7376da971f5cf241a420bdbf1c4e8',developer:'26fd1294037e101c5bd7e327776b6f5d0f3fb3e6c816b55bc6f02e4456ad0cc7'};
 var _pwPending=null;
 function pwOk(role){if(!RQ_PW[role])return true;try{return localStorage.getItem('sd_pw_ok_'+role)===RQ_PW[role];}catch(e){return false;}}
 function pwOpen(role){_pwPending=role;document.getElementById('pw-role').textContent=(ROLES[role]||{}).label||'';var i=document.getElementById('pw-in');i.value='';document.getElementById('pw-err').textContent='';document.getElementById('pw-screen').classList.remove('hidden');setTimeout(function(){i.focus();},50);}
@@ -2211,7 +2211,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-04-pw';
+var APP_VER='2026-10-04-pw2';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
