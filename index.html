@@ -548,6 +548,10 @@ body.rq-only .rq-rooms-card{display:none}
 .iz-sum{margin-top:10px;font-size:13px;color:#3078a6}.iz-sum b{color:#15445a}.iz-r{color:#d92d20;font-weight:800}.iz-g{color:#07a869;font-weight:800}
 .iz-card{background:#fff;border:1px solid #e3e3e5;border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(21,68,90,.05)}
 .iz-hd{display:grid;grid-template-columns:2fr 1fr 1fr;gap:0;border:1px solid #c2c1c1;border-radius:10px;overflow:hidden}.iz-cell{padding:7px 12px;border-bottom:1px solid #efeff1;border-inline-start:1px solid #efeff1;position:relative}.iz-cell span{display:block;font-size:10.5px;color:#3078a6}.iz-cell b{font-size:14px;color:#15445a}.iz-wide{grid-column:span 1}.iz-src{grid-column:span 2}.iz-hd .iz-cell:nth-child(4){grid-column:span 1}
+.iz-reg{display:block;margin-top:6px;font-size:11.5px;padding:5px 10px}
+.rq-came{display:block;width:100%;margin-top:6px;border:1px solid #07a869;background:#e7f7ef;color:#07a869;border-radius:8px;padding:5px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer}.rq-came-x{border-color:#c2c1c1;background:#fff;color:#3078a6;margin:4px 0 0;font-size:11px;padding:3px}
+.iz-t tr.iz-came td{background:#e7f7ef;color:#07a869}
+.rq-fa{margin-top:6px;font-size:12px;font-weight:800;color:#d92d20;background:rgba(217,45,32,.08);border-radius:8px;padding:5px;text-align:center}.rq-fa-w{font-size:11.5px;color:#3078a6;margin-top:4px;text-align:center}
 .iz-x{position:absolute;top:6px;left:8px;border:1px solid rgba(217,45,32,.35);background:#fff;color:#d92d20;border-radius:999px;width:24px;height:24px;cursor:pointer;font-size:12px}
 .iz-note{font-size:12px;color:#218caa;margin:8px 2px}
 .iz-tw{overflow-x:auto}.iz-t{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;border:1px solid #c2c1c1;border-radius:10px;overflow:hidden}.iz-t th{background:#15445a;color:#fff;padding:8px;font-weight:800;text-align:center;white-space:nowrap}.iz-t td{padding:6px 8px;border-top:1px solid #efeff1;text-align:center}
@@ -2467,7 +2471,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-05-iz3';
+var APP_VER='2026-10-05-iz5';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -4752,11 +4756,15 @@ function rqRenderCls(){
   var list=document.getElementById('rq-c-list'),info=document.getElementById('rq-c-info');
   if(dow>4){info.innerHTML=rqAA()?'لا دوام اليوم. الرصد متاح للمساعد الإداري في أيام الدوام فقط.':'لا دوام في هذا اليوم.';list.innerHTML='';return;}
   if(_rqPer<0){rqRenderTaboor(iso,list,info,_rqPer);return;}
-  var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};
+  var cm=rqClassMap(dow,_rqPer);var marks=(rqRoundsGet()[iso])||{};var _absOn=rqAbsentOn(iso);
   var done=0,miss=0,lk=!rqPerOpen(iso,_rqPer);list.classList.toggle('rq-locked',lk);
   list.innerHTML=RQ_CLASSES.map(function(c){var a=cm.map[c];var k='p'+_rqPer+'_'+rqKey(c);var cur=marks[k];if(cur)done++;if(cur==='late'||cur==='abs')miss++;
     var tu=_rm?rqTeamsUrl(c):'';var head='<div class="rq-bx-h"><span class="rq-bx-c">'+c+'</span>'+(_rm?'<span class="rq-tm">'+(tu?'<a href="'+rqEsc(tu)+'" target="_blank" rel="noopener">Teams ↗</a>':'Teams')+'</span>':'<span class="rq-bx-r">'+rqEsc(rqRoom(c))+'</span>')+'</div>';
     if(!a)return '<div class="rq-bx rq-free">'+head+'<div class="rq-bx-s">لا حصة</div></div>';
+    var _t=_absOn[a.ph]?DB.teachers.find(function(x){return x.phone===a.ph;}):null,_cam=_t&&izCame(iso,_t.id,_rqPer),_op=rqPerOpen(iso,_rqPer);
+    if(_t&&!_cam){done++;var _cw='';try{var _st=((izDay(iso)[_t.id]||{}).p||{})[_rqPer];if(_st&&_st.w)_cw=izTName(_st.w);}catch(e){}
+      return '<div class="rq-bx rq-m-abs rq-fullabs">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div><div class="rq-fa">🚫 غائب اليوم كاملًا</div><div class="rq-fa-w">'+(_cw?'🔁 الانتظار: '+rqEsc(_cw):'🔁 لم يُحدَّد منتظر')+'</div>'+(_op?'<button class="rq-came" onclick="izSetCame(\''+iso+'\',\''+_t.id+'\','+_rqPer+',1)">🙋 حضر المعلم للحصة</button>':'')+'</div>';}
+    if(_cam&&_op)head+='<button class="rq-came rq-came-x" onclick="izSetCame(\''+iso+'\',\''+_t.id+'\','+_rqPer+',0)">↩️ إعادته غائبًا</button>';
     return '<div class="rq-bx'+(cur?' rq-m-'+cur:'')+'">'+head+'<div class="rq-bx-s">'+rqEsc(a.subj)+'</div><div class="rq-bx-t">'+rqEsc(a.name)+'</div>'+
       rqMarkBtns("rqMarkCls('"+iso+"',"+_rqPer+",'"+c+"','%M')",cur)+(cur?rqByLine(rqRoundBy(iso,k)):'')+'</div>';}).join('');
   var n=Object.keys(cm.map).length;
@@ -4957,32 +4965,41 @@ function izRender(){var box=document.getElementById('iz-list');if(!box)return;va
     var subj={};rows.forEach(function(c){if(c.subj)subj[c.subj]=1;});
     var h='<div class="iz-card"><div class="iz-hd"><div class="iz-cell iz-wide"><span>اسم المعلم الغائب</span><b>'+rqEsc(rqTName(a.tid))+'</b></div><div class="iz-cell"><span>اليوم</span><b>'+rqDay(iso)+'</b></div><div class="iz-cell"><span>التاريخ</span><b>'+rqHijri(iso)+'</b></div>'+
       '<div class="iz-cell iz-wide"><span>المواد</span><b>'+(Object.keys(subj).map(rqEsc).join('، ')||'—')+'</b></div>'+
-      '<div class="iz-cell iz-src"><span>المصدر</span><b>'+(a.manual?'إضافة يدوية':'غياب سُجّل '+rqHM(izTsMin(a.ts)))+'</b>'+(izCan()?'<button class="iz-x" title="إزالة من الانتظارات" onclick="izHide(\''+a.tid+'\')">✕</button>':'')+'</div></div>'+
+      '<div class="iz-cell iz-src"><span>المصدر</span><b>'+(a.manual?'إضافة يدوية':'غياب مسجّل في المتابعة '+rqHM(izTsMin(a.ts)))+'</b>'+(a.manual&&izCan()?'<button class="bs iz-reg" onclick="izRegister(\''+a.tid+'\')">📝 تسجيله غياب يوم كامل في المتابعة</button>':'')+(izCan()?'<button class="iz-x" title="إزالة من الانتظارات" onclick="izHide(\''+a.tid+'\')">✕</button>':'')+'</div></div>'+
       '<div class="iz-note">أمل تسديد مكانه حسب الجدول الموضح أدناه، والتوقيع بالعلم، ولكم جزيل الشكر.</div>'+
       '<div class="iz-tw"><table class="iz-t"><thead><tr><th>الحصة</th><th>الفصل</th><th>المادة</th><th>المعلم المنتظر</th><th>تم التنفيذ</th><th>ملاحظات</th></tr></thead><tbody>';
     for(var p=0;p<maxP;p++){var c=rows.find(function(x){return x.p===p;});
       if(!c){h+='<tr class="iz-free"><td>'+(p+1)+'</td><td colspan="5">—</td></tr>';continue;}
+      if(izCame(iso,a.tid,p)){h+='<tr class="iz-came"><td>'+(p+1)+'</td><td>'+rqEsc(c.cls)+'</td><td>'+rqEsc(c.subj)+'</td><td colspan="3"><b>🙋 حضر المعلم لهذه الحصة</b>'+(izCan()?' <button class="bs" onclick="izSetCame(\''+iso+'\',\''+a.tid+'\','+p+',0)">↩️ إلغاء</button>':'')+'</td></tr>';continue;}
       tot++;var s=st[p]||{},used=izUsedIn(iso,p,a.tid),cands=izCands(iso,p,c),w=s.w||'';if(w&&s.done)done++;
       var sel=izCan()?'<select onchange="izPick(\''+iso+'\',\''+a.tid+'\','+p+',this.value)"><option value="">— اختر المعلم —</option>'+cands.map(function(x){var bz=used[x.ph]&&x.ph!==w;return '<option value="'+rqEsc(x.ph)+'"'+(x.ph===w?' selected':'')+(bz?' disabled':'')+'>'+rqEsc(x.lbl)+(bz?' (مكلّف بفصل آخر)':'')+'</option>';}).join('')+
         (w&&!cands.some(function(x){return x.ph===w;})?'<option value="'+rqEsc(w)+'" selected>'+rqEsc(izTName(w))+'</option>':'')+'</select>':'<b>'+(w?rqEsc(izTName(w)):'—')+'</b>';
-      h+='<tr class="'+(w?(s.done?'iz-ok':'iz-set'):'iz-need')+'"><td>'+(p+1)+'</td><td>'+rqEsc(c.cls)+'</td><td>'+rqEsc(c.subj)+'</td><td class="iz-sel">'+sel+(w&&izCan()?'<button class="iz-wa" title="إشعار عبر واتساب" onclick="izNotify(\''+iso+'\',\''+a.tid+'\','+p+')">📲</button>':'')+'</td>'+
+      h+='<tr class="'+(w?(s.done?'iz-ok':'iz-set'):'iz-need')+'"><td>'+(p+1)+'</td><td>'+rqEsc(c.cls)+'</td><td>'+rqEsc(c.subj)+'</td><td class="iz-sel">'+sel+(w&&izCan()?'<button class="iz-wa" title="إشعار عبر واتساب" onclick="izNotify(\''+iso+'\',\''+a.tid+'\','+p+')">📲</button>':'')+(izCan()?'<button class="iz-wa" title="حضر المعلم لهذه الحصة" onclick="izSetCame(\''+iso+'\',\''+a.tid+'\','+p+',1)">🙋</button>':'')+'</td>'+
         '<td><label class="iz-ck"><input type="checkbox"'+(s.done?' checked':'')+(izCan()&&w?'':' disabled')+' onchange="izSet(\''+iso+'\',\''+a.tid+'\',\'p/'+p+'/done\',this.checked||null);izRender()"><span></span></label></td>'+
         '<td><input class="iz-nt" value="'+rqEsc(s.n||'')+'"'+(izCan()?'':' disabled')+' onchange="izSet(\''+iso+'\',\''+a.tid+'\',\'p/'+p+'/n\',this.value.trim()||null)" placeholder="—"></td></tr>';}
     h+='</tbody></table></div></div>';return h;}).join('');
-  var need=0;A.forEach(function(a){var st=(D[a.tid]||{}).p||{};izPeriods(iso,a.tid).forEach(function(c){if(!(st[c.p]||{}).w)need++;});});
+  var need=0;A.forEach(function(a){var st=(D[a.tid]||{}).p||{};izPeriods(iso,a.tid).forEach(function(c){if(!(st[c.p]||{}).w&&!izCame(iso,a.tid,c.p))need++;});});
   document.getElementById('iz-sum').innerHTML='<b>'+rqArNum(A.length)+'</b> غائب · <b>'+rqArNum(tot)+'</b> حصة · '+(need?'<span class="iz-r">'+rqArNum(need)+' بلا منتظر</span>':'<span class="iz-g">كل الحصص مغطاة</span>')+' · تم التنفيذ '+rqArNum(done);}
 function izAddRender(iso,A){var el=document.getElementById('iz-add');if(!el)return;if(!izCan()){el.innerHTML='';return;}var have={};A.forEach(function(a){have[a.tid]=1;});
   var L=DB.teachers.filter(function(t){return !have[t.id];}).sort(function(a,b){return (a.name||'').localeCompare(b.name||'','ar');});
   el.innerHTML='<select id="iz-add-t"><option value="">➕ إضافة معلم غائب يدويًا…</option>'+L.map(function(t){return '<option value="'+rqEsc(t.id)+'">'+rqEsc(t.name)+'</option>';}).join('')+'</select><button class="bs" onclick="izAdd()">إضافة</button><button class="bs" onclick="izAuto()">⚡ توزيع تلقائي</button>';}
-function izAdd(){var v=(document.getElementById('iz-add-t')||{}).value;if(!v)return;var iso=izDate();izSet(iso,v,'add',1);izSet(iso,v,'hide',null);toast('✓ أُضيف '+rqTName(v));izRender();}
-function izHide(tid){var iso=izDate();izSet(iso,tid,'hide',1);toast('أُزيل '+rqTName(tid)+' من انتظارات اليوم');izRender();}
+function izCame(iso,tid,p){return !!(((izDay(iso)[tid]||{}).came||{})[p]);}
+function izSetCame(iso,tid,p,on){var t=rqT(tid);izSet(iso,tid,'came/'+p,on?1:null);
+  try{var dow=rqDateObj(iso).getDay(),row=(_rqTT&&t&&_rqTT[t.phone])?(_rqTT[t.phone].tt[dow]||[]):[],x=row[p]||'',i=x.indexOf(' ');if(i>0){var k='p'+p+'_'+rqKey(x.slice(0,i));var prev=rqRoundVal(iso,k);if(on&&!prev)rqRoundSet(iso,k,'ok');else if(!on&&prev==='ok')rqRoundSet(iso,k,'');}}catch(e){}
+  izSync(iso,tid);toast(on?'✓ سُجّل حضور '+rqTName(tid)+' للحصة '+RQ_PER[p]+' — أُلغيت حاجتها لمنتظر':'↩️ أُعيدت الحصة '+RQ_PER[p]+' غيابًا');rqRefreshAll();try{izRender();}catch(e){}}
+function izHasRec(iso,tid){return rqList().some(function(r){return r.date===iso&&r.type==='absent'&&r.tid===tid&&r.status!=='cancelled';});}
+function izRegister(tid,iso,quiet){iso=iso||izDate();if(izHasRec(iso,tid))return;var t=rqT(tid);if(!t)return;var id='ab'+iso.replace(/-/g,'')+rqKey(tid);
+  var rec={id:id,tid:tid,name:rqTName(tid),phone:t.phone||'',date:iso,type:'absent',detail:'',note:'',status:'new',ts:new Date().toISOString(),by:currentRole,byName:rqUser(),src:'intz'};
+  rqPut(rec);rqUndoable('تسجيل غياب: '+rqTName(tid),[[id,null]],[]);izSync(iso,tid);if(!quiet)toast('✓ سُجّل غياب يوم كامل لـ'+rqTName(tid)+' في المتابعة اليومية');rqRefreshAll();izRender();}
+function izAdd(){var v=(document.getElementById('iz-add-t')||{}).value;if(!v)return;var iso=izDate();izSet(iso,v,'add',1);izSet(iso,v,'hide',null);izRegister(v,iso,1);toast('✓ أُضيف '+rqTName(v)+' وسُجّل غيابه في المتابعة اليومية');izRender();}
+function izHide(tid){var iso=izDate();izSet(iso,tid,'hide',1);rqList().forEach(function(r){if(r.date===iso&&r.tid===tid&&r.type==='absent'&&r.src==='intz'&&r.status==='new')rqDel(r.id);});toast('أُزيل '+rqTName(tid)+' من انتظارات اليوم');izRender();}
 function izPick(iso,tid,p,ph){izSet(iso,tid,'p/'+p+'/w',ph||null);if(!ph)izSet(iso,tid,'p/'+p+'/done',null);izSync(iso,tid);izRender();}
-function izAuto(){var iso=izDate(),A=izAbsent(iso),n=0;A.forEach(function(a){var st=(izDay(iso)[a.tid]||{}).p||{};izPeriods(iso,a.tid).forEach(function(c){if((st[c.p]||{}).w)return;var used=izUsedIn(iso,c.p,null);
+function izAuto(){var iso=izDate(),A=izAbsent(iso),n=0;A.forEach(function(a){var st=(izDay(iso)[a.tid]||{}).p||{};izPeriods(iso,a.tid).forEach(function(c){if((st[c.p]||{}).w||izCame(iso,a.tid,c.p))return;var used=izUsedIn(iso,c.p,null);
     var f=izCands(iso,c.p,c).find(function(x){return !used[x.ph];});if(f){izSet(iso,a.tid,'p/'+c.p+'/w',f.ph);n++;}});izSync(iso,a.tid);});
   toast(n?'⚡ وُزّعت '+rqArNum(n)+' حصة انتظار — راجعها':'لا توجد حصص بحاجة لمنتظر',!n);izRender();}
 // يحدّث سجل المتابعة: «غطّاها» وحالة الغياب بالانتظار
 function izSync(iso,tid){var r=rqList().find(function(x){return x.date===iso&&x.type==='absent'&&x.tid===tid&&x.status!=='cancelled';});if(!r)return;
-  var st=(izDay(iso)[tid]||{}).p||{},parts=Object.keys(st).sort().filter(function(p){return st[p]&&st[p].w;}).map(function(p){return izTName(st[p].w)+' — الحصة '+RQ_PER[p];});
+  var st=(izDay(iso)[tid]||{}).p||{},parts=Object.keys(st).sort().filter(function(p){return st[p]&&st[p].w&&!izCame(iso,tid,p);}).map(function(p){return izTName(st[p].w)+' — الحصة '+RQ_PER[p];});
   r.coveredBy=parts.join('، ')||undefined;if(parts.length&&!r.absState)r.absState='covered';if(!r.coveredBy)delete r.coveredBy;rqPut(r);}
 function izNotify(iso,tid,p){var s=((izDay(iso)[tid]||{}).p||{})[p]||{};if(!s.w)return;var c=izPeriods(iso,tid).find(function(x){return x.p===+p;})||{};
   var tt=DB.teachers.find(function(x){return x.phone===s.w;});var sc=getSchoolSettings();var full=(tt?tt.name:izTName(s.w)).trim().split(/\s+/);var nm=full.length>1?full[0]+' '+full[full.length-1]:full[0];
@@ -5010,7 +5027,7 @@ function izDrawOne(iso,A){
   y=150;rr(P,y,W-2*P,118,16);c.fillStyle=BG;c.fill();c.fillStyle=SKY;c.fillRect(P+16,y+113,W-2*P-32,5);
   c.fillStyle=IND;c.font='900 48px '+F;c.fillText('سجل توزيع الانتظار اليومي',W/2,y+54);
   c.fillStyle=SCYAN;c.font='500 22px '+F;var tm=cfgTerm();c.fillText('يوم '+rqDay(iso)+(tm.name?' · '+tm.name+(tm.year?' '+tm.year:''):''),W/2,y+97);
-  y=150+118+26;var totP=0,cov=0;blocks.forEach(function(b){var st=(D[b.a.tid]||{}).p||{};b.rows.forEach(function(r){totP++;if((st[r.p]||{}).w)cov++;});});
+  y=150+118+26;var totP=0,cov=0;blocks.forEach(function(b){var st=(D[b.a.tid]||{}).p||{};b.rows.forEach(function(r){if(izCame(iso,b.a.tid,r.p))return;totP++;if((st[r.p]||{}).w)cov++;});});
   var cells=[['اليوم',rqDay(iso)],['التاريخ الهجري',ea(rqHijri(iso))],['التاريخ الميلادي',ea(iso.split('-').reverse().join('/'))+'م'],['حصص الانتظار',ea(cov)+' من '+ea(totP)]];
   var cw=(W-2*P)/cells.length;rr(P,y,W-2*P,96,14);c.strokeStyle=GRAY;c.lineWidth=1.5;c.stroke();
   cells.forEach(function(cl,i){var x1=W-P-(i+1)*cw;if(i){c.fillStyle=GRAY;c.fillRect(x1+cw,y+1,1.5,94);}c.textAlign='right';c.fillStyle=SBLUE;c.font='500 17px '+F;c.fillText(cl[0],x1+cw-18,y+36);fit(cl[1],cw-30,'800',24);c.fillStyle=NAVY;c.fillText(cl[1],x1+cw-18,y+74);});
@@ -5026,8 +5043,8 @@ function izDrawOne(iso,A){
       c.fillStyle=SBLUE;c.font='800 22px '+F;c.fillText(ea(p+1),(cols[0][0]+cols[0][1])/2,ty+RH/2+8);
       if(r){c.fillStyle=NAVY;c.font='800 23px '+F;c.direction='ltr';c.fillText(r.cls,(cols[1][0]+cols[1][1])/2,ty+RH/2+8);c.direction='rtl';
         fit(r.subj,cols[2][1]-cols[2][0]-20,'700',21);c.fillStyle=SCYAN;c.fillText(r.subj,(cols[2][0]+cols[2][1])/2,ty+RH/2+8);
-        var wn=s.w?izTName(s.w):'لم يُحدَّد';fit(wn,cols[3][1]-cols[3][0]-20,'800',23);c.fillStyle=s.w?NAVY:RED;c.fillText(wn,(cols[3][0]+cols[3][1])/2,ty+RH/2+8);
-        if(s.done){c.fillStyle=GRN;c.font='800 20px '+F;c.fillText('✓ تم التنفيذ',(cols[4][0]+cols[4][1])/2,ty+RH/2+8);}
+        var _cm=izCame(iso,b.a.tid,p);var wn=_cm?'🙋 حضر المعلم':(s.w?izTName(s.w):'لم يُحدَّد');fit(wn,cols[3][1]-cols[3][0]-20,'800',23);c.fillStyle=_cm?GRN:(s.w?NAVY:RED);c.fillText(wn,(cols[3][0]+cols[3][1])/2,ty+RH/2+8);
+        if(_cm){}else if(s.done){c.fillStyle=GRN;c.font='800 20px '+F;c.fillText('✓ تم التنفيذ',(cols[4][0]+cols[4][1])/2,ty+RH/2+8);}
         else{c.fillStyle=GRAY;c.fillRect(cols[4][0]+40,ty+RH-18,cols[4][1]-cols[4][0]-80,1.5);}}
       else{c.fillStyle=GRAY;c.font='600 20px '+F;c.fillText('—',(cols[1][0]+cols[3][1])/2,ty+RH/2+8);}
       ty+=RH;}
