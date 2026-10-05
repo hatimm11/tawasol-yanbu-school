@@ -555,7 +555,7 @@ body.rq-only .rq-rooms-card{display:none}
 .iz-sel{display:flex;gap:6px;align-items:center;min-width:230px}.iz-sel select{flex:1;border:1px solid #c2c1c1;border-radius:8px;padding:6px;font-family:inherit;font-size:12.5px;background:#fff}.iz-wa{border:1px solid #c2c1c1;background:#fff;border-radius:8px;padding:4px 7px;cursor:pointer}
 .iz-nt{width:100%;min-width:110px;border:1px solid #e3e3e5;border-radius:8px;padding:6px;font-family:inherit;font-size:12.5px}
 .iz-ck{display:inline-flex;cursor:pointer}.iz-ck input{width:20px;height:20px;accent-color:#07a869}
-.iz-modal{display:none;position:fixed;inset:0;background:rgba(21,68,90,.55);z-index:9999;align-items:flex-start;justify-content:center;overflow:auto;padding:20px}.iz-modal.on{display:flex}.iz-mbox{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:12px}.iz-mbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}.iz-mbar span{display:flex;gap:6px}.iz-mbox img{width:100%;border-radius:10px;border:1px solid #efeff1}
+.iz-modal{display:none;position:fixed;inset:0;background:rgba(21,68,90,.55);z-index:9999;align-items:flex-start;justify-content:center;overflow:auto;padding:20px}.iz-modal.on{display:flex}.iz-mbox{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:12px}.iz-mbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}.iz-mbar span{display:flex;gap:6px}.iz-mbox img{width:100%;border-radius:10px;border:1px solid #efeff1}.iz-im{margin-bottom:16px}.iz-imh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;font-size:14px;color:#15445a}
 @media(max-width:600px){.iz-hd{grid-template-columns:1fr 1fr}.iz-src{grid-column:span 2}}
 .rm-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#4b53bc,#6264a7);color:#fff;border-radius:14px;padding:10px 14px;margin-bottom:12px;box-shadow:0 4px 14px rgba(75,83,188,.25)}.rm-bar .rm-ic{font-size:22px}.rm-bar b{display:block;font-size:14px}.rm-bar small{font-size:11.5px;opacity:.85}
 .rq-tm{font-size:10.5px;font-weight:800;color:#4b53bc;background:rgba(98,100,167,.12);border-radius:999px;padding:1px 8px}.rq-tm a{color:inherit;text-decoration:none}
@@ -2467,7 +2467,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-05-iz2';
+var APP_VER='2026-10-05-iz3';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -4989,8 +4989,13 @@ function izNotify(iso,tid,p){var s=((izDay(iso)[tid]||{}).p||{})[p]||{};if(!s.w)
   var msg='المكرم '+((tt&&tt.prefix)||'أ.')+' '+nm+'\nالسلام عليكم ورحمة الله وبركاته\n\nنأمل التوجه لحصة الانتظار:\n'+rqDay(iso)+' '+rqHijri(iso)+'\nالحصة '+RQ_PER[p]+' — الفصل '+(c.cls||'')+(c.subj?' ('+c.subj+')':'')+'\nبدلًا من: '+rqTName(tid)+'\n\nشاكرين تعاونكم\nوكيل شؤون المعلمين'+(sc.sender?'\n'+sc.sender:'');
   window.open('https://wa.me/'+s.w+'?text='+encodeURIComponent(msg),'_blank');}
 // ── صورة سجل الانتظار بهوية المنصة ──
-var _izImg=null;
+var _izImg=null,_izImgs=[];
+function izModal(){var m=document.getElementById('iz-modal');if(!m){m=document.createElement('div');m.id='iz-modal';m.className='iz-modal';document.body.appendChild(m);}
+  m.innerHTML='<div class="iz-mbox"><div class="iz-mbar"><b>معاينة سجل الانتظار · '+rqArNum(_izImgs.length)+(_izImgs.length>1?' صور':' صورة')+'</b><span>'+(_izImgs.length>1?'<button class="bs" onclick="izShareAll()">📤 مشاركة الكل</button>':'')+'<button class="bs" onclick="document.getElementById(\'iz-modal\').classList.remove(\'on\')">إغلاق</button></span></div>'+
+    _izImgs.map(function(x,i){return '<div class="iz-im"><div class="iz-imh"><b>'+rqEsc(rqTName(x.tid))+'</b><button class="bs" onclick="izShare('+i+')">📤 مشاركة / تنزيل</button></div><img src="'+x.url+'" alt="سجل توزيع الانتظار"></div>';}).join('')+'</div>';m.classList.add('on');}
 function izImage(){var iso=izDate(),A=izAbsent(iso);if(!A.length){toast('لا توجد انتظارات لهذا اليوم',true);return;}
+  _izImgs=A.map(function(a){return {tid:a.tid,url:izDrawOne(iso,[a])};});_izImg=_izImgs[0].url;izModal();}
+function izDrawOne(iso,A){
   var D=izDay(iso),sc=getSchoolSettings(),ea=rqArNum,dow=rqDateObj(iso).getDay(),maxP=rqMaxP(dow);
   var NAVY='#15445a',SBLUE='#3078a6',SCYAN='#218caa',SKY='#69cee3',IND='#351375',GRAY='#c2c1c1',BG='#efeff1',ROW='#fafbfb',GRN='#07a869',RED='#d92d20',F='Tajarib, Tajawal, Arial, sans-serif';
   var W=1200,P=48,RH=62,TH=52,BH=74;var blocks=A.map(function(a){var rows=izPeriods(iso,a.tid);return {a:a,rows:rows};});
@@ -5006,7 +5011,7 @@ function izImage(){var iso=izDate(),A=izAbsent(iso);if(!A.length){toast('لا ت
   c.fillStyle=IND;c.font='900 48px '+F;c.fillText('سجل توزيع الانتظار اليومي',W/2,y+54);
   c.fillStyle=SCYAN;c.font='500 22px '+F;var tm=cfgTerm();c.fillText('يوم '+rqDay(iso)+(tm.name?' · '+tm.name+(tm.year?' '+tm.year:''):''),W/2,y+97);
   y=150+118+26;var totP=0,cov=0;blocks.forEach(function(b){var st=(D[b.a.tid]||{}).p||{};b.rows.forEach(function(r){totP++;if((st[r.p]||{}).w)cov++;});});
-  var cells=[['اليوم',rqDay(iso)],['التاريخ الهجري',ea(rqHijri(iso))],['التاريخ الميلادي',ea(iso.split('-').reverse().join('/'))+'م'],['المعلمون الغائبون',ea(A.length)],['حصص الانتظار',ea(cov)+' من '+ea(totP)]];
+  var cells=[['اليوم',rqDay(iso)],['التاريخ الهجري',ea(rqHijri(iso))],['التاريخ الميلادي',ea(iso.split('-').reverse().join('/'))+'م'],['حصص الانتظار',ea(cov)+' من '+ea(totP)]];
   var cw=(W-2*P)/cells.length;rr(P,y,W-2*P,96,14);c.strokeStyle=GRAY;c.lineWidth=1.5;c.stroke();
   cells.forEach(function(cl,i){var x1=W-P-(i+1)*cw;if(i){c.fillStyle=GRAY;c.fillRect(x1+cw,y+1,1.5,94);}c.textAlign='right';c.fillStyle=SBLUE;c.font='500 17px '+F;c.fillText(cl[0],x1+cw-18,y+36);fit(cl[1],cw-30,'800',24);c.fillStyle=NAVY;c.fillText(cl[1],x1+cw-18,y+74);});
   c.textAlign='center';y+=96+34;
@@ -5029,14 +5034,12 @@ function izImage(){var iso=izDate(),A=izAbsent(iso);if(!A.length){toast('لا ت
     c.restore();rr(P,y,W-2*P,TH+maxP*RH,12);c.strokeStyle=GRAY;c.lineWidth=1.5;c.stroke();y=ty+34;});
   c.fillStyle=GRAY;c.fillRect(0,y,W,1.5);c.font='500 17px '+F;c.fillStyle=SBLUE;c.fillText((sc.name||'ثانوية ينبع')+' · وكيل شؤون المعلمين'+(sc.sender?' · '+sc.sender:''),W/2,y+36);
   var g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,'#07a869');g.addColorStop(1,'#3d7eb9');c.fillStyle=g;c.fillRect(0,H-10,W,10);
-  _izImg=cv.toDataURL('image/png');
-  var m=document.getElementById('iz-modal');if(!m){m=document.createElement('div');m.id='iz-modal';m.className='iz-modal';document.body.appendChild(m);}
-  m.innerHTML='<div class="iz-mbox"><div class="iz-mbar"><b>معاينة سجل الانتظار</b><span><button class="bs" onclick="izShare()">📤 مشاركة / تنزيل</button><button class="bs" onclick="document.getElementById(\'iz-modal\').classList.remove(\'on\')">إغلاق</button></span></div><img src="'+_izImg+'" alt="سجل توزيع الانتظار"></div>';m.classList.add('on');}
+  return cv.toDataURL('image/png');}
 function izImageGo(){var go=function(){try{izImage();}catch(e){console.error(e);toast('تعذّر إنشاء الصورة',true);}};if(document.fonts&&document.fonts.load){Promise.all([document.fonts.load('800 24px Tajarib'),document.fonts.load('500 20px Tajarib')]).then(go,go);}else go();}
-function izShare(){if(!_izImg)return;var iso=izDate(),nm='انتظار-'+iso+'.png';
-  fetch(_izImg).then(function(r){return r.blob();}).then(function(b){var f=new File([b],nm,{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'سجل توزيع الانتظار'}).catch(function(){});
-    else{var a=document.createElement('a');a.href=_izImg;a.download=nm;a.click();toast('📸 تم تنزيل الصورة');}});}
+function izFile(i){var x=_izImgs[i];var nm='انتظار-'+izDate()+'-'+(rqT(x.tid)||{name:'معلم'}).name.split(' ').slice(0,2).join('-')+'.png';return fetch(x.url).then(function(r){return r.blob();}).then(function(b){return new File([b],nm,{type:'image/png'});});}
+function izDl(f){var a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+function izShare(i){i=i||0;izFile(i).then(function(f){if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'سجل توزيع الانتظار'}).catch(function(){});else{izDl(f);toast('📸 تم تنزيل الصورة');}});}
+function izShareAll(){Promise.all(_izImgs.map(function(x,i){return izFile(i);})).then(function(fs){if(navigator.canShare&&navigator.canShare({files:fs}))navigator.share({files:fs,title:'سجل توزيع الانتظار'}).catch(function(){});else{fs.forEach(function(f,i){setTimeout(function(){izDl(f);},i*400);});toast('📸 تم تنزيل '+rqArNum(fs.length)+' صور');}});}
 function rqAssignCover(id,p,ph){
   var r=rqGet()[id];if(!r)return;var c=rqCoverFor(r).find(function(x){return x.p===p;});if(!c)return;
   var w=c.waits.find(function(x){return x.ph===ph;});var tt=DB.teachers.find(function(x){return x.phone===ph;});
