@@ -704,7 +704,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     function segs(p){return String(p||'').split('/').filter(function(s){return s!=='';});}
     function asArr(o){if(!o||typeof o!=='object'||Array.isArray(o))return o;var ks=Object.keys(o);if(!ks.length)return o;var mx=-1;
       for(var i=0;i<ks.length;i++){if(!/^(0|[1-9]\d*)$/.test(ks[i]))return o;mx=Math.max(mx,+ks[i]);}
-      if(mx>=ks.length*2)return o;var a=[];for(i=0;i<=mx;i++)a.push(o[i]===undefined?null:o[i]);return a;}
+      ks.sort(function(x,y){return x-y;});return ks.map(function(k){return o[k];}).filter(function(x){return x!=null;});}
     function topVal(top,lim){var rows=T[top];if(!rows)return null;if(rows.hasOwnProperty(''))return clone(rows['']);var ks=Object.keys(rows);if(!ks.length)return null;
       if(lim){ks.sort();ks=ks.slice(-lim);}var o={};ks.forEach(function(k){o[k]=clone(rows[k]);});return asArr(o);}
     function valAt(s,lim){if(s.length<2)return null;var top=s[1];if(s.length===2)return topVal(top,lim);var rows=T[top]||{},v=rows[s[2]];
@@ -735,7 +735,15 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     var Q=[],qT=null,chain=Promise.resolve(),OQK='sd_sb_outbox_v1';
     try{var _ob=JSON.parse(localStorage.getItem(OQK)||'[]');if(_ob.length)Q=_ob;}catch(e){}
     function saveQ(){try{localStorage.setItem(OQK,JSON.stringify(Q));}catch(e){}}
-    function write(ops){ops.forEach(function(o){localApply(segs(o[0]).slice(1),o[1]);});
+    function expand(ops){var out=[];ops.forEach(function(o){var s2=segs(o[0]),v=o[1];
+        if(s2.length===2&&LOADED[s2[1]]&&v&&typeof v==='object'){var top=s2[1],nv={};
+          if(Array.isArray(v)){var j=0;v.forEach(function(x){if(x!=null)nv[j++]=x;});}else Object.keys(v).forEach(function(k){if(v[k]!=null)nv[k]=v[k];});
+          var cur=T[top]||{};Object.keys(nv).forEach(function(k){if(JSON.stringify(cur[k])!==JSON.stringify(strip(nv[k])))out.push([s2[0]+'/'+top+'/'+k,nv[k]]);});
+          Object.keys(cur).forEach(function(k){if(!(k in nv))out.push([s2[0]+'/'+top+'/'+k,null]);});if(cur.hasOwnProperty(''))out.push([s2[0]+'/'+top+'/',null]);
+          return;}
+        if(s2.length===2&&Array.isArray(v)){var a=[];v.forEach(function(x){if(x!=null)a.push(x);});out.push([o[0],a]);return;}
+        out.push(o);});return out;}
+    function write(ops){ops=expand(ops);if(!ops.length)return Promise.resolve();ops.forEach(function(o){localApply(segs(o[0]).slice(1),o[1]);});
       return new Promise(function(res,rej){ops.forEach(function(o,i){Q.push({p:segs(o[0]).slice(1).join('/'),v:strip(o[1])==null?null:strip(o[1]),cb:i===ops.length-1?[res,rej]:null});});saveQ();if(!qT)qT=setTimeout(flush,0);});}
     function flush(){qT=null;if(!Q.length||!sb)return;var batch=Q.slice(0,200);
       chain=chain.then(function(){return sb.rpc('fb_write',{p_school:FB_SCHOOL,p_ops:batch.map(function(o){return [o.p,o.v];})});}).then(function(r){
@@ -795,8 +803,12 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
   // ── FIREBASE SYNC FUNCTIONS ──
 
   // Sync teachers to Firebase
+  var _tSrv=null;
   function fbSaveTeachers(teachers){
-    try{db.ref(FB_SCHOOL+'/teachers').set(teachers);}catch(e){}
+    try{var clean=(teachers||[]).filter(function(t){return t&&t.id;});if(!clean.length)return;
+      var js=JSON.stringify(clean);if(_tSrv&&js===_tSrv.js)return;
+      if(_tSrv&&clean.length<_tSrv.n-1&&!fbSaveTeachers._force){console.warn('teachers shrink blocked',clean.length,_tSrv.n);if(window.__devQ)window.__devQ.push({t:new Date().toISOString(),msg:'منع حفظ قائمة معلمين ناقصة ('+clean.length+' من '+_tSrv.n+')',kind:'guard'});return;}
+      _tSrv={js:js,n:clean.length};db.ref(FB_SCHOOL+'/teachers').set(clean);}catch(e){}
   }
 
   // Sync parents to Firebase
@@ -841,8 +853,9 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     // Teachers
     db.ref(FB_SCHOOL+'/teachers').on('value', function(snap){
       var data = snap.val();
+      if(data && Array.isArray(data)) data=data.filter(function(t){return t&&t.id;});
       if(data && Array.isArray(data) && data.length > 0){
-        DB.teachers = data;
+        DB.teachers = data;_tSrv={js:JSON.stringify(data),n:data.length};
         try{localStorage.setItem('sd_shared_teachers_v1', JSON.stringify(data));}catch(e){}
         if(document.getElementById('tc-list')) renderTC();
       }
@@ -871,6 +884,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     // Sched
     db.ref(FB_SCHOOL+'/sched').on('value', function(snap){
       var data = snap.val();
+      if(!data){try{var _ls=JSON.parse(localStorage.getItem('sd_weekly_sched_v1')||'null');if(_ls&&Object.keys(_ls).length&&(currentRole==='teacher_affairs'||currentRole==='developer'))fbSaveSched(_ls);}catch(e){}}
       if(data){
         _schedCache = data;
         try{localStorage.setItem('sd_weekly_sched_v1', JSON.stringify(data));}catch(e){}
@@ -880,6 +894,7 @@ input[type=date]:disabled{opacity:.7;cursor:not-allowed}
     // Sched locs
     db.ref(FB_SCHOOL+'/sched_locs').on('value', function(snap){
       var data = snap.val();
+      if(!data){try{var _ll=JSON.parse(localStorage.getItem('sd_sched_locs_v1')||'null');if(_ll&&_ll.length&&(currentRole==='teacher_affairs'||currentRole==='developer'))fbSaveSchedLocs(_ll);}catch(e){}}
       if(data && Array.isArray(data)){
         _schedLocsCache = data;
         try{localStorage.setItem('sd_sched_locs_v1', JSON.stringify(data));}catch(e){}
@@ -2319,13 +2334,14 @@ function selectRole(role,signed){
   var r = ROLES[role];
   STORE = r.store;
   try{ var d=localStorage.getItem(STORE); DB=d?JSON.parse(d):{teachers:[],templates:[]}; }catch(e){ DB={teachers:[],templates:[]}; }
-  try{ var t=localStorage.getItem(SHARED_TEACHERS_KEY); if(t) DB.teachers=JSON.parse(t); }catch(e){}
+  try{ var t=localStorage.getItem(SHARED_TEACHERS_KEY); if(t) DB.teachers=(JSON.parse(t)||[]).filter(function(x){return x&&x.id;}); }catch(e){}
   var badge=document.getElementById('role-badge');
   if(badge)badge.textContent=r.icon;
   document.getElementById('role-screen').classList.add('hidden');
   // Reload role templates from store
   try{var _rd=localStorage.getItem(STORE);if(_rd){var _rp=JSON.parse(_rd);if(_rp.templates)DB.templates=_rp.templates;}}catch(e){}
   setTimeout(function(){try{tpRoleSync(role);}catch(e){}},1200);
+  setTimeout(function(){try{schedEnsure();}catch(e){}},2500);
   // Add default daily supervision template if role can see sched
   if(role==='teacher_affairs'||role==='admin'||role==='admin_assistant'||role==='developer'){
     var _hasIshraf=DB.templates.some(function(t){return t.id==='__ishraf__';});
@@ -2473,7 +2489,7 @@ function dsKeyInfo(iso,k){var dow=rqDateObj(iso).getDay(),m;
   if((m=/^p(\d)_(.+)$/.exec(k))){var p=+m[1],c=m[2].replace(/_/g,' ');var a=rqClassMap(dow,p).map[c]||{};return {t:a.name||'',w:c+' · '+dsPerName(p),p:p};}
   if(k.indexOf('d_')===0){var r=rqDutyRows(iso).find(function(x){return 'd_'+x.k===k;});return r?{t:rqTName(r.tid),w:r.label,p:/^taboor_/.test(r.k)?-1:/^brk_/.test(r.k)?-2:null}:{t:'',w:k};}
   return {t:'',w:k};}
-var APP_VER='2026-10-07-rl';
+var APP_VER='2026-10-12-fix';
 (function(){function chk(){try{fetch(location.pathname+'?_v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){var m=/APP_VER='([^']+)'/.exec(t);if(m&&m[1]!==APP_VER&&!window._updShown){window._updShown=1;
   var b=document.createElement('button');b.className='app-upd';b.textContent='⟳ يتوفر تحديث جديد — اضغط للتحديث';b.onclick=function(){location.replace(location.pathname+'?v='+m[1]);};document.body.appendChild(b);}}).catch(function(){});}catch(e){}}
   setTimeout(chk,4000);setInterval(chk,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk();});})();
@@ -4320,6 +4336,17 @@ function renderRosterInfo(){
   el.innerHTML=nm?('📌 حسب سجل المناوبة المعتمد: <b>'+nm+'</b>. يُستخدم تلقائيًا في الرسائل والصورة.')
     :'لا توجد مناوبة مسجلة في سجل المناوبة لهذا اليوم من الأسبوع الحالي (إجازة أو خارج الفصل).';
 }
+// يضمن وجود جدول الإشراف في قاعدة البيانات: نسخة الجهاز إن وُجدت، وإلا يُبنى من بيانات الفصل
+function schedEnsure(){if(typeof db==='undefined'||!(currentRole==='teacher_affairs'||currentRole==='developer'))return;
+  db.ref(FB_SCHOOL+'/sched').once('value').then(function(sn){if(sn.val())return;
+    var loc=null;try{loc=JSON.parse(localStorage.getItem(SCHED_KEY)||'null');}catch(e){}
+    if(loc&&Object.keys(loc).length){fbSaveSched(loc);var ll=null;try{ll=JSON.parse(localStorage.getItem('sd_sched_locs_v1')||'null');}catch(e){}if(ll&&ll.length)fbSaveSchedLocs(ll);toast('✓ رُفع جدول الإشراف من هذا الجهاز');return;}
+    if(!SD1448||!SD1448.brk)return;var byPhone={};DB.teachers.forEach(function(t){if(t&&t.phone)byPhone[t.phone]=t.id;});
+    var ids=SD1448.teachers.map(function(x){return byPhone[x.ph]||'';}),sched={};
+    SD_DAYS.forEach(function(day){var d={};SD1448.locs.forEach(function(l){var i=(SD1448.brk[day]||{})[l];d[l]=(i===undefined)?'':ids[i];});d._taboor=(SD1448.taboor||[]).map(function(i){return ids[i];});d._salah=[];d._monawaba=[];sched[day]=d;});
+    _schedCache=sched;try{localStorage.setItem(SCHED_KEY,JSON.stringify(sched));}catch(e){}fbSaveSched(sched);
+    _schedLocsCache=SD1448.locs.slice();try{localStorage.setItem('sd_sched_locs_v1',JSON.stringify(_schedLocsCache));}catch(e){}fbSaveSchedLocs(_schedLocsCache);
+    toast('✓ أُعيد بناء جدول الإشراف من بيانات الفصل');}).catch(function(){});}
 function applySchoolData1448(){
   var byPhone={};DB.teachers.forEach(function(t){byPhone[t.phone]=t;});
   var ids=[],added=0,updated=0;
